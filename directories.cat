@@ -1,0 +1,3 @@
+DATA_DIR: ./ 
+SEX_FILES: ~/Library/Code/python/lensing/lenstool/sex_files/ 
+PSF_MODEL_DIR: ~/Library/Code/python/lensing/lenstool/psf_lib//814/ 
