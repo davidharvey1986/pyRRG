@@ -61,7 +61,8 @@ def psf_cor(    mom_file,
     '''
     
     moms = py.open(dataDir+'/'+mom_file)[1].data
-   
+    uncorrected_xx = moms.xx
+    uncorrected_yy = moms.yy
     radius = np.sqrt( ( moms.xx + moms.yy)/2.)
     nGalaxies=len(moms.x)
     
@@ -320,7 +321,9 @@ def psf_cor(    mom_file,
     moms['gal_size'] = np.sqrt( (corrected_moments.xx +corrected_moments.yy)/2.)
     newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
                py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
-                         array=psf_moms.nExposures) ]
+                         array=psf_moms.nExposures),
+                py.Column('xx_uncorrected', format=moms.xx.dtype, array=uncorrected_xx),
+                py.Column('yy_uncorrected', format=moms.yy.dtype, array=uncorrected_yy)]
     
     orig_cols = moms.columns
     new_cols = py.ColDefs(newcol)
