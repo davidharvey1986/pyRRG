@@ -60,7 +60,7 @@ def drizzle_position(      drizzle_file,
 
     newcol = []
     for iImage in xrange(nImages):
-        print( "%i/%i" %(iImage, nImages))
+        print( "%i/%i" %(iImage+1, nImages))
         #now see where each of our positions lie on each of the individual images
         
         SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec)    

@@ -180,7 +180,7 @@ def psf_cor(    mom_file,
 
     #Save the focus array
     focuslist = open(dataDir+'/FocusArray.txt', "wb")
-    print FocusArray
+    
     for i in xrange(nImages):
         focuslist.write( "%10s %3.1f \n" % ((images[i].split('_'))[0][2:], FocusArray[i]))
 

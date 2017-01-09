@@ -99,8 +99,8 @@ def star_galaxy_separation( sources, restore=False,
         #Plot the stars and galaxies to make sure i am taking the right ones
         
         ax1.plot( sources['MAG_AUTO'], sources['gal_size'], 'k,')
-        ax1.set_xlabel="Magnitude"
-        ax1.set_ylabel="Size"
+        ax1.set_xlabel("Magnitude")
+        ax1.set_ylabel("Size")
        
 
         
@@ -126,8 +126,8 @@ def star_galaxy_separation( sources, restore=False,
         ax2.plot( sources['MAG_AUTO'][galaxies], sources['RADIUS'][galaxies], 'rD')
         ax2.plot( sources['MAG_AUTO'] [stars], sources['RADIUS'][stars], 'y*')
 
-        ax2.set_xlabel="Magnitude"
-        ax2.set_ylabel="radius"
+        ax2.set_xlabel("Magnitude")
+        ax2.set_ylabel("Radius")
         ax2.set_xlim([10,30])
         ax2.set_ylim([0,25])
      
@@ -147,8 +147,8 @@ def star_galaxy_separation( sources, restore=False,
         
         ax3.plot( sources['MAG_AUTO'][galaxies],sources['MU_MAX'][galaxies],'rD')
         ax3.plot( sources['MAG_AUTO'][stars],sources['MU_MAX'][stars], 'y*')
-        ax3.set_xlabel="Magnitude"
-        ax3.set_ylabel="Mu Max"
+        ax3.set_xlabel("Magnitude")
+        ax3.set_ylabel("Mu Max")
         ax3.set_xlim([10,30])
         ax3.set_ylim([10,30])
 
@@ -183,7 +183,7 @@ def star_galaxy_separation( sources, restore=False,
                 galaxies, stars = star_galaxy_separation( sources, savefile=savefile, axes=[ax1,ax2,ax3] )
 
     plt.close()
-    return stars, galaxies
+    return galaxies, stars
 
     
 
