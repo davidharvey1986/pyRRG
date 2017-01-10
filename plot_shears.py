@@ -34,7 +34,7 @@ def plot_shears( moments_catalogue, nbins=None,
 
 
     xgrid, ygrid = np.meshgrid( xbins[:-1] - np.mean( xbins), ybins[:-1] - np.mean( ybins) )
-    
+
         
     for i in xrange( nbins ):
         for j in xrange( nbins ):
@@ -50,8 +50,8 @@ def plot_shears( moments_catalogue, nbins=None,
             gamma = np.sqrt( np.mean(catalogue.gamma1[ in_bin ])**2 +
                              np.mean(catalogue.gamma2[ in_bin ])**2 )
             
-            e1_map[ j, i] = gamma*np.cos(2.*theta) #np.mean(catalogue.gamma1[ in_bin ])
-            e2_map[ j, i] = gamma*np.sin(2.*theta) #np.mean(catalogue.gamma2[ in_bin ])
+            e1_map[ j, i] = gamma*np.cos(theta) #np.mean(catalogue.gamma1[ in_bin ])
+            e2_map[ j, i] = gamma*np.sin(theta) #np.mean(catalogue.gamma2[ in_bin ])
             theta_map[ j, i] = theta
     
     

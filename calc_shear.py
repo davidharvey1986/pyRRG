@@ -4,10 +4,8 @@ import pyfits as py
 
 def calc_shear( corrected_moments, galaxies, outfile,
                 min_rad=6, mult=2,
-                size_cut_lo=0.,
-                size_cut_hi=100.,
-                mag_cut_lo=22.5,
-                mag_cut_hi=30,
+                size_cut=[0., 100.],
+                mag_cut=[22.5, 30],
                 signal_noise_cut=3.,
                 rhodes_factor=0.86,
                 dataDir='./',
@@ -31,8 +29,8 @@ def calc_shear( corrected_moments, galaxies, outfile,
     OPTIONAL INPUTS:
          MIN_RAD: The minimum measured radios that is used to weight each galaxies in the
                   measurement.
-        SIZE_CUT_[LO,HI] : scalar, the cut in galaxy size that is allowed to measure shear on
-        MAG_CUT_[LO,HI] : scalar, the cut in the galaxy magnitude that is allowed to measure shear on
+        SIZE_CUT [LO,HI] : scalar, the cut in galaxy size that is allowed to measure shear on
+        MAG_CUT [LO,HI] : two scalar array, the cut in the galaxy magnitude that is allowed to measure shear on
         SIGNAL_NOSIE_CUT : scalar, the lowest acceptable signal to nosie allowed in the catalogue
         rhodes_factor : The RRG rhodes factor (see paper)
         dataDir : the directory in which all the data exists
@@ -58,18 +56,15 @@ def calc_shear( corrected_moments, galaxies, outfile,
           
     good = np.zeros(len(corrected_moments.x))
     good[ galaxies ] = 1
-    good[ (corrected_moments.xy < 0 ) ]  = 0
     good[ (corrected_moments.xx + corrected_moments.yy < 0)] = 0
-    good[ (corrected_moments.xx < 0)]  = 0
-    good[ (corrected_moments.yy < 0 ) ]  = 0
     good[ (uncut_ell_sqr > 2 ) ]  = 0
-    good[ (uncor_size < size_cut_lo )]  = 0 
-    good[ (uncor_size > size_cut_hi )]  = 0
-    good[( corrected_moments.MAG_AUTO < mag_cut_lo )]  = 0 
-    good[( corrected_moments.MAG_AUTO > mag_cut_hi )]  = 0
+    good[ (uncor_size < size_cut[0] )]  = 0 
+    good[ (uncor_size > size_cut[1] )]  = 0
+    good[( corrected_moments.MAG_AUTO < mag_cut[0] )]  = 0 
+    good[( corrected_moments.MAG_AUTO > mag_cut[1] )]  = 0
     good[ (signal_noise < signal_noise_cut)]  = 0 
     
-    good[ corrected_moments.nExposures < expThresh ] = 0
+    #good[ corrected_moments.nExposures < expThresh ] = 0
     good[  (~np.isfinite(corrected_moments.xx)) ] = 0
     good[  corrected_moments.prob != 0 ] = 0
 
@@ -121,3 +116,4 @@ def calc_shear( corrected_moments, galaxies, outfile,
  
     hdu = py.BinTableHDU.from_columns(fits_cols + newcol)
     hdu.writeto(dataDir+'/'+outfile, clobber=True)
+ 
