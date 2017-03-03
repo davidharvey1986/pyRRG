@@ -65,10 +65,10 @@ def main(  infile, hst_filter=None,
                    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
     if sex_files is None:
-        sex_files='~/Library/Code/python/lensing/lenstool/sex_files/'
+        sex_files='sex_files/'
         
     if  psf_model_dir is None:
-        psf_model_dir='~/Library/Code/python/lensing/lenstool/psf_lib/'
+        psf_model_dir='psf_lib/'
 
         
     dirs = directories(data_dir,  sex_files, psf_model_dir+'/'+str(wavelength)+'/' )
@@ -109,7 +109,7 @@ def main(  infile, hst_filter=None,
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
     
-    if os.path.isfile(uncorrected_moments_cat):
+    if not os.path.isfile(uncorrected_moments_cat):
         measure_moms.measure_moms( infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,
