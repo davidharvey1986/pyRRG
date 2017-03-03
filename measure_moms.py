@@ -5,14 +5,17 @@ import ipdb as pdb
 from matplotlib import pyplot as plt
 import astro_tools as at
 def measure_moms(fits_image, sex_catalog, outfile,
-                     width=None, saturation=800000000, badval=-99,
+                     width=None,
+                     saturation=800000000, badval=-99,
                      cut_off=2.5, fieldback=0, mult=1,
                      min_rad=1.5, startx=0, starty=0,
-                     silent=0, stellar=0, weight_image=None,
-                     wt_ext=0,nocenter=0,gain=1,exp_time=1,
-                     sgm_im='null',cat=None, nExposures = 1,
-                     back=None, bad_val=-99, regfile=None,
-                     skymed=None, skysd=None, return_moms=True, **kwargs):
+                     silent=0, weight_image=None,
+                     wt_ext=0, nocenter=0,
+                     sgm_im='null',
+                     object_catalogue=None,
+                     bad_val=-99, regfile=None,
+                     skymed=None, skysd=None,
+                     return_moms=True, **kwargs):
                      
     '''
     ;
@@ -33,7 +36,6 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ; KEYWORD PARAMETERS:
     ;   width- gaussian window function width, if not input is calculated from area
     ;   saturation,bad_value are saturation level and value of pixels not to use (outside image)
-    ;   badval
     ;   cut_off- cut_off for measuring objects default is 2.5x width
     ;   fieldback -1 means use a field backgroup as calculated by IDL SKY, 0(default) uses object back from SEx
     ;   mult- multiplier used to find gaussian width from area
@@ -65,7 +67,9 @@ def measure_moms(fits_image, sex_catalog, outfile,
     img_file = py.open( fits_image )
     img = img_file[0].data
     imhead = img_file[0].header
+    exp_time = imhead['EXPTIME']
 
+    
     #What is mmm?
     if (skymed is None )| \
         (skysd is None):
@@ -73,31 +77,27 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
     print(' % f skymed and %f skysd' % (skymed,skysd))
     
-    if cat is None:
+    if object_catalogue is None:
         cat_file=py.open(sex_catalog)
-        cat = cat_file[1].data
+        object_catalogue = cat_file[1].data
         header=cat_file[1].header
-   
-    nGalaxies = len(cat['RA'])
+     
+    nGalaxies = len(object_catalogue['RA'])
 
     
     try:
         if not 'xGal' in kwargs:
-            xGal = cat['X_IMAGE']
+            xGal = object_catalogue['X_IMAGE']
         else:
             xGal = kwargs['xGal']
         if not 'yGal' in kwargs:
-            yGal = cat['Y_IMAGE']
+            yGal = object_catalogue['Y_IMAGE']
         else:
             yGal = kwargs['yGal']
     except:
-        xGal, yGal = at.deg2pix( fits_image, cat['RA'], cat['DEC'] )
+        xGal, yGal = at.deg2pix( fits_image, object_catalogue['RA'], object_catalogue['DEC'] )
 
-    
-
-
-
-
+  
     ysize= imhead['NAXIS2']
     xsize= imhead['NAXIS1']
 
@@ -109,13 +109,11 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
 
     #The background for each galaxy. if none take from sex cata;pgue
-    if back is None:
-        try:
-            back=cat.BACKGROUND
-        except:
-            back =  np.zeros( nGalaxies) + skysd
-    else:
-        back = np.zeros( nGalaxies) + back
+    try:
+        back=object_catalogue.BACKGROUND
+    except:
+        back =  np.zeros( nGalaxies) + skysd
+
     
 
     if (sgm_im != 'null') & (fieldback == 1):
@@ -128,7 +126,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
         back=replicate(seg_sky,num) 
         '''
     if not 'radius' in kwargs:
-        area=np.pi*cat['A_IMAGE']*cat['B_IMAGE']
+        area=np.pi*object_catalogue['A_IMAGE']*object_catalogue['B_IMAGE']
         radius = np.sqrt( area / np.pi )*mult
     else:
         radius = kwargs['radius']
@@ -322,7 +320,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
             #find moment errors and covariances
 
             #Error in internsity
-            I_err_sq =  skysd**2+(postage_stamp-back[i])/( gain*exp_time) / sum_int**2
+            I_err_sq =  skysd**2+(postage_stamp-back[i])/( exp_time) / sum_int**2
 
             #Error in x and y
             sum_xxdI = np.sum(g_f*g_f*I_err_sq*rel_xgrid*rel_xgrid) / sum_int
@@ -365,12 +363,12 @@ def measure_moms(fits_image, sex_catalog, outfile,
         galaxy_moments.append( i, int_moms )
         
     #Append some needed things
-    galaxy_moments.ra = cat['RA']
-    galaxy_moments.dec = cat['DEC']
+    galaxy_moments.ra = object_catalogue['RA']
+    galaxy_moments.dec = object_catalogue['DEC']
    
     galaxy_moments.calc_e1e2( mult_rad=mult)     
 
-    galaxy_moments.write_to_fits( cat, outfile )
+    galaxy_moments.write_to_fits( object_catalogue, outfile )
 
     if regfile is not None:
         galaxy_moments.fits_to_ellipse( regfile)

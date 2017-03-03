@@ -91,7 +91,7 @@ def acs_determine_focus( unknown_focus_image,
     if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
         mm.measure_moms( unknown_focus_image,  'NOCAT_NEED',
                     unknown_focus_image[:-5]+'_uncor.cat',
-                    object_catalogue=inframe_stars,
+                    cat=inframe_stars,
                     xGal=inframe_stars[unknown_focus_image+'_X_IMAGE'],
                     yGal=inframe_stars[unknown_focus_image+'_Y_IMAGE'],
                     mult=2, min_rad=6)

@@ -61,7 +61,7 @@ def hot_cold_sextract( dirs, infile,
         hot_sex_cat = infile[:-4]+'_hot_sex.cat'
         #FIRST RUN COLD
         if not os.path.isfile(cold_sex_cat):
-            sex_config_file = dirs.sex_files+"HFF_cold.param"
+            sex_config_file = dirs.sex_files+"config_cold_FINAL_06_2006.param"
             sex_config_args["CATALOG_NAME"] = cold_sex_cat
             sex.run( infile,
                     conf_file=sex_config_file,
@@ -73,7 +73,7 @@ def hot_cold_sextract( dirs, infile,
         #SECOND HOT COLD
         if os.path.isfile( hot_sex_cat ):
             sex_config_args["CATALOG_NAME"] = cold_sex_cat
-            sex_config_file = dirs.sex_files+"HFF_hot.param"
+            sex_config_file = dirs.sex_files+"config_hot_FINAL_06_2006.param"
             sex.run( infile,
                  conf_file=sex_config_file,
                  conf_args=sex_config_args )
