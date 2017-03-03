@@ -67,7 +67,7 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     # Initialise variables
   
     if data_dir is None:
-      data_dir="psf_lib/"+wavelength+'/'
+      data_dir="/Users/DavidHarvey/Library/Code/python/lensing/rrg/psf_lib/"+wavelength+'/'
     filenames1=data_dir+"TinyTim_f"
     filenames2=".moms"
     n_focus = 16

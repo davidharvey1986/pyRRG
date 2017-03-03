@@ -85,7 +85,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
     if modeldir is None:
-        modeldir = 'psf_lib/'+wavelength
+        modeldir = '/Users/DavidHarvey/Library/Code/python/lensing/rrg/psf_lib/'+wavelength
     scat = idlsave.read( modeldir+'/TinyTim'+wavelength+'.scat' )['scat']
 
     #so this function interpolates.
