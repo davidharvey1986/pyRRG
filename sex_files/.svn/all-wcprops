@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repo/user/s1100023/!svn/ver/87/lib/IDL/shape_measurement/shape/sex_files
+END
+gauss_5.0_9x9.conv
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repo/user/s1100023/!svn/ver/58/lib/IDL/shape_measurement/shape/sex_files/gauss_5.0_9x9.conv
+END
+default.nnw
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repo/user/s1100023/!svn/ver/58/lib/IDL/shape_measurement/shape/sex_files/default.nnw
+END
+rrg.sex
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repo/user/s1100023/!svn/ver/87/lib/IDL/shape_measurement/shape/sex_files/rrg.sex
+END
+rrg.param
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repo/user/s1100023/!svn/ver/84/lib/IDL/shape_measurement/shape/sex_files/rrg.param
+END
+rrg_single.sex
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repo/user/s1100023/!svn/ver/84/lib/IDL/shape_measurement/shape/sex_files/rrg_single.sex
+END
+tweak.sex
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repo/user/s1100023/!svn/ver/84/lib/IDL/shape_measurement/shape/sex_files/tweak.sex
+END
+tweak.param
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repo/user/s1100023/!svn/ver/84/lib/IDL/shape_measurement/shape/sex_files/tweak.param
+END
+SEXTRACTOR.sex
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repo/user/s1100023/!svn/ver/84/lib/IDL/shape_measurement/shape/sex_files/SEXTRACTOR.sex
+END
