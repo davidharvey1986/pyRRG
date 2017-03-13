@@ -1,6 +1,7 @@
 import idlsave as idl
 import numpy as np
 import pyfits as py
+import directories
 
 import ipdb as pdb
 
@@ -62,13 +63,13 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     ; 
   '''
 
+    dirs = directories.return_dirs()
 
 
     # Initialise variables
   
-    if data_dir is None:
-      data_dir="psf_lib/"+wavelength+'/'
-    filenames1=data_dir+"TinyTim_f"
+
+    filenames1=dirs.psf_model_dir+"/TinyTim_f"
     filenames2=".moms"
     n_focus = 16
     catalogues_focus = np.arange( n_focus ) - 10

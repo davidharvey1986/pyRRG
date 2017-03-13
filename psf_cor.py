@@ -10,6 +10,7 @@ import rotate_moments as rm
 import ipdb as pdb
 import star_galaxy_separation as sgs
 import copy as cp
+import directories
 
 def psf_cor(    mom_file,
                 outfile,
@@ -18,8 +19,7 @@ def psf_cor(    mom_file,
                 mult=1, min_rad=1.5, chip=1,
                 constantpsf=0, mscale=0, 
                 num_exposures=1, order=3,
-                n_chip=2,
-                dataDir='.', modeldir=None):
+                n_chip=2):
     '''
     ;
     ; NAME:                  rrg_psf_cor
@@ -59,8 +59,9 @@ def psf_cor(    mom_file,
     ;class:class,area:area,area_ab:area_ab,flags:flags,$
     ;a:a,b:b,theta:theta,mag:mag,prob:prob}
     '''
-    
-    moms = py.open(dataDir+'/'+mom_file)[1].data
+    dirs = directories.return_dirs( )
+
+    moms = py.open(mom_file)[1].data
     uncorrected_xx = moms.xx
     uncorrected_yy = moms.yy
     radius = np.sqrt( ( moms.xx + moms.yy)/2.)
@@ -84,9 +85,8 @@ def psf_cor(    mom_file,
     print 'Getting the psf models from tinytim, cheers Tim!'
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
-    if modeldir is None:
-        modeldir = 'psf_lib/'+wavelength
-    scat = idlsave.read( modeldir+'/TinyTim'+wavelength+'.scat' )['scat']
+
+    scat = idlsave.read( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -101,7 +101,9 @@ def psf_cor(    mom_file,
     ;4. Then take the average of the moments for each 
     '''
 
-    images = glob.glob( dataDir+'/j*_drz_sci.fits')
+    images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
+    if len(images) == 0:
+        raise ValueError('Cant find single exposures of field')
 
     nImages = len(images)
 
@@ -110,7 +112,7 @@ def psf_cor(    mom_file,
     #frame of ref
     
     moms = \
-      dp.drizzle_position( drizzle_file, images, moms, dataDir=dataDir)
+      dp.drizzle_position( drizzle_file, images, moms, dataDir=dirs.data_dir)
 
     
 
@@ -142,7 +144,8 @@ def psf_cor(    mom_file,
         #So get the focus position by fitting the true image stars to the
         #model
         
-        focus = adf.acs_determine_focus(  images[iImage], moms, drizzle_file, wavelength, dataDir=dataDir)
+        focus = adf.acs_determine_focus(  images[iImage], moms, \
+                                              drizzle_file, wavelength)
 
         #Just keep track of the focii i have used through out
         FocusArray[iImage] = focus
@@ -179,7 +182,7 @@ def psf_cor(    mom_file,
         #then give the position the value of the averaged psf_moms.
 
     #Save the focus array
-    focuslist = open(dataDir+'/FocusArray.txt', "wb")
+    focuslist = open(dirs.data_dir+'/FocusArray.txt', "wb")
     
     for i in xrange(nImages):
         focuslist.write( "%10s %3.1f \n" % ((images[i].split('_'))[0][2:], FocusArray[i]))
@@ -329,7 +332,7 @@ def psf_cor(    mom_file,
     new_cols = py.ColDefs(newcol)
     
     hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
-    hdu.writeto(dataDir+'/'+outfile, clobber=True)
+    hdu.writeto( outfile, clobber=True)
     
 
 class moments( dict ):

@@ -11,8 +11,11 @@ import psf_cor as psf
 import ipdb as pdb
 import plot_shears as plot
 import ellipse_to_reg as etr
+import directories as directories
+
 def main(  infile, hst_filter=None,
-            data_dir='./',
+            data_dir=None,
+            code_dir=None,
             sex_files=None,
             psf_model_dir=None,
             expThresh = 3, 
@@ -64,15 +67,25 @@ def main(  infile, hst_filter=None,
     wavelength=''.join([  s for s in hst_filter if s.isdigit()])
                    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
+    #get the cwd first, and make sure these are aboslute paths!
+    if code_dir is None:
+        code_dir = '/'.join(os.path.abspath(__file__).split('/')[:-1])
+        
     if sex_files is None:
-        sex_files='sex_files/'
+        sex_files=code_dir+'/sex_files/'
         
     if  psf_model_dir is None:
-        psf_model_dir='psf_lib/'
+        psf_model_dir=code_dir+'/psf_lib/'
 
+    if data_dir is None:
+        data_dir = os.getcwd()+'/'
         
-    dirs = directories(data_dir,  sex_files, psf_model_dir+'/'+str(wavelength)+'/' )
-
+        
+    dirs = directories.directories(data_dir,  sex_files,
+                           psf_model_dir+'/'+str(wavelength)+'/',
+                                       code_dir)
+    dirs.write_dirs()
+    
     field=dirs.data_dir+infile
 
     if not os.path.isfile( field):
@@ -135,7 +148,7 @@ def main(  infile, hst_filter=None,
                     mult=1, min_rad=min_rad, chip=1,
                     constantpsf=0, mscale=0, 
                     num_exposures=1, order=3,
-                    n_chip=2, dataDir=data_dir)
+                    n_chip=2)
     
 
     corrected_moments = py.open( corrected_moments_cat )[1].data
@@ -163,23 +176,3 @@ def main(  infile, hst_filter=None,
 
 
 '''
-
-class directories( dict ):
-
-    def __init__( self, data_dir, sex_files, psf_mode_dir):
-        self.__dict__['sex_files'] = sex_files
-        self.__dict__['data_dir'] = data_dir
-        self.__dict__['psf_mode_dir'] = psf_mode_dir
-        self.write_dirs()
-
-    def write_dirs( self ):
-        file_obj = open('directories.cat',"wb")
-        file_obj.write("DATA_DIR: %s \n" %self.data_dir)
-        file_obj.write("SEX_FILES: %s \n" %self.sex_files)
-        file_obj.write("PSF_MODEL_DIR: %s \n" %self.psf_mode_dir)
-      
-    def keys(self):
-        return self.__dict__.keys()
-
-    def __getitem__(self, key): 
-        return self.__dict__[key]

@@ -64,11 +64,16 @@ def main(  infile, hst_filter=None,
     wavelength=''.join([  s for s in hst_filter if s.isdigit()])
                    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
+    #get the cwd first, and make sure these are aboslute paths!
+    if code_dir is None:
+        code_dir = '/'.join(rrg.__file__.split('/')[0:-1])
+    else:
+        code_dir = '.'
     if sex_files is None:
-        sex_files='sex_files/'
+        sex_files=code_dir+'/sex_files/'
         
     if  psf_model_dir is None:
-        psf_model_dir='psf_lib/'
+        psf_model_dir=code_dir+'/psf_lib/'
 
         
     dirs = directories(data_dir,  sex_files, psf_model_dir+'/'+str(wavelength)+'/' )
@@ -109,7 +114,7 @@ def main(  infile, hst_filter=None,
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
     
-    if os.path.isfile(uncorrected_moments_cat):
+    if not os.path.isfile(uncorrected_moments_cat):
         measure_moms.measure_moms( infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,

@@ -7,7 +7,7 @@ import ipdb as pdb
 import drizzle_position as dp
 import os as os
 import pyfits as py
-
+import directories
 def acs_determine_focus_metric( true, model ):
     '''
     SO A is the flag to check if the quadrupole moments
@@ -26,7 +26,8 @@ def acs_determine_focus( unknown_focus_image,
                          observed_moments,
                          drizzle_file,
                          wavelength,
-                         dataDir='.',
+                         data_dir=None,
+                         psf_model_dir=None,
                          pixel_scale=0.03,
                          r_match=600):
     '''
@@ -69,12 +70,13 @@ def acs_determine_focus( unknown_focus_image,
     '''
 
  
-
+    dirs = directories.return_dirs()
 
     
     #I need to get the positions of just the stars
-    galaxies, stars = sgs.star_galaxy_separation( observed_moments,  restore=True,\
-                                                  savefile=dataDir+'/galStar.locus')
+    galaxies, stars = sgs.star_galaxy_separation( observed_moments, \
+                                                      restore=True,\
+                                                    savefile=dirs.data_dir+'/galStar.locus')
     
     #Filter the stars out
     observed_moments_stars = observed_moments[ stars ]
