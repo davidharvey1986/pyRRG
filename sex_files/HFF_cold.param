@@ -4,8 +4,6 @@
 # 06/2006
 #
 
-PARAMETERS_NAME /Users/DavidHarvey/Library/Code/python/lensing/rrg/sex_files/rrg.param
-STARNNW_NAME    /Users/DavidHarvey/Library/Code/python/lensing/rrg/default.nnw
 
 PIXEL_SCALE     0.030                          # size of pixel in arcsec.
 SEEING_FWHM     0.12                           # stellar FWHM in arcsec
@@ -20,7 +18,6 @@ WEIGHT_GAIN N 	                               # Gain is already known
 WEIGHT_TYPE MAP_WEIGHT			       # Set Weight image type
 
 FILTER          Y                              # apply filter for detection ("Y" or "N")?
-FILTER_NAME     /Users/DavidHarvey/Library/Code/python/lensing/rrg/gauss_5.0_9x9.conv
 
 DETECT_MINAREA  140                            # minimum number of pixels above threshold
 DETECT_THRESH   2.2                            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2

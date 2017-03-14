@@ -1,7 +1,6 @@
 import star_galaxy_separation as sgs
 import numpy as np
 import measure_moms as mm
-import astro_tools as at
 import acs_model_e as acs_model
 import ipdb as pdb
 import drizzle_position as dp

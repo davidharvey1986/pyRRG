@@ -18,6 +18,7 @@ def main(  infile, hst_filter=None,
             code_dir=None,
             sex_files=None,
             psf_model_dir=None,
+            stilts_dir=None,
             expThresh = 3, 
             noisy=False, 
             nonstop=True, 
@@ -73,20 +74,28 @@ def main(  infile, hst_filter=None,
         
     if sex_files is None:
         sex_files=code_dir+'/sex_files/'
-        
+    
     if  psf_model_dir is None:
         psf_model_dir=code_dir+'/psf_lib/'
-
+   
+    
     if data_dir is None:
-        data_dir = os.getcwd()+'/'
-        
-        
+        data_dir = os.getcwd()+'/'    
+   
+    
+    if stilts_dir is None:
+        stilts_dir = '/usr/local/lib/stilts'
+   
     dirs = directories.directories(data_dir,  sex_files,
                            psf_model_dir+'/'+str(wavelength)+'/',
-                                       code_dir)
+                                       code_dir, stilts_dir)
+    dirs.check_dirs()
     dirs.write_dirs()
-    
+
+    #Check files exist
     field=dirs.data_dir+infile
+    if not os.path.isfile( field ):
+        raise ValueError('Cant find input image (%s)' % field)
 
     if not os.path.isfile( field):
         raise ValueError("%s not found" % field)
@@ -111,7 +120,10 @@ def main(  infile, hst_filter=None,
     if not os.path.isfile( sex_catalogue):
         weight_file = infile[:-8]+'wht.fits'
         sources = at.source_extract( infile, weight_file,
-                                         outfile=sex_catalogue )
+                                         outfile=sex_catalogue,
+                                         conf_path=dirs.sex_files,
+                                         stilts_dir=dirs.stilts_dir,
+                                         dataDir=dirs.data_dir)
     else:
         sources = py.open( sex_catalogue )[1].data
 
