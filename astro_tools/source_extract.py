@@ -53,12 +53,12 @@ def source_extract( image_name, weight_file, zero_point=None,
     cold_sources = sex.run( image_name, \
                                 conf_file=cold_conf, \
                                 conf_args=conf_args )
+
+    cold_sources = append_fits_field( cold_sources, 'RA', cold_sources['X_WORLD'])
+    cold_sources = append_fits_field( cold_sources, 'DEC', cold_sources['Y_WORLD'])
+    
     
 
-    cold_sources = append_rec( cold_sources, 'RA', \
-                                   cold_sources['X_WORLD'], usemask=False)
-    cold_sources = append_rec( cold_sources, 'DEC', \
-                                   cold_sources['Y_WORLD'], usemask=False)
     #Second hot 
     hot_conf = conf_path+'/HFF_hot.param'
         
@@ -67,10 +67,8 @@ def source_extract( image_name, weight_file, zero_point=None,
                                conf_args=conf_args )
 
 
-    hot_sources = append_rec( hot_sources, 'RA', \
-                                  hot_sources['X_WORLD'], usemask=False)
-    hot_sources = append_rec( hot_sources, 'DEC', \
-                                  hot_sources['Y_WORLD'], usemask=False)
+    hot_sources = append_fits_field( hot_sources, 'RA', hot_sources['X_WORLD'])
+    hot_sources = append_fits_field( hot_sources, 'DEC', hot_sources['Y_WORLD'])
     
     #The NYMBER is a weird thing
     
@@ -86,7 +84,7 @@ def source_extract( image_name, weight_file, zero_point=None,
                                 'hot_sources.fits',
                                        stilts_path=stilts_dir)
     pdb.set_trace()
-    for iField in hot_names:
+    for iField in hot_sources.columns.names:
         hot_sources[iField][ matched_sources[1].data['NUMBER_2'] -1 ] = \
           cold_sources[iField][ matched_sources[1].data['NUMBER_1'] - 1]
 
@@ -127,3 +125,16 @@ def check_sex_files( sex_dir ):
                 
     if (not os.path.isfile(sex_dir+'/rrg.param')):
         raise ValueError('rrg.param not found')
+
+
+    
+def append_fits_field( fits_array, name, array, format='D'):
+    
+    cols = [] 
+    cols.append(
+        fits.Column(name=name, format=format, array=array ))
+                          
+    orig_cols = fits_array.columns
+    new_cols = fits.ColDefs(cols)
+    new_fits = fits.BinTableHDU.from_columns(orig_cols + new_cols)
+    return new_fits.data
