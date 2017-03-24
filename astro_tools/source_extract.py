@@ -42,7 +42,7 @@ def source_extract( image_name, weight_file, zero_point=None,
                  'STARNNW_NAME':conf_path+'/default.nnw',
                  'FILTER_NAME':conf_path+'/gauss_5.0_9x9.conv'}
         
-
+    
 
 
     #First run cold run
@@ -53,11 +53,12 @@ def source_extract( image_name, weight_file, zero_point=None,
     cold_sources = sex.run( image_name, \
                                 conf_file=cold_conf, \
                                 conf_args=conf_args )
+    
 
-    cold_names = np.array(cold_sources.columns.names)
-    cold_names[ cold_names == 'X_WORLD' ] = 'RA'
-    cold_names[ cold_names == 'Y_WORLD' ] = 'DEC'
-    cold_sources.columns.names = tuple( cold_names )
+    cold_sources = append_rec( cold_sources, 'RA', \
+                                   cold_sources['X_WORLD'], usemask=False)
+    cold_sources = append_rec( cold_sources, 'DEC', \
+                                   cold_sources['Y_WORLD'], usemask=False)
     #Second hot 
     hot_conf = conf_path+'/HFF_hot.param'
         
@@ -65,13 +66,14 @@ def source_extract( image_name, weight_file, zero_point=None,
                                conf_file=hot_conf, \
                                conf_args=conf_args )
 
-    hot_names = np.array(hot_sources.columns.names)
 
-    hot_names[ hot_names == 'X_WORLD' ] = 'RA'
-    hot_names[ hot_names == 'Y_WORLD' ] = 'DEC'
-    hot_sources.columns.names = tuple( hot_names )
-
+    hot_sources = append_rec( hot_sources, 'RA', \
+                                  hot_sources['X_WORLD'], usemask=False)
+    hot_sources = append_rec( hot_sources, 'DEC', \
+                                  hot_sources['Y_WORLD'], usemask=False)
+    
     #The NYMBER is a weird thing
+    
     hot_sources['NUMBER'] = np.arange( len(hot_sources['NUMBER'])) +1
     cold_sources['NUMBER'] = np.arange( len(cold_sources['NUMBER'])) +1
     
@@ -83,7 +85,7 @@ def source_extract( image_name, weight_file, zero_point=None,
     matched_sources= mc.run_match( 'cold_sources.fits',
                                 'hot_sources.fits',
                                        stilts_path=stilts_dir)
-    
+    pdb.set_trace()
     for iField in hot_names:
         hot_sources[iField][ matched_sources[1].data['NUMBER_2'] -1 ] = \
           cold_sources[iField][ matched_sources[1].data['NUMBER_1'] - 1]
