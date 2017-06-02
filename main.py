@@ -12,6 +12,7 @@ import ipdb as pdb
 import plot_shears as plot
 import ellipse_to_reg as etr
 import directories as directories
+import rrg_to_lenstool as rtl
 
 def main(  infile, hst_filter=None,
             data_dir=None,
@@ -181,10 +182,8 @@ def main(  infile, hst_filter=None,
     
     plot.plot_shears( sheared_cat )
     etr.ellipse_to_reg( sheared_cat )
-    '''
+
+    lenstool_file =  field[:-5]+".lenstool"
+    rtl.rrg_to_lenstool( sheared_cat, field)
   
-  ellconverter, cluster_name, filter
 
-
-
-'''

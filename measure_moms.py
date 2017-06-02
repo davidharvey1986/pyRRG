@@ -363,8 +363,13 @@ def measure_moms(fits_image, sex_catalog, outfile,
         galaxy_moments.append( i, int_moms )
         
     #Append some needed things
-    galaxy_moments.ra = object_catalogue['RA']
-    galaxy_moments.dec = object_catalogue['DEC']
+    #Can just append the RA as this is not the same as the pixel position
+    #Need to find the re-centred RA
+    recentred_ra, recentred_dec = \
+      at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y)
+
+    galaxy_moments.ra = recentred_ra
+    galaxy_moments.dec = recentred_dec
    
     galaxy_moments.calc_e1e2( mult_rad=mult)     
 

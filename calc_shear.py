@@ -116,4 +116,4 @@ def calc_shear( corrected_moments, galaxies, outfile,
  
     hdu = py.BinTableHDU.from_columns(fits_cols + newcol)
     hdu.writeto(outfile, clobber=True)
- 
+
