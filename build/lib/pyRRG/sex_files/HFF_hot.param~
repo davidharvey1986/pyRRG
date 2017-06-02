@@ -1,0 +1,48 @@
+#
+# SE configuration parameters for 0.3" Cosmos ACS data
+# Hot extraction
+# 06/2006
+#
+
+PIXEL_SCALE     0.030                          # size of pixel in arcsec.
+SEEING_FWHM     0.12                           # stellar FWHM in arcsec
+DETECT_TYPE     CCD                            # "CCD" or "PHOTO"
+SATUR_LEVEL     80                             # level of saturation
+#MAG_ZEROPOINT   25.946622                      # magnitude zero-point
+MAG_GAMMA       4.0                            # gamma of emulsion (for photographic scans)
+GAIN            4056                           # gain adjusted for exposure params
+
+CHECKIMAGE_TYPE SEGMENTATION                   # can be one of NONE, BACKGROUND,
+WEIGHT_GAIN Y 	                               #Gain is already known
+WEIGHT_TYPE MAP_WEIGHT			       #Set Weight image type
+
+FILTER          Y                              # apply filter for detection ("Y" or "N")?
+FILTER_NAME     /Users/DavidHarvey/Library/Code/IDL/rrg/code/shape/gauss_5.0_9x9.conv 
+
+DETECT_MINAREA  18                             # minimum number of pixels above threshold
+DETECT_THRESH   1.0                            # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
+ANALYSIS_THRESH 1.5                           # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
+THRESH_TYPE RELATIVE
+
+DEBLEND_NTHRESH 64                             # Number of deblending sub-thresholds
+DEBLEND_MINCONT 0.0001                          # Minimum contrast parameter for deblending
+
+CLEAN           Y                              # Clean spurious detections? (Y or N)?
+CLEAN_PARAM     1.2                              # Cleaning efficiency
+
+PHOT_APERTURES  20                             # MAG_APER aperture diameter(s) in pixels
+PHOT_AUTOPARAMS 2.5, 3.5                       # MAG_AUTO parameters: <Kron_fact>,<min_radius>
+PHOT_FLUXFRAC   0.2,0.5,0.8,0.9                # define n-light radii
+PHOT_AUTOAPERS  0.0, 0.0                     # MAG_AUTO minimum apertures: estimation, photometry
+
+BACK_TYPE AUTO
+BACK_SIZE       64                            # Background mesh: <size> or <width>,<height> (smaller=finer grid)
+BACK_FILTERSIZE 3
+BACK_FILTTHRESH 0.0                              # Background filter: <size> or <width>,<height>
+BACKPHOTO_TYPE  local                          # may be GLOBAL or LOCAL
+BACKPHOTO_THICK 24                            # thickness of the background LOCAL annulus (bigger=better photometry)
+
+MEMORY_PIXSTACK 10000000                       # number of pixels in stack (if too small=memory bugs)
+MEMORY_BUFSIZE  7500                           # number of lines in buffer(if too small=objects are lost)
+MEMORY_OBJSTACK 60000                          # Size of the buffer containing objects
+VERBOSE_TYPE    NORMAL                         # may be QUIET, NORMAL or FULL

@@ -1,0 +1,39 @@
+PARAMETERS_NAME /Users/davidharvey/Library/IDL/shape_measurement/rrg.param	   # fields to be included in output cat
+FILTER_NAME     /Users/davidharvey/Library/IDL/shape_measurement/gauss_5.0_9x9.conv # filter for detection
+STARNNW_NAME    /Users/davidharvey/Library/IDL/shape_measurement/default.nnw	   # Neural-Network_Weight table filename
+CATALOG_NAME    ${FILENAME}
+name 
+of the 
+output catalog
+CATALOG_TYPE    ASCII                      # "ASCII" or "FITS"
+DETECT_TYPE     CCD                            # "CCD" or "PHOTO"
+DETECT_MINAREA  20                              # minimum number of pixels above threshold
+DETECT_THRESH   5                         # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
+ANALYSIS_THRESH 3                        # <sigmas> or <threshold>,<ZP> in mag.arcsec-2
+FILTER          Y                              # apply filter for detection ("Y" or "N")?
+DEBLEND_NTHRESH 32                           # Number of deblending sub-thresholds
+DEBLEND_MINCONT 0.001                          # Minimum contrast parameter for deblending
+#changed from 0.005
+CLEAN           Y                              # Clean spurious detections? (Y or N)?
+CLEAN_PARAM     1.0                            # Cleaning efficiency
+MEMORY_OBJSTACK 1000                           # Size of the buffer containing objects
+PHOT_APERTURES  25                             # MAG_APER aperture diameter(s) in pixels
+PHOT_AUTOPARAMS 2.5, 3.5                       # MAG_AUTO parameters: <Kron_fact>,<min_radius>
+PHOT_FLUXFRAC   0.1,0.5,0.8,0.9                # define n-light radii
+SATUR_LEVEL    5000                  # level of saturation
+#sat was higher
+MAG_ZEROPOINT   0.0                            # magnitude zero-point
+MAG_GAMMA       4.0                            # gamma of emulsion (for photographic scans)
+GAIN            720                  # gain adjusted for exposure params
+PIXEL_SCALE     0.0300                         # size of pixel in arcsec.
+SEEING_FWHM     0.03                           # stellar FWHM in arcsec  was 0.07
+BACK_SIZE       32                             # Background mesh: <size> or <width>,<height> was 20 (128)
+BACK_FILTERSIZE 5                             # Background filter: <size> or <width>,<height> was 3
+BACKPHOTO_TYPE GLOBAL                        # may be GLOBAL or LOCAL 
+#was local
+BACKPHOTO_THICK 12                             # thickness of the background LOCAL annulus
+CHECKIMAGE_TYPE APERTURES,SEGMENTATION         # can be one of NONE, BACKGROUND,
+CHECKIMAGE_NAME check.fits,segment.fits        # Filename for the check-image
+MEMORY_PIXSTACK 10000000                        # number of pixels in stack
+MEMORY_BUFSIZE  1024                           # number of lines in buffer
+VERBOSE_TYPE    NORMAL                         # may be QUIET, NORMAL or FULL
