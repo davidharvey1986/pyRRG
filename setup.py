@@ -57,10 +57,10 @@ package_data = {'pyRRG': ['psf_lib/*/*',
 
 # in the setup function:
 cmdclass={'install': checkModules}
-requires = ['penis']
+
 
 setup   (       name            = "pyRRG",
-                version         = "0.0.1",
+                version         = "0.0.3",
                 author          = "David Harvey",
                 author_email    = "david.harvey@epfl.ch",
                 description     = "pyRRG module",
@@ -68,7 +68,8 @@ setup   (       name            = "pyRRG",
                 packages        = packages,
                 package_dir     = package_dir,
                 package_data    = package_data,
-                install_requires = requires,
+                url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
+                download_url = 'https://github.com/davidharvey1986/pyRRG/archive/0.0.3.tar.gz',
                           
         )
 
