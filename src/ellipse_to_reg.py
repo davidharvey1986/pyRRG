@@ -1,7 +1,7 @@
 import numpy as np
 import pyfits as py
 
-import ipdb as pdb
+
 
 def ellipse_to_reg( catalogue_name ):
     '''

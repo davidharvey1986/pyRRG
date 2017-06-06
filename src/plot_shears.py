@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import pyfits as py
 import numpy as np
 from matplotlib import gridspec as gridspec
-import ipdb as pdb
+
 def plot_shears( moments_catalogue, nbins=None,
                  min_gals_per_bins=100., catalogue=None ):
     '''

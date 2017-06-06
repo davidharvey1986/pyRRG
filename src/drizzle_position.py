@@ -2,7 +2,7 @@ import numpy as np
 import acs_limits as al
 import RRGtools as at
 import pyfits as py
-import ipdb as pdb
+
 def drizzle_position(      drizzle_file,
                            individual_files,
                            moments,

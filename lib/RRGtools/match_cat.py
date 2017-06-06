@@ -1,7 +1,7 @@
 import os as os
 import pyfits as py
 import numpy as np
-import ipdb as pdb
+
 import color_color as color
 from numpy.lib.recfunctions import append_fields as append_rec
 

@@ -39,7 +39,7 @@ import csv as c
 import numpy as np
 import astro_tools as at
 import pyfits as py
-import ipdb as pdb
+
 
 def sex_to_reg( sex_cat, outfile,
                 coordinate_sys='IMAGE',

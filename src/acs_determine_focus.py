@@ -2,7 +2,6 @@ import star_galaxy_separation as sgs
 import numpy as np
 import measure_moms as mm
 import acs_model_e as acs_model
-import ipdb as pdb
 import drizzle_position as dp
 import os as os
 import pyfits as py

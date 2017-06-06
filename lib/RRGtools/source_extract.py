@@ -1,6 +1,6 @@
 import pysex as sex
 import pyfits as fits
-import ipdb as pdb
+
 import numpy as np
 import os as os
 import match_cat as mc

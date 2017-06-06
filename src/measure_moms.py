@@ -1,7 +1,7 @@
 import mmm as mmm
 import pyfits as py
 import numpy as np
-import ipdb as pdb
+
 from matplotlib import pyplot as plt
 import RRGtools as at
 def measure_moms(fits_image, sex_catalog, outfile,

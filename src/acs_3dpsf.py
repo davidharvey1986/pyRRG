@@ -1,5 +1,4 @@
 import numpy as np
-import ipdb as pdb
 import acs_map_xy as acs_map
 def acs_3dpsf_basisfunctions( degree, x, y, focus ):
 

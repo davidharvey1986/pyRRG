@@ -1,5 +1,4 @@
 import numpy as np
-import ipdb as pdb
 
 def acs_map_xy( x, y,
                 inverse=False,        

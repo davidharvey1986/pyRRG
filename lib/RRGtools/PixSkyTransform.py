@@ -1,6 +1,6 @@
 import numpy as np
 import drizzlepac
-import ipdb as pdb
+
 import pyfits as py
 import os as os
 

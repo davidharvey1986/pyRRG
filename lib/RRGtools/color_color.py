@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import pyfits as py
 import nearest_neighbour as nearest
-import ipdb as pdb
+
 from scipy.stats import gaussian_kde
 import match_cat as mc
 

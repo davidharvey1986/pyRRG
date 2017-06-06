@@ -3,7 +3,7 @@ import numpy as np
 import pyfits as py
 import directories
 
-import ipdb as pdb
+
 
 
 def acs_model_e( x, y, wavelength='814', data_dir=None):

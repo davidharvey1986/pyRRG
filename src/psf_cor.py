@@ -7,7 +7,7 @@ import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
 import idlsave as idlsave
 import rotate_moments as rm
-import ipdb as pdb
+
 import star_galaxy_separation as sgs
 import copy as cp
 import directories

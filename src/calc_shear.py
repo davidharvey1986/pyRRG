@@ -1,5 +1,5 @@
 import numpy as np
-import ipdb as pdb
+
 import pyfits as py
 
 def calc_shear( corrected_moments, galaxies, outfile,

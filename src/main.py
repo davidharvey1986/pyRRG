@@ -8,12 +8,12 @@ import star_galaxy_separation as sgs
 import pyfits as py
 import calc_shear as cs
 import psf_cor as psf
-import ipdb as pdb
 import plot_shears as plot
 import ellipse_to_reg as etr
 import directories as directories
 import rrg_to_lenstool as rtl
 import subprocess
+import check_external_packages as cep
 
 def main(  infile, hst_filter=None,
             data_dir=None,
@@ -79,7 +79,6 @@ def main(  infile, hst_filter=None,
     if  psf_model_dir is None:
         psf_model_dir=code_dir+'/psf_lib/'
    
-    
     if data_dir is None:
         data_dir = os.getcwd()+'/'    
    
@@ -90,7 +89,9 @@ def main(  infile, hst_filter=None,
                                        code_dir, stilts_dir)
     dirs.check_dirs()
     dirs.write_dirs()
+    cep.check_external_pacakges()
 
+    
     #Check files exist
     field=dirs.data_dir+infile
     if not os.path.isfile( field ):
@@ -112,7 +113,7 @@ def main(  infile, hst_filter=None,
     #------------------------------------------
     #Now as keywords
 
- 
+
     sex_catalogue = field[:-5]+"_sex.cat"
     
     #Find objects and measure their raw shapes

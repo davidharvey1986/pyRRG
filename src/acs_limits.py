@@ -1,6 +1,6 @@
 import numpy as np
 import pyfits as py
-import ipdb as pdb
+
 
 def acs_limits( x, y, filename):
     '''

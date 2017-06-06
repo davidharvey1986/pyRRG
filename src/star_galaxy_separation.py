@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
-import ipdb as pdb
+
 def star_galaxy_separation( sources, restore=False,
                             savefile=None,
                             NonStop=False,
