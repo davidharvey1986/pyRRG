@@ -13,7 +13,7 @@ This module uses the RRG method to measure the shapes of galaxies
 in Hubble Space Telescope data
 """
 
-class checkStilts(install):
+class checkModules(install):
 
     def run(self):
         install.run(self)
@@ -21,6 +21,29 @@ class checkStilts(install):
             stilts_path = subprocess.check_output(['which','stilts.sh'])
         except:
             raise ValueError('Cannot find STILTS please install and ensure it is in the shell path')
+
+        try:
+            import pyfits as pyfits
+            if pyfits.__version__ < 3.3:
+                raise ImportError('Code only tested on Pyfits 3.3 or later')
+        except:
+            raise ImportError('Cant find PyFITS')
+
+        try:
+            stilts_path = subprocess.check_output(['which','sex'])
+        except:
+            raise ImportError('Cannot find SExtractir please install and ensure it can be called with "sex"')
+
+        try:
+            import pickle as pkl
+        except:
+            raise ImportError('Cannot find pickle, plesae run easy_install pickle')
+
+        try:
+            import idlsave as idl
+        except:
+            raise ImportError('Cannot find idlsave, plesae run easy_install pickle')
+            
     
 INCDIRS=['.']
 
@@ -33,19 +56,19 @@ package_data = {'pyRRG': ['psf_lib/*/*',
 
 
 # in the setup function:
-cmdclass={'install': checkStilts}
-
+cmdclass={'install': checkModules}
+requires = ['penis']
 
 setup   (       name            = "pyRRG",
                 version         = "0.0.1",
                 author          = "David Harvey",
                 author_email    = "david.harvey@epfl.ch",
                 description     = "pyRRG module",
-                platform        = 'MAC OS X',
                 cmdclass        = cmdclass,
                 packages        = packages,
                 package_dir     = package_dir,
                 package_data    = package_data,
+                install_requires = requires,
                           
         )
 

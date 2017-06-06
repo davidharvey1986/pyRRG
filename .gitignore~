@@ -1,3 +1,7 @@
+dist
+test
+build
+examples
 src/__init__.pyc
 src/acs_3dpsf.pyc
 src/acs_determine_focus.pyc
