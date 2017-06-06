@@ -1,10 +1,8 @@
 import sys,os,string,glob,subprocess
 
-from distutils.sysconfig import *
-from distutils.core import setup,Extension
-from distutils.command.build_ext import build_ext
-from distutils.command.install import install
-from distutils.command.install_data import install_data
+from setuptools import setup,Extension
+from setuptools.command.build_ext import build_ext
+from setuptools.command.install import install
 
 import numpy
 
@@ -12,7 +10,10 @@ long_description = """\
 This module uses the RRG method to measure the shapes of galaxies
 in Hubble Space Telescope data
 """
+#python setup.py register -r pypi
+#python setup.py sdist upload -r pypi
 
+version='0.0.6'
 class checkModules(install):
 
     def run(self):
@@ -22,13 +23,7 @@ class checkModules(install):
         except:
             raise ValueError('Cannot find STILTS please install and ensure it is in the shell path')
 
-        try:
-            import pyfits as pyfits
-            if pyfits.__version__ < 3.3:
-                raise ImportError('Code only tested on Pyfits 3.3 or later')
-        except:
-            raise ImportError('Cant find PyFITS')
-
+    
         try:
             stilts_path = subprocess.check_output(['which','sex'])
         except:
@@ -37,12 +32,8 @@ class checkModules(install):
         try:
             import pickle as pkl
         except:
-            raise ImportError('Cannot find pickle, plesae run easy_install pickle')
+            raise ImportError('Cannot find pickle, plesae install')
 
-        try:
-            import idlsave as idl
-        except:
-            raise ImportError('Cannot find idlsave, plesae run easy_install idlsave')
             
     
 INCDIRS=['.']
@@ -60,7 +51,7 @@ cmdclass={'install': checkModules}
 
 
 setup   (       name            = "pyRRG",
-                version         = "0.0.3",
+                version         = version,
                 author          = "David Harvey",
                 author_email    = "david.harvey@epfl.ch",
                 description     = "pyRRG module",
@@ -69,7 +60,8 @@ setup   (       name            = "pyRRG",
                 package_dir     = package_dir,
                 package_data    = package_data,
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
-                download_url = 'https://github.com/davidharvey1986/pyRRG/archive/0.0.3.tar.gz',
+                download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
+                install_requires=['idlsave','pyfits>=3.3']
                           
         )
 
