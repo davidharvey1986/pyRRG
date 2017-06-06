@@ -42,7 +42,7 @@ class checkModules(install):
         try:
             import idlsave as idl
         except:
-            raise ImportError('Cannot find idlsave, plesae run easy_install pickle')
+            raise ImportError('Cannot find idlsave, plesae run easy_install idlsave')
             
     
 INCDIRS=['.']
