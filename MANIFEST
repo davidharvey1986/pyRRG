@@ -10,6 +10,7 @@ lib/RRGtools/match_cat.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
+src/check_external_packages.py
 src/acs_3dpsf.py
 src/acs_determine_focus.py
 src/acs_limits.py
