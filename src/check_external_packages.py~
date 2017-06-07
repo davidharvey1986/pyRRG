@@ -1,4 +1,4 @@
-def check_external_packages():
+def check_external_packages()
 
     try:
         stilts_path = subprocess.check_output(['which','stilts.sh'])
