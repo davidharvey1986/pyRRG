@@ -13,10 +13,8 @@ in Hubble Space Telescope data
 #python setup.py register -r pypi
 #python setup.py sdist upload -r pypi
 
-version='0.0.6'
-class checkModules(install):
-
-          
+version='0.0.7'
+         
     
 INCDIRS=['.']
 
@@ -28,8 +26,7 @@ package_data = {'pyRRG': ['psf_lib/*/*',
 
 
 
-# in the setup function:
-cmdclass={'install': checkModules}
+
 
 
 setup   (       name            = "pyRRG",
@@ -37,6 +34,7 @@ setup   (       name            = "pyRRG",
                 author          = "David Harvey",
                 author_email    = "david.harvey@epfl.ch",
                 description     = "pyRRG module",
+                license         = 'MIT',
                 packages        = packages,
                 package_dir     = package_dir,
                 package_data    = package_data,
