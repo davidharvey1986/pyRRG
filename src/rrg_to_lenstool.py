@@ -9,10 +9,6 @@ import pyfits as py
 import os as os
 #import mask_catalogue as mask_catalogue
 import numpy as np
-<<<<<<< HEAD
-
-=======
->>>>>>> interactive_star_gal
 
 def rrg_to_lenstool( rrg_catalogue,
                          image_file,

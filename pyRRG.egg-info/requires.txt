@@ -1,0 +1,2 @@
+idlsave
+pyfits>=3.3
