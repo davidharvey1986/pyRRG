@@ -49,7 +49,7 @@ def star_galaxy_separation( sources, restore=False,
   
 
 
-    
+    print savefile
     if not os.path.isfile( savefile ):
         gal_star = galStar( savefile, sources, set_defaults=True)
         return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
@@ -66,7 +66,7 @@ def star_galaxy_separation( sources, restore=False,
         gal_star.get_stars( sources )
         gal_star.generate_axes( sources )
         gal_star.plot_boundaries(  sources )
-        gal_star.plot_stars_galaxies( sources,gal_star.axes, overwrite=True )
+        gal_star.plot_stars_galaxies( sources, gal_star.axes, overwrite=True )
         plt.show()
 
         if NonStop:
@@ -80,10 +80,10 @@ def star_galaxy_separation( sources, restore=False,
             print 'Writing over gal file and removing j*uncor.cat'
             os.system('rm -fr j*uncor.cat *_cor.cat')
             gal_star.write( savefile )
-
+            return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
         else:
             if overwrite == 'c':
-                return object_indexes[ self.galaxies], object_indexes[ self.stars ]
+                return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
             else:
                 print 'Reseparating'
                 os.system('rm -fr '+savefile)

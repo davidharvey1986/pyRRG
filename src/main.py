@@ -89,7 +89,7 @@ def main(  infile, hst_filter=None,
                                        code_dir, stilts_dir)
     dirs.check_dirs()
     dirs.write_dirs()
-    cep.check_external_pacakges()
+    cep.check_external_packages()
 
     
     #Check files exist

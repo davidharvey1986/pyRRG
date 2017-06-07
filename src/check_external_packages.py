@@ -1,3 +1,5 @@
+import subprocess
+
 def check_external_packages():
 
     try:
