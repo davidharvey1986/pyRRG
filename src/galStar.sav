@@ -1,9 +1,0 @@
-#Galaxy Parameters
-GalLowCut 14.70
-GradGal  1.03
-IntGal -4.24
-#Star Parameters
-GradStarsLowCut  0.99
-IntStarsLowCut -4.55
-StarsUpCut 17.21
-StarsLowCut 14.63
