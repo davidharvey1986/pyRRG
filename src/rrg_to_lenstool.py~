@@ -9,7 +9,7 @@ import pyfits as py
 import os as os
 #import mask_catalogue as mask_catalogue
 import numpy as np
-
+from lensing import lenstool as lt
 
 def rrg_to_lenstool( rrg_catalogue,
                          image_file,
