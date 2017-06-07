@@ -192,6 +192,7 @@ class galStar():
             self.StarsLowCut = 0.
             self.StarsUpCut = 100
             self.stars = []
+            self.GalLowCut = 0
 
             self.get_params_interactively( sources ) 
 
@@ -296,7 +297,7 @@ class galStar():
 
                     
                     if len(self.xcoords) == 2:
-                        self.borders.append(event.inaxes.plot( self.xcoords, self.ycoords, '-'))
+                        self.borders.append(event.inaxes.plot( self.xcoords, self.ycoords, 'r-'))
                         intercept, grad = coords_to_line( self.xcoords, self.ycoords )
                         self.GradGal = grad
                         self.IntGal = intercept
@@ -307,12 +308,24 @@ class galStar():
                         self.get_galaxies( sources )
                         self.plot_stars_galaxies(  sources, axes, overwrite=False )
                         event.inaxes.figure.canvas.draw()
-                    
-                    
-                    if len(self.xcoords) == 4:
                         
-                        self.borders.append(event.inaxes.plot( self.xcoords[2:], self.ycoords[2:], '-'))
-                        intercept, grad = coords_to_line( self.xcoords[2:], self.ycoords[2:] )
+                    if len(self.xcoords) == 4:
+                        self.borders.append(event.inaxes.plot( self.xcoords[2:], self.ycoords[2:], 'r-'))
+                        intercept = (self.ycoords[2] + self.ycoords[3] )/2.
+                        self.GalLowCut = intercept
+                        self.get_galaxies( sources )
+                        self.ann.remove()
+                        self.ann = ax3.annotate( 'Second upper boundary for galaxies', xy=( 0.01, 0.95), \
+                                            xycoords='axes fraction', fontsize=10)
+
+                        self.get_galaxies( sources )
+                        self.plot_stars_galaxies(  sources, axes )
+                        event.inaxes.figure.canvas.draw()
+                    
+                    if len(self.xcoords) == 6:
+                        
+                        self.borders.append(event.inaxes.plot( self.xcoords[4:], self.ycoords[4:], '-'))
+                        intercept, grad = coords_to_line( self.xcoords[4:], self.ycoords[4:] )
                         self.GradStarsLowCut = grad
                         self.IntStarsLowCut = intercept
                         self.get_stars(sources)
@@ -325,9 +338,9 @@ class galStar():
            
                         event.inaxes.figure.canvas.draw()
 
-                    if len(self.xcoords) == 6:
-                        self.borders.append(event.inaxes.plot( self.xcoords[4:], self.ycoords[4:], '-'))
-                        self.StarsLowCut = (self.ycoords[4] + self.ycoords[5])/2.
+                    if len(self.xcoords) == 8:
+                        self.borders.append(event.inaxes.plot( self.xcoords[6:], self.ycoords[6:], '-'))
+                        self.StarsLowCut = (self.ycoords[6] + self.ycoords[7])/2.
                         self.get_stars(sources)
 
                         
@@ -341,9 +354,9 @@ class galStar():
                         ax3.annotate( 'When happy, close plot window', xy=( 0.01, 0.8), \
                                                 xycoords='axes fraction', fontsize=10)
 
-                    if len(self.xcoords) == 8:
-                        self.borders.append(event.inaxes.plot( self.xcoords[6:], self.ycoords[6:], '-'))
-                        self.StarsUpCut = (self.ycoords[6] + self.ycoords[7])/2.
+                    if len(self.xcoords) == 10:
+                        self.borders.append(event.inaxes.plot( self.xcoords[8:], self.ycoords[8:], '-'))
+                        self.StarsUpCut = (self.ycoords[8] + self.ycoords[9])/2.
                         self.get_stars(sources)
                         
                         self.plot_stars_galaxies( sources, axes)
@@ -361,13 +374,17 @@ class galStar():
                         self.galaxies = []
                         self.plot_stars_galaxies( sources, axes)
                     elif len(self.xcoords) == 4:
-                        self.stars = []
+                        self.GalLowCut = 0.
+                        self.get_galaxies( sources )
                         self.plot_stars_galaxies( sources, axes)
                     elif len(self.xcoords) == 6:
+                        self.stars = []
+                        self.plot_stars_galaxies( sources, axes)
+                    elif len(self.xcoords) == 8:
                         self.StarsLowCut = 0
                         self.get_stars(sources)
                         self.plot_stars_galaxies( sources, axes )
-                    elif len(self.xcoords) == 8:
+                    elif len(self.xcoords) == 10:
                         self.StarsUpCut = 100
                         self.get_stars(sources)
                         self.plot_stars_galaxies( sources, axes )
@@ -381,8 +398,7 @@ class galStar():
 
             cid = fig.canvas.mpl_connect('button_press_event', onclick)
             plt.show()
-            self.x = xcoords
-            self.y = ycoords
+
 
 
         def plot_stars_galaxies( self, sources, axes, overwrite=True ):
@@ -411,12 +427,9 @@ class galStar():
 
         def get_galaxies( self, sources  ):
             self.galaxies =  (sources['MU_MAX'] > \
-                 self.GradGal*sources['MAG_AUTO']  + self.IntGal)
-
-                                #&
-                                #( sources['MU_MAX'] > gal_star.GalLowCut) & \
-                                #( sources['gal_size'] > gal_star.GradStars*sources['MAG_AUTO'] +\
-                                #gal_star.IntStars )]
+                 self.GradGal*sources['MAG_AUTO']  + self.IntGal) & \
+                 ( sources['MU_MAX'] > self.GalLowCut )
+                                
         def get_stars( self, sources):
             self.stars = (sources['MU_MAX'] < \
                     sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
