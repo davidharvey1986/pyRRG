@@ -452,7 +452,7 @@ class galStar():
                  ( sources['MU_MAX'] > self.GalLowCut )
                                 
         def get_stars( self, sources):
-                        '''
+            '''
             Using the boundaries set determien which of the sourecs
             are stars. Store as a boolean array of N objects
             
@@ -460,7 +460,7 @@ class galStar():
                sources : a fits record of the sources from source extractor
             '''
             self.stars = (sources['MU_MAX'] < \
-                    sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
+                        sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
                             (sources['MU_MAX'] > \
                     sources['MAG_AUTO']*self.GradStarsLowCut + self.IntStarsLowCut) & \
                             (sources['MU_MAX'] > self.StarsLowCut) & \

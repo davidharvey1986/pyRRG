@@ -40,7 +40,7 @@ setup   (       name            = "pyRRG",
                 package_data    = package_data,
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
-                install_requires=['idlsave','pyfits>=3.3','csv']
+                install_requires=['idlsave','pyfits>=3.3']
                           
         )
 
