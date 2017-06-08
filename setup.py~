@@ -11,9 +11,9 @@ This module uses the RRG method to measure the shapes of galaxies
 in Hubble Space Telescope data
 """
 #python setup.py register -r pypi
-#python setup.py sdist upload -r pypi
+#sudo python setup.py sdist upload -r pypi
 
-version='0.0.9'
+version='0.0.10'
          
     
 INCDIRS=['.']
