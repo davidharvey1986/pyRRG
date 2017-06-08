@@ -84,23 +84,23 @@ def acs_determine_focus( unknown_focus_image,
     #But the x and y here are in the frame of the drizzled frame
     #So need to change these to position in the new fram
     
-   
-    inframe_stars = observed_moments_stars[observed_moments_stars[unknown_focus_image+'_INFRAME'] == 1]
+    image_name = unknown_focus_image.split('/')[-1] 
+    inframe_stars = observed_moments_stars[observed_moments_stars[image_name+'_INFRAME'] == 1]
     
 
     if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
         mm.measure_moms( unknown_focus_image,  'NOCAT_NEED',
                     unknown_focus_image[:-5]+'_uncor.cat',
                     object_catalogue=inframe_stars,
-                    xGal=inframe_stars[unknown_focus_image+'_X_IMAGE'],
-                    yGal=inframe_stars[unknown_focus_image+'_Y_IMAGE'],
+                    xGal=inframe_stars[image_name+'_X_IMAGE'],
+                    yGal=inframe_stars[image_name+'_Y_IMAGE'],
                     mult=2, min_rad=6)
         
     star_moments = py.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
     
     #Now get an array of moments for all the possible focus positions
-    model_e, focus = acs_model.acs_model_e(star_moments[unknown_focus_image+'_X_IMAGE'],
-                                           star_moments[unknown_focus_image+'_Y_IMAGE'], 
+    model_e, focus = acs_model.acs_model_e(star_moments[image_name+'_X_IMAGE'],
+                                           star_moments[image_name+'_Y_IMAGE'], 
                                            wavelength=wavelength )
 
     #Number of focus positions

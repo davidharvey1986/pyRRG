@@ -266,8 +266,8 @@ def mmm( sky_vector,
     
         center = (minimm + 1 + maximm)/2.
         side = np.round(0.2*(maximm-minimm))/2.  + 0.25
-        j = np.round(center-side)
-        k = np.round(center+side)
+        j = np.int(np.round(center-side))
+        k = np.int(np.round(center+side))
 
         #  In case  the data has a large number of of the same (quantized) 
         #  intensity, expand the range until both limiting values differ from the 

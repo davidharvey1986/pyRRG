@@ -135,8 +135,8 @@ def psf_cor(    mom_file,
     for iImage in xrange(nImages):
    
         #Which positions are in the cluster frame
-        
-        inFrame = moms[images[iImage]+'_INFRAME'] == 1
+        iImage_name = images[iImage].split('/')[-1]
+        inFrame = moms[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
         #position of the image in question
@@ -155,12 +155,12 @@ def psf_cor(    mom_file,
         #image  to the X,Y of the drizzled image
         
        
-        iPsfMoms=acs_3dpsf.acs_3dpsf( moms[images[iImage]+'_X_IMAGE'][inFrame], 
-                                    moms[images[iImage]+'_Y_IMAGE'][inFrame],
-                                    np.zeros(len(moms[images[iImage]+'_INFRAME'][inFrame]))+focus, \
+        iPsfMoms=acs_3dpsf.acs_3dpsf( moms[iImage_name+'_X_IMAGE'][inFrame], 
+                                    moms[iImage_name+'_Y_IMAGE'][inFrame],
+                                    np.zeros(len(moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
                                     radius, scat, degree=[3,2,2] )
         #now rotate the moments according to the angle in orient
-        iPsfMomsRot = rm.rotate_moments( iPsfMoms, moms[images[iImage]+'_ORIENTAT'][inFrame])
+        iPsfMomsRot = rm.rotate_moments( iPsfMoms, moms[iImage_name+'_ORIENTAT'][inFrame])
         
         #CHECK THAT ANGLES ARE CORRECT HERE PLEASE
         

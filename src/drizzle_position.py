@@ -82,20 +82,20 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
 
-        
-        x_column = py.Column( name=individual_files[iImage]+'_X_IMAGE', \
+        iFilename = individual_files[iImage].split('/')[-1]
+        x_column = py.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )
 
-        y_column = py.Column( name=individual_files[iImage]+'_Y_IMAGE', \
+        y_column = py.Column( name=iFilename+'_Y_IMAGE', \
                                 format=SingleImageY.dtype, \
                                 array=SingleImageY )
         
-        inFrame = py.Column( name=individual_files[iImage]+'_INFRAME', \
+        inFrame = py.Column( name=iFilename+'_INFRAME', \
                                 format=isinArr.dtype, \
                                 array=isinArr )
                                 
-        orientat = py.Column( name=individual_files[iImage]+'_ORIENTAT', \
+        orientat = py.Column( name=iFilename+'_ORIENTAT', \
                                 format=Orientation.dtype, \
                                 array=Orientation )
 
