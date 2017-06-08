@@ -1,11 +1,9 @@
 from matplotlib import pyplot as plt
 import os as os
 import pickle as pkl
-from matplotlib import pyplot as plt
 from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
-import ipdb as pdb
 
 def star_galaxy_separation( sources, restore=False,
                             savefile='galStar.sav'):
