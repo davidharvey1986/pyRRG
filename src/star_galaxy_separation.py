@@ -78,8 +78,10 @@ def star_galaxy_separation( sources, restore=False,
             if overwrite == 'c':
                 return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
             else:
+                #If i reseparate i will want to remeasure all stars and galaxies
                 print 'Reseparating'
                 os.system('rm -fr '+savefile)
+                os.system('rm -fr j*uncor.cat *_cor.cat')
                 galaxies, stars = star_galaxy_separation( sources, savefile=savefile )
                 return galaxies, stars
 
