@@ -1,4 +1,6 @@
 import numpy as np
+import drizzlepac
+
 import pyfits as py
 import os as os
 
