@@ -1,0 +1,204 @@
+\section{The detailed description}
+\label{details}
+The \AAD module was developed in Python using an Object Oriented (OO) approach
+with classes and methods. This can not be hidden in the usage of the
+\AAD module.
+Working with \AAD means creating its class objects, accessing the class data
+and executing class methods. This might be confusing for users who are
+not familiar with this terminology and its meaning.
+
+However this manual makes no attempt to introduce the OO terminology,
+and its complete understanding is not really necessary in order to use
+the \AAD module . The user can simply stick to
+a strictly {\it phenomenological} approach by looking at the examples
+and transferring them to his/her own applications. Nevertheless the OO terms
+are used to structure this section of the manual.
+
+%
+% Section for functions
+%
+\subsection{Functions}
+\label{functions}
+\index{functions}
+The \AAD module contains the two functions {\tt open()} and {\tt create()}.
+These function serve as a starting point for the work with ASCII tables,
+since both return an \ad object by either opening  and loading
+an existing ASCII file ({\tt open()}) or creating an empty \ad object
+from scratch ({\tt create()}).
+
+\subsubsection{open()}
+\label{functions_open}
+\index{open()}\index{functions!open()}
+This function loads an existing ASCII table file. An \ad object is
+created and the data stored in the ASCII table is transferred to the
+AsciiData object. Various function parameters specify e.g. the
+character used as a delimiter to separate adjacent column elements.
+
+\prgrf{Usage}
+open(filename, null=None, delimiter=None, comment\_char=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lccl}
+Name     & Type    & Default & Description \\ \hline
+filename &{\it string}& - & the name of the ASCII\\
+         &            &   & table file to be loaded\\
+null     &{\it string}& ['*','NULL', 'Null', 'None']& the character/string\\
+         &            &   & representing a null-entry\\
+delimiter&{\it string}& `` `` & the delimiter separating\\
+         &            &   & columns \\
+comment\_char  &{\it string}& '\#' & the character/string\\
+         &            &   & indicating a comment\\
+\end{tabular}
+
+\prgrf{Return}
+- an \ad object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Load the file 'example.txt' and print the result. The file 'example.txt
+looks like:
+\begin{small}
+\begin{verbatim}
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+The command sequence is:
+\begin{small}
+\begin{verbatim}
+>>> example = asciidata.open('example.txt')
+>>> print example
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+
+\item Load the file 'example2.txt' and print the results. 'example2.txt':
+\begin{small}
+\begin{verbatim}
+@
+@ Some objects in the GOODS field
+@
+unknown $ 189.2207323 $ 62.2357983 $ 26.87 $ 0.32
+ galaxy $      *      $ 62.2376331 $ 24.97 $ 0.15
+   star $ 189.1409453 $ 62.1696844 $ 25.30 $  *
+ *      $ 188.9014716 $     *      $ 25.95 $ 0.20
+\end{verbatim}
+\end{small}
+
+Load and print:
+\begin{small}
+\begin{verbatim}
+>>> example2 = asciidata.open('example2.txt', null='*', \
+                              delimiter='$', comment_char='@')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+
+\end{enumerate}
+
+\subsubsection{create()}
+\label{functions_create}
+\index{create()}\index{functions!create()}
+
+This function creates an empty \ad object in the 'plain' format, which means
+that the column information is {\bf not} part of the default output.
+The dimension of the \ad object as well as the delimiter separating
+the elements is specified as input.
+
+\prgrf{Usage}
+create(ncols, nrows, null=None, delimiter=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lccl}
+Name     & Type    & Default & Description \\ \hline
+ncols    &{\it int}& - & number of columns to be created\\
+nrows    &{\it int}& - & number of rows to be created\\
+null     &{\it string}& 'Null' & the character/string representing a null-entry\\
+delimiter&{\it string}& `` `` & the delimiter separating the columns \\
+\end{tabular}
+
+\prgrf{Return}
+- an \ad object in the 'plain' format
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Create an \ad object with 3 columns and 2 rows, print the result:
+\begin{verbatim}
+>>> example3 = asciidata.create(3,2)
+>>> print (example3)
+      Null       Null       Null
+      Null       Null       Null
+\end{verbatim}
+
+\item As in 1., but use a different delimiter and NULL value, print the result:
+\begin{verbatim}
+>>> example4 = asciidata.create(3,2,delimiter='|', null='<*>')
+>>> print (example4)
+       <*> |        <*> |        <*>
+       <*> |        <*> |        <*>
+\end{verbatim}
+\end{enumerate}
+
+
+\subsubsection{createSEx()}
+\label{functions_createSEx}
+\index{createSEx()}\index{functions!createSEx()}
+
+\prgrf{Usage}
+createSEx(ncols, nrows, null=None, delimiter=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lccl}
+Name     & Type    & Default & Description \\ \hline
+ncols    &{\it int}& - & number of columns to be created\\
+nrows    &{\it int}& - & number of rows to be created\\
+null     &{\it string}& 'Null' & the character/string representing a null-entry\\
+delimiter&{\it string}& `` `` & the delimiter separating the columns \\
+\end{tabular}
+
+\prgrf{Return}
+- an \ad object in the SExtractor catalogue format
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Create an \ad object with 3 columns and 2 rows, print the result:
+\begin{verbatim}
+>>> example5 = asciidata.createSEx(3,2)
+>>> print example5
+# 1  column1
+# 2  column2
+# 3  column3
+      Null       Null       Null
+      Null       Null       Null
+\end{verbatim}
+
+\item As in 1., but use a different delimiter and NULL value, print the result:
+\begin{verbatim}
+>>> example6 = asciidata.createSEx(3,2,delimiter='|', null='<*>')
+>>> print example6
+# 1  column1
+# 2  column2
+# 3  column3
+       <*>|       <*>|       <*>
+       <*>|       <*>|       <*>
+\end{verbatim}
+\end{enumerate}
+

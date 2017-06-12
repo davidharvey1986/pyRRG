@@ -1,0 +1,69 @@
+\section{Installation}
+\label{installation}
+\index{installation}
+The \AAD module requires Python 2.4 or later. It was developed on linux\index{linux}
+(SUSE\index{SUSE}\index{linux!SUSE},
+fedora\index{fedora}\index{linux!fedora}), Solaris 5.8\index{Solaris} and
+MacOSX\index{MacOSX}, however there should be no problems installing it on any machine
+hosting Python.
+
+Individual functions, such as the transformation to numarray\index{numarray},
+numpy\index{numpy} or the FITS\index{FITS} format, obviously require the python
+modules for the formats they convert to. But there is no general need to install them.\\
+
+The current version 1.1 of \AAD is distributed as the source
+archive {\tt asciidata-1.1.tar.gz} from the \AAD webpage
+\index{AstroAsciiData webpage} at\newline
+\htmladdnormallink{http://www.stecf.org/software/PYTHONtools/astroasciidata/}{http://www.stecf.org/software/PYTHONtools/astroasciidata/}.
+Installing the module is not difficult. Unpack the tarball with:
+\begin{verbatim}
+> gunzip asciidata-1.1.tar.gz
+> tar -xvf asciidata-1.1.tar
+\end{verbatim}
+
+Then enter the the unpacked directory and do the usual:
+\begin{verbatim}
+> cd asciidata-1.1
+> python setup.py install
+\end{verbatim}
+
+After installation, some Unit Tests can be executed with:
+\begin{verbatim}
+> python setup.py test
+\end{verbatim}
+If there are no errors reported in the Unit Tests, the proper
+working  of the module is assured. Failed tests may happen due to
+missing pyhon modules (numpy, PyFITS or numarray) and can be neglected
+if you do not intend to convert into these formats.\\
+
+In all classes and sub-modules the epydoc-conventions have been used in
+the inline documentation. In case that {\tt epydoc}\index{epydoc}
+(\htmladdnormallink{http://epydoc.sourceforge.net/}{http://epydoc.sourceforge.net/})
+is installed, the command
+\begin{verbatim}
+> epydoc Lib/
+\end{verbatim}
+creates webpages from the inline documenatation, which are written to the
+the directory './html'. This would be certainly a very good start for users
+who really want to find out what is behind the module or intend to subclass
+it to e.g. support their own, custom made ASCII table format with column
+names. In case that you just want to use the \AAD module, there is no
+need to look at its inline documentation.
+
+\subsection{Lemma for version 1.1.1}
+This newest version is rather a patch release. The advent of numpy-1.1 require
+some small changes not even to the code itself, but to the unit tests. Since these
+are integral part of the software release, we decided to upgrade and call the new bundle
+version 1.1.1.
+
+\subsection{Release notes for version 1.1}
+Except for minor bug fixes, version 1.1 contains the following improvements:
+\begin{itemize}
+  \item export to
+  \htmladdnormallink{numpy}{http://numpy.scipy.org/}\index{numpy};
+  \item export to
+  \htmladdnormallink{FITS}{http://fits.gsfc.nasa.gov/fits_home.html}\index{FITS} via numpy;
+  \item some convenient functions were added (see e.g. Sect.\ref{adm_strip});
+  \item column names can contain basic arithmetic operators now.
+  \item code with deprecation warnings was replaced.
+\end{itemize}

@@ -1,0 +1,766 @@
+%
+% Section the AsciiColumn class
+%
+\subsection{The AsciiColumn class}
+\label{acclass}
+\index{classes}\index{classes!AsciiColumn}
+\index{AsciiColumn class}
+The \ac class is the the second important class in the \AAD module.
+The \ac manages all column related issues, which means that even the
+actual data is stored in \ac objects. These \ac object are accessed
+via the \ad object, either specifying the column name
+(such as e.g.\ \verb+adata_object['diff1']+) or the column index
+(such as e.g.\ \verb+adata_object[3]+).
+
+\subsubsection{AsciiColumn data}
+\label{acd}
+\index{class data}\index{AsciiColumn!data}
+\ac objects contain some information which is important to the user
+and can be used in the processing. Although it is possible,
+this class data should {\bf never} be changed directly by the user.
+All book-keeping is done internally.
+
+\prgrf{Data}
+\begin{tabular}{lcl}
+colname &{\it string}& file name associated to the object\\
+\end{tabular}
+
+
+\subsubsection{AsciiColumn method get}
+\label{acm_get}
+\index{methods}\index{methods!AsciiColumn!get}
+\index{get}
+%
+This method retrieves one list element of an \ac instance.
+The element is specified with the row number.
+
+\prgrf{Usage}
+elem = acol\_object[row]\\
+{\it or}\\
+elem = operator.getitem(acol\_object, row)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+row &{\it int}& the row number of the entry to be replaced\\
+\end{tabular}
+
+
+\prgrf{Return}
+- the requested column element
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Retrieve and print the first element of the \ac instance which is the
+third column of the \ad instance {\tt 'exa'}:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> elem = exa[2][0]
+>>> print elem
+ red
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method set}
+\label{acm_set}
+\index{methods}\index{methods!AsciiColumn!set}
+\index{set}
+%
+This methods sets list members, which means elements, of an \ac instance.
+The list member to be changed is addressed via their row number.
+
+\prgrf{Usage}
+acol\_object[row] = an\_entry\\
+{\it or}\\
+operator.setitem(acol\_object, row, adata\_column)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+row &{\it int}& the row number of the entry to be replaced\\
+an\_entry &{\it string/integer/float}& the data to replace the previous entry\\
+\end{tabular}
+%
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Replace the third entry of the column which is the third column
+in the \ad instance {\tt 'exa'}:
+\begin{small}
+\begin{verbatim}
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> exa[2][2] = 'green'
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 green  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method len()}
+\label{acm_len}
+\index{methods}\index{methods!AsciiColumn!len()}
+\index{len()}
+%
+This method defines a length of an \ac instance, which equals the
+number of row in the \ac.
+
+\prgrf{Usage}
+len(ac\_object)
+
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the length (= number of rows) of the \ac
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the length of the fifth column onto the screen:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> print len(exa[4])
+3
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn iterator type}
+\label{acm_iterator}
+\index{methods}\index{methods!AsciiColumn!iterator}
+\index{iterator}
+%
+This defines an iterator over an \ac instance. The iteration is finished after
+{\tt acolumn\_object.nrows} calls and returns each element in subsequent calls.
+Please note that it is {\bf not} possible to change these elements.
+
+\prgrf{Usage}
+for element in acolumn\_object:\\
+... $<do\ something>$
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Iterate over an \ac instance and print the elements:
+\begin{small}
+\begin{verbatim}
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> acol = exa[4]
+>>> for element in acol:
+...     print element
+...
+-19.34509
+-19.94546
+-19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+
+\subsubsection{AsciiColumn method copy()}
+\label{acm_copy}
+\index{methods}\index{methods!AsciiColumn!copy()}
+\index{copy()}
+This method generates a so-called {\it deep copy} \index{deep copy}
+of a column. This means the copy is not only a reference to an
+existing column, but a real copy with all data.
+
+\prgrf{Usage}
+adata\_object[colname].copy()
+
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the copy of the column
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Copy the column 5 of \ad object 'example2' to column 2 of \ad
+object 'example1'
+\begin{small}
+\begin{verbatim}
+>>> print example1
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy            *  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example1[1] = example2[4].copy()
+>>> print example1
+#
+# Some objects in the GOODS field
+#
+unknown  0.32  62.2357983  26.87  0.32
+ galaxy  0.15  62.2376331  24.97  0.15
+   star     *  62.1696844  25.30  0.12
+ galaxy  0.20  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_format()}
+\label{acm_getformat}
+\index{methods}\index{methods!AsciiColumn!get\_format()}
+\index{get\_format()}
+The method returns the format of the \ac object
+The format description in \AAD is taken from Python. The Python Library
+Reference
+(\htmladdnormallink{Chapt.\ 2.3.6.2 in Python 2.5
+}{http://www.python.org/doc/2.4.2/lib/typesseq-strings.html\#l2h-211}) gives a list of all possible formats.
+
+\prgrf{Usage}
+adata\_object[colname].get\_format()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the format of the \ac object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the format of \ac 0:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[0].get_format()
+'% 9s'
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_type()}
+\label{acm_gettype}
+\index{methods}\index{methods!AsciiColumn!get\_type()}
+\index{get\_type()}
+The method returns the type of an \ac object
+
+\prgrf{Usage}
+adata\_object[colname].get\_type()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the type of the \ac
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the type of \ac 0:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[0].get_type()
+<type 'str'>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method get\_nrows()}
+\label{acm_getnrows}
+\index{methods}\index{methods!AsciiColumn!get\_nrows()}
+\index{get\_nrows()}
+This method offers a way to derive the number of rows in a \ac instance.
+
+\prgrf{Usage}
+acolumn\_object.get\_nrows()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the number of rows
+
+\prgrf{Examples}
+\begin{enumerate}
+\item get the number of rows in the column named 'column1':
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('sort_objects.cat')
+>>> exa['column1'].get_nrows()
+12
+>>> print exa
+    1     0     1     1
+    2     1     0     3
+    3     1     2     4
+    4     0     0     2
+    5     1     2     1
+    6     0     0     3
+    7     0     2     4
+    8     1     1     2
+    9     0     1     5
+   10     1     2     6
+   11     0     0     6
+   12     1     1     5
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_unit()}
+\label{acm_getunit}
+\index{methods}\index{methods!AsciiColumn!get\_unit()}
+\index{get\_unit()}
+%
+The method returns the unit of an \ac instance. If there is not unit defined,
+a string with zero length is returned (\lq\rq)
+
+\prgrf{Usage}
+acolumn\_object.get\_unit()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the unit of the column
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the overview of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+test>more some_objects.cat
+# 1 NUMBER          Running object number
+# 2 X_Y
+# 3 COLOUR
+# 4 RA              Barycenter position along world x axis          [deg]
+# 5 DEC             Barycenter position along world y axis          [deg]
+#
+# most important objects
+#
+1 1.0  red 23.08932 -19.34509
+2 9.5 blue 23.59312 -19.94546
+3 3.5 blue 23.19843 -19.23571
+test>python
+Python 2.4.2 (#1, Nov 10 2005, 11:34:38)
+[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import asciidata
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa['RA'].get_unit()
+deg
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method info()}
+\label{acm_info}
+\index{methods}\index{methods!AsciiColumn!info()}
+\index{info()}
+The method gives an overview on an \ac object including its type,
+format and the number of elements.
+
+Its focus is on interactive work.
+All information can also be retrieved by other methods in a machine
+readable format.
+
+\prgrf{Usage}
+adata\_object[colname].info()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the overview on the \ac object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the overview of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> print example2[1].info()
+Column name:        column2
+Column type:        <type 'float'>
+Column format:      ['% 11.7f', '%12s']
+Column null value : ['*']
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method reformat()}
+\label{acm_reformat}
+\index{methods}\index{methods!AsciiColumn!reformat()}
+\index{reformat()}
+The method gives a new format\index{format} to an \ac object. Please note
+that the new format does {\bf not} change the column content,
+but only the string representation of the content.
+The format description in \AAD is taken from Python. The Python Library
+Reference
+(\htmladdnormallink{Chapt.\ 2.3.6.2 in Python
+2.5}{http://www.python.org/doc/2..2/lib/typesseq-strings.html\#l2h-211}) gives a list of all possible formats.
+
+
+\prgrf{Usage}
+adata\_object[colname].reformat('newformat')
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+new\_format &{\it string}& the new format of the \ac \\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the format of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[1].reformat('% 6.2f')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.22 $  62.2357983 $  26.87 $  0.32
+ galaxy   $       * $  62.2376331 $  24.97 $  0.15
+   star   $  189.14 $  62.1696844 $  25.30 $     *
+        * $  188.90 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method rename()}
+\label{acm_rename}
+\index{methods}\index{methods!AsciiColumn!rename()}
+\index{rename()}
+The method changes the name on \ac object.
+
+\prgrf{Usage}
+adata\_object[colname].rename('newname')
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+newname &{\it string}& the filename to save the \ad object to\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the column name from 'column1' to 'newname':
+\begin{small}
+\begin{verbatim}
+>>> print example2[3].info()
+Column name:        column4
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['*']
+
+>>> example2[3].rename('newname')
+>>> print example2[3].info()
+Column name:        newname
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['*']
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method tonumarray()}
+\label{acm_tonumarray}
+\index{methods}\index{methods!AsciiColumn!tonumarray()}
+\index{tonumarray()}
+The method converts the content of an \ad object into a numarray
+object. Note that this is only possible if there are no Null-entries
+in the column, since numarray would not allow these Null-entries.
+
+\prgrf{Usage}
+adata\_object[colname].tonumarray()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the \ac content in a numarray object.
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Convert the column with the index 3 to a numarray object:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> numarr =  example2[3].tonumarray()
+>>> numarr
+array([ 26.87,  24.97,  25.3 ,  25.95])
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method tonumpy()}
+\label{acm_tonumpy}
+\index{methods}\index{methods!AsciiColumn!tonumpy()}
+\index{tonumpy()}
+The method converts the content of an \ad object into a numpy
+object. Columns without Null-entries are converted to numpy array
+objects, columns with Null-entries become a numpy masked arrays
+(see numpy manual for details).
+
+\prgrf{Usage}
+adata\_object[colname].tonumpy()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the \ac content in a numpy (-masked) object.
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Convert the column with index 3 to a numpy object:
+\begin{small}
+\begin{verbatim}
+>>> print example
+@
+@ Some objects in the GOODS field
+@
+unknown   $ 189.2207323$ 62.2357983$ 26.87$ 0.32
+ galaxy   $        Null$ 62.2376331$ 24.97$ 0.15
+   star   $ 189.1409453$ 62.1696844$ 25.30$ Null
+      Null$ 188.9014716$       Null$ 25.95$ 0.20
+>>> nump = example[3].tonumpy()
+>>> print nump
+[ 26.87  24.97  25.3   25.95]
+\end{verbatim}
+\end{small}
+\item Convert the column with index 2 to a numpy object. This column contains
+a Null-entry, thus it is converted to a masked array:
+\begin{small}
+\begin{verbatim}
+>>> print example
+@
+@ Some objects in the GOODS field
+@
+unknown   $ 189.2207323$ 62.2357983$ 26.87$ 0.32
+ galaxy   $        Null$ 62.2376331$ 24.97$ 0.15
+   star   $ 189.1409453$ 62.1696844$ 25.30$ Null
+      Null$ 188.9014716$       Null$ 25.95$ 0.20
+>>> nump = example[2].tonumpy()
+>>> type(nump)
+<class 'numpy.core.ma.MaskedArray'>
+>>> nump[3]
+array(data =
+ 999999,
+      mask =
+ True,
+      fill_value=999999)
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method set\_unit()}
+\label{acm_set_unit}
+\index{methods}\index{methods!AsciiColumn!set\_unit()}
+\index{set\_unit()}
+The method sets the unit for a given column. Already existing
+units are just replaced.
+
+\prgrf{Usage}
+adata\_object[colname].set\_unit(acol\_unit)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+acol\_unit &{\it string}& the new column unit\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Set a unit for the column {\sl FLAGS}:
+\begin{small}
+\begin{verbatim}
+>>> print sm
+# 1  NUMBER  Running object number
+# 2  X_IMAGE  Object position along x  [pixel]
+# 3  Y_IMAGE  Object position along y  [pixel]
+# 4  FLAGS  Extraction flags
+    2  379.148  196.397     3
+    3  177.377  199.843     4
+    1  367.213  123.803     8
+>>> sm['FLAGS'].set_unit('arbitrary')
+>>> print sm
+# 1  NUMBER  Running object number
+# 2  X_IMAGE  Object position along x  [pixel]
+# 3  Y_IMAGE  Object position along y  [pixel]
+# 4  FLAGS  Extraction flags  [arbitrary]
+    2  379.148  196.397     3
+    3  177.377  199.843     4
+    1  367.213  123.803     8
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method set\_colcomment()}
+\label{acm_set_colcomment}
+\index{methods}\index{methods!AsciiColumn!set\_colcomment()}
+\index{set\_colcomment()}
+The method writes a comment for a column into the \ad header.
+
+\prgrf{Usage}
+adata\_object[colname].set\_colcomment(acol\_comment)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+acol\_comment &{\it string}& the new column comment\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Set (in this case change) the column comment for the column {\sl FLAGS}:
+\begin{small}
+\begin{verbatim}
+>>> print sm
+# 1  NUMBER  Running object number
+# 2  X_IMAGE  Object position along x  [pixel]
+# 3  Y_IMAGE  Object position along y  [pixel]
+# 4  FLAGS  Extraction flags  [arbitrary]
+    2  379.148  196.397     3
+    3  177.377  199.843     4
+    1  367.213  123.803     8
+>>> sm['FLAGS'].set_colcomment('Quality numbers')
+>>> print sm
+# 1  NUMBER  Running object number
+# 2  X_IMAGE  Object position along x  [pixel]
+# 3  Y_IMAGE  Object position along y  [pixel]
+# 4  FLAGS  Quality numbers  [arbitrary]
+    2  379.148  196.397     3
+    3  177.377  199.843     4
+    1  367.213  123.803     8
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_colcomment()}
+\label{acm_get_colcomment}
+\index{methods}\index{methods!AsciiColumn!get\_colcomment()}
+\index{get\_colcomment()}
+The method reads a column comment from an \ad column.
+
+\prgrf{Usage}
+adata\_object[colname].get\_colcomment()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the comment string of the column
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Read and print the column comment of the column {\sl X\_IMAGE}:
+\begin{small}
+\begin{verbatim}
+>>> cocomm = sm['X_IMAGE'].get_colcomment()
+>>> print cocomm
+Object position along x
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}

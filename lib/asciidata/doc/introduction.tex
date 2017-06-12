@@ -1,0 +1,131 @@
+\section{Introduction}
+\label{introduction}
+
+\subsection{ASCII tables in astronomy and science}
+\label{atables_astronomy}
+ASCII tables are one of the major data exchange formats used in science.
+In astronomy, which is the background of \AAD's developers, ASCII tables are
+used for a variety of things like object lists, line lists or
+even spectra. Every person working in astronomy has to deal with
+ASCII data, and there are various ways of doing so. Some use the {\tt awk}
+scripting language, some transfer the ASCII tables to FITS tables and then
+work on the FITS data, some use IDL routines. Most of those approaches need
+individual efforts (such as preparing a format file for the
+transformation to FITS) whenever there is a new kind of ASCII table
+with e.g. a different number of columns.\\
+
+
+\subsection{The project goal}
+\label{project_goal}
+Within the \AAD project we envision a module which can be
+used to work on {\bf all} kinds of ASCII tables. The module provides a
+convenient tool such that the user easily can:
+
+\begin{itemize}
+\item read in ASCII tables;
+\item manipulate table elements;
+\item save the modified ASCII table;
+\item read and write meta data such as column names and units;
+\item combine several tables;
+\item delete/add rows and columns;
+\item manage metadata in the table headers.
+\end{itemize}
+
+\subsection{Why python?}
+\label{why_python}
+Python \index{python}(\htmladdnormallink{www.python.org}{www.python.org}) is
+in the process of becomming the programming
+language of choice for astronomers and scientists in general, both for
+interactive data analysis as well as for large scale software development.
+A number of interfaces such as PyRAF\index{PyRAF}
+(\htmladdnormallink{http://www.stsci.edu/resources/software\_hardware/pyraf}{http://www.stsci.edu/resources/software_hardware/pyraf})
+or PyFITS \index{PyFITS}\newline
+(\htmladdnormallink{http://www.stsci.edu/resources/software\_hardware/pyfits}{http://www.stsci.edu/resources/software_hardware/pyfits})
+have already been written to bridge the gap between widely used
+astronomical software
+packages, data formats and Python.
+
+This makes the  development of the \AAD module for Python a natural
+choice.
+Within Python, the \AAD module may be used interactively, within small scripts,
+in data reduction tasks and even in data bases.
+
+\subsection{Design considerations}
+\label{design_considerations}
+In general, the ASCII tables used in astronomy have a relatively small size.
+As an example, the size of the Wide Field Camera catalogue of
+Hubble Ultra Deep Field
+(\htmladdnormallink{http://www.stsci.edu/hst/udf}{http://www.stsci.edu/hst/udf})
+is only 2.2\,MB. Handling those amounts of data is not a time consuming task for modern day computers. As a consequence, computational speed is not a prime issue in software design and
+construction, and there was no attempt to implement \AAD as a particularly fast
+module. The focus was rather to maximizing convenience and ensuring a
+steep learning curve for the users.\\
+
+\subsection{The SExtractor table format}
+\label{sex_format}
+There are many ways to store meta data such column name and units in a file
+together with the table data. Instead of defining our own, proprietary format
+within the \AAD module, we have chosen to support the
+SExtractor\index{SExtractor} header scheme.
+
+This means that the module can read ASCII tables which follow the SExtractor
+format and extract all column information from the file
+(see Sect.\ \ref{SExtractor_data}). The module also offers to write this information
+in the SExtractor format back into file.
+
+In the SExtractor format the meta data is stored at the beginning of the
+file:
+\begin{small}
+\begin{verbatim}
+#   1 NUMBER          Running object number
+#   2 XWIN_IMAGE      Windowed position estimate along x              [pixel]
+#   3 YWIN_IMAGE      Windowed position estimate along y              [pixel]
+#   4 ERRY2WIN_IMAGE  Variance of windowed pos along y                [pixel**2]
+#   5 AWIN_IMAGE      Windowed profile RMS along major axis           [pixel]
+#   6 ERRAWIN_IMAGE   RMS windowed pos error along major axis         [pixel]
+#   7 BWIN_IMAGE      Windowed profile RMS along minor axis           [pixel]
+#   8 ERRBWIN_IMAGE   RMS windowed pos error along minor axis         [pixel]
+#   9 MAG_AUTO        Kron-like elliptical aperture magnitude         [mag]
+#  10 MAGERR_AUTO     RMS error for AUTO magnitude                    [mag]
+#  11 CLASS_STAR      S/G classifier output
+#  12 FLAGS           Extraction flags
+  1 100.523  11.911   2.783 0.0693 2.078 0.0688  -5.3246   0.0416  0.00  19
+  2 100.660   4.872   7.005 0.1261 3.742 0.0989  -6.4538   0.0214  0.00  27
+  3 131.046  10.382   1.965 0.0681 1.714 0.0663  -4.6836   0.0524  0.00  17
+  4 338.959   4.966  11.439 0.1704 4.337 0.1450  -7.1747   0.0173  0.00  25
+\end{verbatim}
+\end{small}
+
+The format is rather simple, but nevertheless offers the possibility to save the
+essential column information.
+
+Potential users who would need or prefer other formats can:
+\begin{itemize}
+\item try to convince us that the alternative format is worth the implementation;
+\item sub-class the relevant module classes and implement the format support by
+themselves. We would certainly offer help for this.
+\end{itemize}
+
+\subsection{The usage of the User Manual}
+\label{manualusage}
+With more than 70 pages this User Manual is quite voluminous. But to start
+reading at page 1 and working through it all is pointless. Our
+recommendations on how to proceed are the following:
+\begin{itemize}
+  \item install the module with the the help of Sect.\ \ref{installation};
+  \item get a first impression on \AAD browsing through Sect.\
+  \ref{allinonechapter};
+  \item start working with the module;
+  \item use Sect.\ \ref{details} with its
+  detailed examples as a reference manual\index{reference manual}, preferably in
+  the {\tt html} form (available at the\index{project site}
+  project site
+  \htmladdnormallink{http://www.stecf.org/software/PYTHONtools/astroasciidata/}{http://www.stecf.org/software/PYTHONtools/astroasciidata/}), when looking for a certain functionality or features you need.
+\end{itemize}
+\subsection{Feedback}
+\label{feedback}
+Feedback in any form, suggestions,
+critics, comments, development requests, is very much welcome and will
+certainly contribute to improve the next versions of the module.
+The feedback should be sent directly to the developers or to\newline
+{\tt AstroAsciiData@stecf.org}.

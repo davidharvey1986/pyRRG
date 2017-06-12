@@ -1,0 +1,527 @@
+\section{All in one chapter}
+\label{allinonechapter}
+Reading documentation is no fun. Moreover the \AAD module promised to be
+convenient for users (see Sect.\ \ref{project_goal}). This Section gives
+a fast introduction on all features of the \AAD module and how these features
+are used to work with ASCII tables. On the basis of some sample session
+the most important classes and methods are introduced without
+explicitly listing all their names and modes of usage. A complete and
+detailed overview on all \AAD classes and their methods is given in
+Section \ref{details}.
+
+\subsection{Working with existing data}
+\label{existingdata}
+This chapter shows how to load and work with the ASCII table 'example.txt'.
+This tables looks like:
+\begin{verbatim}
+#
+# Some objects in the GOODS field
+#
+unknown 189.2207323  62.2357983 26.87 0.32
+galaxy  189.1408929  62.2376331 24.97 0.15
+star    189.1409453  62.1696844 25.30 0.12
+galaxy  188.9014716  62.2037839 25.95 0.20
+\end{verbatim}
+
+\begin{itemize}
+\item[$\Rightarrow$] Before actually loading the table, the \AAD module
+must be imported with:
+\begin{verbatim}
+>>> import asciidata
+\end{verbatim}
+
+\item[$\Rightarrow$] The ASCII table is loaded with:
+\begin{verbatim}
+>>> example = asciidata.open('example.txt')
+\end{verbatim}
+
+\item[$\Rightarrow$] Just to check whether the table was loaded
+correctly you do:
+\begin{verbatim}
+>>> print str(example)
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+\end{verbatim}
+
+\item[$\Rightarrow$] As a first application, you want to compute the average
+from the numbers in the second and third row:
+\begin{verbatim}
+>>> sum1=0.0
+>>> sum2=0.0
+>>> for index in range(example.nrows):
+...     sum1 += example[1][index]
+...     sum2 += example[2][index]
+... 
+>>> ave1 = sum1/example.nrows
+>>> ave2 = sum2/example.nrows
+>>> print ave1, ave2
+189.101010525 62.211724925
+\end{verbatim}
+Please note that indices start with 0, so the first
+row in the first column is \verb+example[0][0]+.
+
+\item[$\Rightarrow$]
+You want to change the table values, but before that perhaps it would be
+wise to keep a copy of the original ASCII table
+\index{writeto()}\index{methods!writeto()}:
+\begin{verbatim}
+>>> example.writeto('example_orig.txt')
+\end{verbatim}
+This gives you a file 'example\_orig.txt', which is identical
+to the original 'example.txt'.
+
+\item[$\Rightarrow$] Now you may want to compute and save the differences
+between the average and the individual values:
+\begin{small}
+\begin{verbatim}
+>>> for index in range(example.nrows):
+...     example['diff1'][index] = example[1][index] - ave1
+...     example['diff2'][index] = example[2][index] - ave2
+... 
+>>> print str(example)
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32  1.197218e-01  2.407338e-02
+ galaxy  189.1408929  62.2376331  24.97  0.15  3.988237e-02  2.590817e-02
+   star  189.1409453  62.1696844  25.30  0.12  3.993477e-02 -4.204052e-02
+ galaxy  188.9014716  62.2037839  25.95  0.20 -1.995389e-01 -7.941025e-03
+\end{verbatim}
+\end{small}
+There are two new columns, which were created by addressing elements in
+an unknown column with the name 'diff1' and 'diff2'.
+
+\item[$\Rightarrow$] To remember the new columns and their meaning,
+you would like to put a note into the table header:
+\begin{small}
+\begin{verbatim}
+>>> example.header.append('Nov 16 2005: computed and stored differences!')
+>>> print str(example)
+#
+# Some objects in the GOODS field
+#
+# Nov 16 2005: computed and stored differences!
+unknown  189.2207323  62.2357983  26.87  0.32  1.197218e-01  2.407338e-02
+ galaxy  189.1408929  62.2376331  24.97  0.15  3.988237e-02  2.590817e-02
+   star  189.1409453  62.1696844  25.30  0.12  3.993477e-02 -4.204052e-02
+ galaxy  188.9014716  62.2037839  25.95  0.20 -1.995389e-01 -7.941025e-03
+\end{verbatim}
+\end{small}
+There is a new commented line at the beginning of the table
+with your note.
+
+\item[$\Rightarrow$] That was enough for now, and the best is to save
+the modified ASCII table\index{flush()}\index{methods!flush()}:
+ \begin{verbatim}
+>>> example.flush()
+\end{verbatim}
+Now the file 'example.txt' also has the two new columns.
+
+\item[$\Rightarrow$] OK, there  is a column with the name 'diff1' and another
+named 'diff2', but what are the names of the original columns?
+To get all information, just type:
+\begin{small}
+\begin{verbatim}
+>>> print example.info()
+File:       example.txt
+Ncols:      7
+Nrows:      4
+Delimiter:  None
+Null value: ['Null', 'NULL', 'None', '*']
+Comment:    #
+Column name:        column1
+Column type:        <type 'str'>
+Column format:      ['% 7s', '%7s']
+Column null value : ['Null']
+Column name:        column2
+Column type:        <type 'float'>
+Column format:      ['% 11.7f', '%12s']
+Column null value : ['Null']
+Column name:        column3
+Column type:        <type 'float'>
+Column format:      ['% 10.7f', '%11s']
+Column null value : ['Null']
+Column name:        column4
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['Null']
+Column name:        column5
+Column type:        <type 'float'>
+Column format:      ['% 4.2f', '%5s']
+Column null value : ['Null']
+Column name:        diff1
+Column type:        <type 'float'>
+Column format:      ['% 12.6e', '%13s']
+Column null value : ['Null']
+Column name:        diff2
+Column type:        <type 'float'>
+Column format:      ['% 12.6e', '%13s']
+Column null value : ['Null']
+\end{verbatim}
+\end{small}
+So the original columns had default names
+such as 'column1', 'column2', ... Moreover the method 
+\verb+info()+\index{methods!info()}\index{info()} returns the column
+type and format for every column .
+\end{itemize}
+
+\subsection{Creating an ASCII table from scratch}
+\label{creatingfromscratch}
+In this Section an ASCII table is created from scratch using
+functions classes and methods in the \AAD module.
+
+\begin{itemize}
+\item[$\Rightarrow$] To create an empty \ad object, import the \AAD module
+and type:
+\begin{small}
+\begin{verbatim}
+>>> import asciidata
+>>> example2 = asciidata.create(4,10)
+>>> print example2
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+      Null       Null       Null       Null
+\end{verbatim}
+\end{small}
+The object has four columns with ten rows, all empty so far.
+
+\item[$\Rightarrow$] The first column should contain an index:
+\begin{small}
+\begin{verbatim}
+>>> for index in range(example2.nrows):
+...     example2[0][index] = index+1
+... 
+>>> print example2
+    1       Null       Null       Null
+    2       Null       Null       Null
+    3       Null       Null       Null
+    4       Null       Null       Null
+    5       Null       Null       Null
+    6       Null       Null       Null
+    7       Null       Null       Null
+    8       Null       Null       Null
+    9       Null       Null       Null
+   10       Null       Null       Null
+\end{verbatim}
+\end{small}
+For convenience the index starts with 1.
+
+\item[$\Rightarrow$] Now the rest is filled using a functional form:
+\begin{small}
+\begin{verbatim}
+>>> for cindex in range(1, example2.ncols):
+...   for rindex in range(example2.nrows):
+...     example2[cindex][rindex] = 0.3*float(example2[0][rindex])**cindex
+... 
+>>> print example2
+    1  3.000000e-01  3.000000e-01  3.000000e-01
+    2  6.000000e-01  1.200000e+00  2.400000e+00
+    3  9.000000e-01  2.700000e+00  8.100000e+00
+    4  1.200000e+00  4.800000e+00  1.920000e+01
+    5  1.500000e+00  7.500000e+00  3.750000e+01
+    6  1.800000e+00  1.080000e+01  6.480000e+01
+    7  2.100000e+00  1.470000e+01  1.029000e+02
+    8  2.400000e+00  1.920000e+01  1.536000e+02
+    9  2.700000e+00  2.430000e+01  2.187000e+02
+   10  3.000000e+00  3.000000e+01  3.000000e+02
+\end{verbatim}
+\end{small}
+Please note that the column type of the first column is {\tt int}
+since only integer type data was entered. In all other columns
+numbers of type float were entered, hence their column type
+is also {\tt float}.
+
+\item[$\Rightarrow$] Inserting one element with a more generic data type changes the type of the whole column:
+\begin{small}
+\begin{verbatim}
+>>> example2[0][1] = 2.0
+>>> print example2
+ 1.000000e+00  3.000000e-01  3.000000e-01  3.000000e-01
+ 2.000000e+00  6.000000e-01  1.200000e+00  2.400000e+00
+ 3.000000e+00  9.000000e-01  2.700000e+00  8.100000e+00
+ 4.000000e+00  1.200000e+00  4.800000e+00  1.920000e+01
+ 5.000000e+00  1.500000e+00  7.500000e+00  3.750000e+01
+ 6.000000e+00  1.800000e+00  1.080000e+01  6.480000e+01
+ 7.000000e+00  2.100000e+00  1.470000e+01  1.029000e+02
+ 8.000000e+00  2.400000e+00  1.920000e+01  1.536000e+02
+ 9.000000e+00  2.700000e+00  2.430000e+01  2.187000e+02
+ 1.000000e+01  3.000000e+00  3.000000e+01  3.000000e+02
+\end{verbatim}
+\end{small}
+Now the first column is of type {\tt float} as well.
+
+\item[$\Rightarrow$] Eventually, some comments are added for specific
+rows:
+\begin{small}
+\begin{verbatim}
+>>> newcol = example2.append('comment')
+>>> example2[newcol][0] =  'small!'            
+>>> example2[newcol][2] =  'bigger!'
+>>> example2[newcol][7] =  'Huge!'
+>>> print example2
+ 1.000000e+00  3.000000e-01  3.000000e-01  3.000000e-01 small!
+ 2.000000e+00  6.000000e-01  1.200000e+00  2.400000e+00   Null
+ 3.000000e+00  9.000000e-01  2.700000e+00  8.100000e+00 bigger!
+ 4.000000e+00  1.200000e+00  4.800000e+00  1.920000e+01   Null
+ 5.000000e+00  1.500000e+00  7.500000e+00  3.750000e+01   Null
+ 6.000000e+00  1.800000e+00  1.080000e+01  6.480000e+01   Null
+ 7.000000e+00  2.100000e+00  1.470000e+01  1.029000e+02   Null
+ 8.000000e+00  2.400000e+00  1.920000e+01  1.536000e+02  Huge!
+ 9.000000e+00  2.700000e+00  2.430000e+01  2.187000e+02   Null
+ 1.000000e+01  3.000000e+00  3.000000e+01  3.000000e+02   Null
+\end{verbatim}
+\end{small}
+Obviously it also is possible to create a new column using the
+\ad {\tt append()}\index{append()}\index{methods!append()} method.
+This method returns the column number, which then can be used
+to fill the new column.
+
+\item[$\Rightarrow$] Now its time to safe the \ad object:
+\begin{small}
+\begin{verbatim}
+>>> example2.flush()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+  File ".../site-packages/asciidata/asciidata.py", line 279, in flush
+    raise "No filename given. Use 'writeto()' instead."
+No filename given. Use 'writeto()' instead.
+>>> example2.writeto('example2.txt')
+\end{verbatim}
+\end{small}
+Since the object was created from scratch, there is no filename associated
+with and the method {\tt flush()}\index{flush()}\index{methods!flush()}
+can not be used. The method {\tt writeto()}\index{writeto()}
+\index{methods!writeto()} must be used instead!
+
+\end{itemize}
+
+\subsection{Woorking with SExtractor formatted data}
+\label{SExtractor_data}
+This chapter shows how to load and work with the table  'SExample.txt',
+which was produced by SExtractor. This object catalogue looks like:
+
+\begin{small}
+\begin{verbatim}
+#   1 NUMBER          Running object number
+#   2 MAG_APER        Fixed aperture magnitude vector                 [mag]
+#   5 MAGERR_APER     RMS error vector for fixed aperture mag.        [mag]
+#   8 FLUX_AUTO       Flux within a Kron-like elliptical aperture     [count]
+#   9 FLUXERR_AUTO    RMS error for AUTO flux                         [count]
+#  10 X_IMAGE         Object position along x                         [pixel]
+#  11 Y_IMAGE         Object position along y                         [pixel]
+#  12 FLAGS           Extraction flags
+ 1  -7.1135  -9.9589 -11.4873 0.1151 0.0168 0.0082 52533.1 580.708 379.715  72.461 3
+ 2  -7.8412  -9.5452 -10.8191 0.0591 0.0246 0.0152  171543 2014.45 341.365 320.621 9
+ 3  -8.1548  -9.6216 -11.0307 0.0444 0.0229 0.0125  267764 1844.97 379.148 196.397 3
+ 4  -9.4534 -11.0534 -11.9600 0.0134 0.0061 0.0053  178541 1290.41 367.213 123.803 3
+ 5  -7.8104  -9.1967 -10.5169 0.0609 0.0339 0.0201  131343 1648.34 305.545 307.027 3
+ 6 -12.1666 -13.2193 -14.1293 0.0011 0.0008 0.0007 2.22738 1938.01 258.692 260.341 3
+ 7  -8.8319 -10.3340 -11.3343 0.0238 0.0119 0.0095  111597 1525.78 336.462  97.060 3
+ 8  -8.9203 -10.3532 -11.7252 0.0219 0.0117 0.0066  129934 917.641 177.377 199.843 3
+ 9  -7.5366  -9.0374 -10.3321 0.0784 0.0393 0.0238 72761.7 1603.15  94.196 131.380 3
+10  -6.7963  -8.4304  -9.5685 0.1552 0.0687 0.0482   14072 895.465 265.404  46.241 3
+\end{verbatim}
+\end{small}
+
+Please note the the jump in the column numbers from {\sl \#2 MAG\_APER} to
+{\sl \#5 MAGERR\_APER} and then {\sl \#8 FLUX\_AUTO}. {\it MAG\_APER} and
+{\it MAGERR\_APER} are both vector data\index{vector data} with three items each.
+There are three colmns with {\it MAG\_APER}-values and three columns with
+{\it MAGERR\_APER}-values in the table data, however the header contains
+only one explicit entry for {\it MAG\_APER} and {\it MAGERR\_APER}.
+
+In \AAD an individual column name is given to each of these multiple columns
+by adding a number to the basic name given in the header.
+
+\begin{itemize}
+\item[$\Rightarrow$] First you load the \AAD module and the table:
+\begin{verbatim}
+>>> import asciidata
+>>> SExample = asciidata.open('SExample.txt')
+\end{verbatim}
+
+\item[$\Rightarrow$] Now you check the columns in the \ad object
+\begin{small}
+\begin{verbatim}
+>>> print SExample.info()
+File:       SExample.cat
+Ncols:      12
+Nrows:      10
+Delimiter:  None
+Null value: ['Null', 'NULL', 'None', '*']
+comment_char:    #
+Column name:        NUMBER
+Column type:        <type 'int'>
+Column format:      ['%5i', '%5s']
+Column null value : ['Null']
+Column comment : Running object number
+Column name:        MAG_APER
+Column type:        <type 'float'>
+Column format:      ['% 6.4f', '%7s']
+Column null value : ['Null']
+Column unit : mag
+Column comment : Fixed aperture magnitude vector
+Column name:        MAG_APER1
+Column type:        <type 'float'>
+Column format:      ['% 6.4f', '%7s']
+Column null value : ['Null']
+Column name:        MAG_APER2
+Column type:        <type 'float'>
+Column format:      ['% 7.4f', '%8s']
+Column null value : ['Null']
+Column name:        MAGERR_APER
+Column type:        <type 'float'>
+Column format:      ['% 6.4f', '%7s']
+Column null value : ['Null']
+Column unit : mag
+Column comment : RMS error vector for fixed aperture mag.
+Column name:        MAGERR_APER1
+Column type:        <type 'float'>
+Column format:      ['% 6.4f', '%7s']
+Column null value : ['Null']
+Column name:        MAGERR_APER2
+Column type:        <type 'float'>
+Column format:      ['% 6.4f', '%7s']
+Column null value : ['Null']
+Column name:        FLUX_AUTO
+Column type:        <type 'float'>
+Column format:      ['% 7.1f', '%8s']
+Column null value : ['Null']
+Column unit : count
+Column comment : Flux within a Kron-like elliptical aperture
+Column name:        FLUXERR_AUTO
+Column type:        <type 'float'>
+Column format:      ['% 7.3f', '%8s']
+Column null value : ['Null']
+Column unit : count
+Column comment : RMS error for AUTO flux
+Column name:        X_IMAGE
+Column type:        <type 'float'>
+Column format:      ['% 7.3f', '%8s']
+Column null value : ['Null']
+Column unit : pixel
+Column comment : Object position along x
+Column name:        Y_IMAGE
+Column type:        <type 'float'>
+Column format:      ['% 6.3f', '%7s']
+Column null value : ['Null']
+Column unit : pixel
+Column comment : Object position along y
+Column name:        FLAGS
+Column type:        <type 'int'>
+Column format:      ['%5i', '%5s']
+Column null value : ['Null']
+Column comment : Extraction flags
+\end{verbatim}
+\end{small}
+In this list there are the expanded column names {\sl MAG\_APER},
+{\sl MAG\_APER1} and {\sl MAG\_APER2}, and now every data column has
+a proper name.
+
+\item[$\Rightarrow$] You compute the signa-to-noise-ratio, set the column
+comment and check it:
+\begin{small}
+\begin{verbatim}
+>>> for ii in range(SExample.nrows):
+...     SExample['SNR'][ii]=SExample['FLUX_AUTO'][ii]/SExample['FLUXERR_AUTO'][ii]
+...
+>>> SExample['SNR'].set_colcomment('Singal-to-Noise-Ratio')
+>>> print SExample['SNR'].info()
+Column name:        SNR
+Column type:        <type 'float'>
+Column format:      ['% 12.6e', '%13s']
+Column null value : ['Null']
+Column comment : Singal-to-Noise-Ratio
+\end{verbatim}
+\end{small}
+\item[$\Rightarrow$] The object is sorted according to the
+signal-to-noise-ratio, the result is checked and the \ad object
+re-written to the disk:
+\begin{small}
+\begin{verbatim}
+>>> SExample.sort('SNR', descending=1)
+>>> print SExample['SNR']
+Column: SNR
+ 1.451319e+02
+ 1.415957e+02
+ 1.383599e+02
+ 9.046388e+01
+ 8.515625e+01
+ 7.968198e+01
+ 7.314095e+01
+ 4.538671e+01
+ 1.571474e+01
+ 1.149313e-03
+>>> SExample.flush()
+\end{verbatim}
+\end{small}
+
+\item[$\Rightarrow$] Your favoured plotting program can not deal with any
+kind of header. You tranfer the \ad object to plain format and write
+it to a special plotting file 'SExample.plot':
+\begin{small}
+\begin{verbatim}
+>>> SExample.toplain()
+>>> SExample.writeto('SExample.plot')
+>>>
+\end{verbatim}
+\end{small}
+
+\item[$\Rightarrow$] You are finshed now, leave python and, since you do not
+trust the \AAD module, check both files:
+\begin{tiny}
+\begin{verbatim}
+~>more SExample.cat
+# 1  NUMBER  Running object number
+# 2  MAG_APER  Fixed aperture magnitude vector  [mag]
+# 3  MAG_APER1
+# 4  MAG_APER2
+# 5  MAGERR_APER  RMS error vector for fixed aperture mag.  [mag]
+# 6  MAGERR_APER1
+# 7  MAGERR_APER2
+# 8  FLUX_AUTO  Flux within a Kron-like elliptical aperture  [count]
+# 9  FLUXERR_AUTO  RMS error for AUTO flux  [count]
+# 10 X_IMAGE  Object position along x  [pixel]
+# 11 Y_IMAGE  Object position along y  [pixel]
+# 12 FLAGS  Extraction flags
+# 13 SNR  Singal-to-Noise-Ratio
+    3 -8.1548 -9.6216 -11.0307  0.0444  0.0229  0.0125  267764.0  1844.970  379.148  196.397     3  1.451319e+02
+    8 -8.9203 -10.3532 -11.7252  0.0219  0.0117  0.0066  129934.0  917.641  177.377  199.843     3  1.415957e+02
+    4 -9.4534 -11.0534 -11.9600  0.0134  0.0061  0.0053  178541.0  1290.410  367.213  123.803     3  1.383599e+02
+    1 -7.1135 -9.9589 -11.4873  0.1151  0.0168  0.0082  52533.1  580.708  379.715  72.461     3  9.046388e+01
+    2 -7.8412 -9.5452 -10.8191  0.0591  0.0246  0.0152  171543.0  2014.450  341.365  320.621     9  8.515625e+01
+    5 -7.8104 -9.1967 -10.5169  0.0609  0.0339  0.0201  131343.0  1648.340  305.545  307.027     3  7.968198e+01
+    7 -8.8319 -10.3340 -11.3343  0.0238  0.0119  0.0095  111597.0  1525.780  336.462  97.060     3  7.314095e+01
+    9 -7.5366 -9.0374 -10.3321  0.0784  0.0393  0.0238  72761.7  1603.150  94.196  131.380     3  4.538671e+01
+   10 -6.7963 -8.4304 -9.5685  0.1552  0.0687  0.0482  14072.0  895.465  265.404  46.241     3  1.571474e+01
+    6 -12.1666 -13.2193 -14.1293  0.0011  0.0008  0.0007     2.2  1938.010  258.692  260.341     3  1.149313e-03
+~>
+~>more SExample.plot
+    3 -8.1548 -9.6216 -11.0307  0.0444  0.0229  0.0125  267764.0  1844.970  379.148  196.397     3  1.451319e+02
+    8 -8.9203 -10.3532 -11.7252  0.0219  0.0117  0.0066  129934.0  917.641  177.377  199.843     3  1.415957e+02
+    4 -9.4534 -11.0534 -11.9600  0.0134  0.0061  0.0053  178541.0  1290.410  367.213  123.803     3  1.383599e+02
+    1 -7.1135 -9.9589 -11.4873  0.1151  0.0168  0.0082  52533.1  580.708  379.715  72.461     3  9.046388e+01
+    2 -7.8412 -9.5452 -10.8191  0.0591  0.0246  0.0152  171543.0  2014.450  341.365  320.621     9  8.515625e+01
+    5 -7.8104 -9.1967 -10.5169  0.0609  0.0339  0.0201  131343.0  1648.340  305.545  307.027     3  7.968198e+01
+    7 -8.8319 -10.3340 -11.3343  0.0238  0.0119  0.0095  111597.0  1525.780  336.462  97.060     3  7.314095e+01
+    9 -7.5366 -9.0374 -10.3321  0.0784  0.0393  0.0238  72761.7  1603.150  94.196  131.380     3  4.538671e+01
+   10 -6.7963 -8.4304 -9.5685  0.1552  0.0687  0.0482  14072.0  895.465  265.404  46.241     3  1.571474e+01
+    6 -12.1666 -13.2193 -14.1293  0.0011  0.0008  0.0007     2.2  1938.010  258.692  260.341     3  1.149313e-03
+~>
+\end{verbatim}
+\end{tiny}
+The two files contain the same data. In the SExtractor version the column names
+are still present in the header.
+\end{itemize}
