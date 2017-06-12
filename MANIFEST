@@ -9,6 +9,7 @@ lib/RRGtools/__init__.py
 lib/RRGtools/astro_tools.py
 lib/RRGtools/color_color.py
 lib/RRGtools/match_cat.py
+lib/RRGtools/pysex.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
