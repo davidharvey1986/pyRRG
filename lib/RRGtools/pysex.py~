@@ -22,7 +22,7 @@ import os, shutil, sys
 import asciidata
 import numpy as np
 import glob
-
+import ipdb as pdb
 command = 'sex'
 
 
