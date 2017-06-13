@@ -13,18 +13,19 @@ in Hubble Space Telescope data
 #python setup.py register -r pypi
 #sudo python setup.py sdist upload -r pypi
 
-version='0.0.12'
+version='0.0.13'
          
     
 INCDIRS=['.']
 
-packages = ['pyRRG', 'RRGtools']
+packages = ['pyRRG', 'RRGtools','asciidata']
 package_dir = {'RRGtools':'./lib/RRGtools',
-                   'pyRRG':'./src'}
+                   'pyRRG':'./src',
+               'asciidata':'./lib/asciidata'}
 package_data = {'pyRRG': ['psf_lib/*/*',
                               'sex_files/*']}
 
-
+dependency_links=['lib/asciidata']
 
 
 
@@ -40,7 +41,8 @@ setup   (       name            = "pyRRG",
                 package_data    = package_data,
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
-                install_requires=['idlsave','pyfits>=3.3']
+                install_requires=['idlsave','pyfits>=3.3'],
+                dependency_links=dependecy_links,
                           
         )
 

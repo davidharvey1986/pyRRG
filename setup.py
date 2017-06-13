@@ -18,13 +18,11 @@ version='0.0.13'
     
 INCDIRS=['.']
 
-packages = ['pyRRG', 'RRGtools','asciidata']
+packages = ['pyRRG', 'RRGtools', 'asciidata']
 package_dir = {'RRGtools':'./lib/RRGtools',
                    'pyRRG':'./src',
                'asciidata':'./lib/asciidata'}
-package_data = {'pyRRG': ['psf_lib/*/*',
-                              'sex_files/*']}
-
+package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*']}
 
 
 
@@ -41,8 +39,7 @@ setup   (       name            = "pyRRG",
                 package_data    = package_data,
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
-                install_requires=['idlsave','pyfits>=3.3']
-                          
+                install_requires=['idlsave','pyfits>=3.3','numpy'],                          
         )
 
 

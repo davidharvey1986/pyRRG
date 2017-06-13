@@ -1,0 +1,287 @@
+running install
+running bdist_egg
+running egg_info
+writing requirements to pyRRG.egg-info/requires.txt
+writing pyRRG.egg-info/PKG-INFO
+writing top-level names to pyRRG.egg-info/top_level.txt
+writing dependency_links to pyRRG.egg-info/dependency_links.txt
+reading manifest file 'pyRRG.egg-info/SOURCES.txt'
+writing manifest file 'pyRRG.egg-info/SOURCES.txt'
+installing library code to build/bdist.macosx-10.11-intel/egg
+running install_lib
+running build_py
+creating build/bdist.macosx-10.11-intel/egg
+creating build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/__init__.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciicolumn.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciidata.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciidata_numtest.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciidata_SExtest.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciidata_test.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciielement.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciierror.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciifits.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciifunction.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciiheader.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciisorter.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/asciiutils.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+copying build/lib/asciidata/setup.py -> build/bdist.macosx-10.11-intel/egg/asciidata
+creating build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/__init__.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/acs_3dpsf.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/acs_determine_focus.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/acs_limits.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/acs_map_xy.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/acs_model_e.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/calc_shear.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/check_external_packages.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/combination.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/directories.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/drizzle_position.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/ellipse_to_reg.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/main.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/measure_moms.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/mmm.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/plot_shears.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/psf_cor.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim160.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-1.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-10.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-2.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-3.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-4.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-5.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-6.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-7.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-8.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-9.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f0.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f1.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f2.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f3.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f4.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f5.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+copying build/lib/pyRRG/psf_lib/160/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/160
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim330.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-1.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-10.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-2.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-3.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-4.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-5.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-6.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-7.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-8.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-9.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f0.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f1.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f2.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f3.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f4.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f5.cat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+copying build/lib/pyRRG/psf_lib/330/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/330
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim606.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+copying build/lib/pyRRG/psf_lib/606/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/606
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim775.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+copying build/lib/pyRRG/psf_lib/775/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/775
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim814.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+copying build/lib/pyRRG/psf_lib/814/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/814
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim850.scat -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-10.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-6.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-7.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-8.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f-9.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f0.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f1.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f2.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f3.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f4.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/psf_lib/850/TinyTim_f5.moms -> build/bdist.macosx-10.11-intel/egg/pyRRG/psf_lib/850
+copying build/lib/pyRRG/rotate_moments.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+copying build/lib/pyRRG/rrg_to_lenstool.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+creating build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/default.nnw -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/gauss_5.0_9x9.conv -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/HFF_cold.param -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/HFF_cold.param~ -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/HFF_hot.param -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/HFF_hot.param~ -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/rrg.param -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/sex_files/rrg.param~ -> build/bdist.macosx-10.11-intel/egg/pyRRG/sex_files
+copying build/lib/pyRRG/star_galaxy_separation.py -> build/bdist.macosx-10.11-intel/egg/pyRRG
+creating build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/__init__.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/astro_tools.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/color_color.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/match_cat.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/nearest_neighbour.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/PixSkyTransform.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/pysex.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/pysex_tools.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+copying build/lib/RRGtools/source_extract.py -> build/bdist.macosx-10.11-intel/egg/RRGtools
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/__init__.py to __init__.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciicolumn.py to asciicolumn.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciidata.py to asciidata.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciidata_numtest.py to asciidata_numtest.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciidata_SExtest.py to asciidata_SExtest.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciidata_test.py to asciidata_test.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciielement.py to asciielement.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciierror.py to asciierror.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciifits.py to asciifits.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciifunction.py to asciifunction.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciiheader.py to asciiheader.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciisorter.py to asciisorter.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/asciiutils.py to asciiutils.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/asciidata/setup.py to setup.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/__init__.py to __init__.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/acs_3dpsf.py to acs_3dpsf.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/acs_determine_focus.py to acs_determine_focus.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/acs_limits.py to acs_limits.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/acs_map_xy.py to acs_map_xy.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/acs_model_e.py to acs_model_e.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/calc_shear.py to calc_shear.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/check_external_packages.py to check_external_packages.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/combination.py to combination.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/directories.py to directories.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/drizzle_position.py to drizzle_position.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/ellipse_to_reg.py to ellipse_to_reg.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/main.py to main.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/measure_moms.py to measure_moms.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/mmm.py to mmm.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/plot_shears.py to plot_shears.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/psf_cor.py to psf_cor.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/rotate_moments.py to rotate_moments.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/rrg_to_lenstool.py to rrg_to_lenstool.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/pyRRG/star_galaxy_separation.py to star_galaxy_separation.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/__init__.py to __init__.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/astro_tools.py to astro_tools.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/color_color.py to color_color.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/match_cat.py to match_cat.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/nearest_neighbour.py to nearest_neighbour.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/PixSkyTransform.py to PixSkyTransform.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/pysex.py to pysex.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/pysex_tools.py to pysex_tools.pyc
+byte-compiling build/bdist.macosx-10.11-intel/egg/RRGtools/source_extract.py to source_extract.pyc
+creating build/bdist.macosx-10.11-intel/egg/EGG-INFO
+copying pyRRG.egg-info/PKG-INFO -> build/bdist.macosx-10.11-intel/egg/EGG-INFO
+copying pyRRG.egg-info/SOURCES.txt -> build/bdist.macosx-10.11-intel/egg/EGG-INFO
+copying pyRRG.egg-info/dependency_links.txt -> build/bdist.macosx-10.11-intel/egg/EGG-INFO
+copying pyRRG.egg-info/requires.txt -> build/bdist.macosx-10.11-intel/egg/EGG-INFO
+copying pyRRG.egg-info/top_level.txt -> build/bdist.macosx-10.11-intel/egg/EGG-INFO
+creating 'dist/pyRRG-0.0.13-py2.7.egg' and adding 'build/bdist.macosx-10.11-intel/egg' to it
+removing 'build/bdist.macosx-10.11-intel/egg' (and everything under it)
+Processing pyRRG-0.0.13-py2.7.egg
+removing '/Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages/pyRRG-0.0.13-py2.7.egg' (and everything under it)
+creating /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages/pyRRG-0.0.13-py2.7.egg
+Extracting pyRRG-0.0.13-py2.7.egg to /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages
+pyRRG 0.0.13 is already the active version in easy-install.pth
+
+Installed /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages/pyRRG-0.0.13-py2.7.egg
+Processing dependencies for pyRRG==0.0.13
+Searching for pyfits==3.4
+Best match: pyfits 3.4
+Adding pyfits 3.4 to easy-install.pth file
+Installing fitsdiff script to /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/bin
+Installing fitshead script to /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/bin
+Installing fitscheck script to /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/bin
+
+Using /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages
+Searching for IDLSave==1.0.0
+Best match: IDLSave 1.0.0
+Adding IDLSave 1.0.0 to easy-install.pth file
+
+Using /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages
+Searching for numpy==1.13.0
+Best match: numpy 1.13.0
+Adding numpy 1.13.0 to easy-install.pth file
+
+Using /Users/DavidHarvey/Library/Code/python/lensing/rrg/virtualenv/pyRRG/lib/python2.7/site-packages
+Finished processing dependencies for pyRRG==0.0.13
