@@ -1,0 +1,7 @@
+include README
+include setup.py
+include MANIFEST.in
+include doc/*.tex
+include doc/*.eps
+include doc/*.jpg
+recursive-include Lib/*.py

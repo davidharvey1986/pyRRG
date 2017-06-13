@@ -1,0 +1,90 @@
+\documentclass[]{article}
+
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
+
+\usepackage{color}
+% switch in for 'latex2html'
+\usepackage{html}
+%\ifpdf
+%\usepackage[pdftex]{graphicx}
+%\else
+\usepackage{graphicx,makeidx}
+%\fi
+
+%\ifpdf
+%\DeclareGraphicsExtensions{.pdf, .jpg}
+%\else
+%\DeclareGraphicsExtensions{.eps, .tif}
+%\fi
+
+% put in for latex2html:
+%\newcommand{htmladdnormallink}[2]{\url{#1}}
+
+\newcommand{\AAD}{{\tt AstroAsciiData }}
+\newcommand{\ad}{{\tt AsciiData }}
+\newcommand{\AD}{{\tt AsciiData }}
+\newcommand{\ac}{{\tt AsciiColumn }}
+\newcommand{\AC}{{\tt AsciiColumn }}
+\newcommand{\ah}{{\tt AsciiHeader }}
+\newcommand{\AH}{{\tt AsciiHeader }}
+\newcommand{\prgrf}[1]{\vspace*{1em}\noindent{\bf #1}\newline}
+
+
+\makeindex
+\begin{document}
+
+\title{
+%\begin{figure}[t]
+\centering
+\includegraphics[width=.9\textwidth]{astroasciidata}
+%\end{figure}
+%\center{{\Huge \AAD} \\User Manual version 1.0}
+\newline
+User Manual version 1.1.1}
+
+\author{M.\ K\"ummel ({\tt mkuemmel@eso.org}),
+J. Haase ({\tt jhaase@eso.org})\\
+Space Telescope - European Coordinating Facility
+}
+\date{28 March 2009}
+\maketitle
+
+\tableofcontents
+
+% \parindent 0cm
+\include{introduction}
+\include{installation}
+\include{allinone}
+\include{function_details}
+\include{asciidata_details}
+\include{asciicolumn_details}
+\include{asciiheader_details}
+
+% the index at the end...
+%-------------------------
+\include{index}
+%\printindex
+\end{document}
+
+% To geta useful index, do the following:
+% run latex with \makeindex. This produces
+% asciidata.idx. Then run the command:
+% makeindex asciidata.idx -o asciidata.ind
+% This gives you the file manual.ind
+% Then run latex again, and \printindex
+% inserts the file Manual.ind
+% To have the index also created with
+% pdflatex, rename Manual.ind to Index.tex
+% and insert it via '\insert{}'
+% To make the links working in latex2html,
+% insert the '\newcommand{htmladd...}[2]{\url{}}' above..
+%

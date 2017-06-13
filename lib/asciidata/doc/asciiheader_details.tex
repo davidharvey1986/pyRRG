@@ -1,0 +1,417 @@
+%
+% Section the Header class
+%
+\subsection{The Header class}
+\label{hclass}
+\index{classes}\index{classes!Header}
+\index{Header class}
+The Header class manages the header of an \ad object.
+The header contains a list of comments.
+Any kind of meta-data such as column names are part of the
+columns and therefore located in the AsciiColumn (see Sect.\ \ref{acclass})
+class. The header object is accessed through various
+methods to e.g. get or set items.
+
+\subsubsection{Header method get}
+\label{ahe_get}
+\index{methods}\index{methods!Header!get}
+\index{get}
+%
+The header class contains a method to get individual items from a header
+instance via their index.
+
+\prgrf{Usage}
+header\_entry = adata\_object.header[index]\\
+{\it or}\\
+header\_entry = operator.getitem(adata\_object.header, index)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to retrieve\\
+\end{tabular}
+
+\prgrf{Return}
+- one entry of the header
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Retrieve the second entry of this table header:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> header_entry = example.header[1]
+>>> print header_entry
+ most important sources!!
+
+>>>
+\end{verbatim}
+\end{small}
+\item Access the third entry of this table header:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[2]
+'\n'
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method set}
+\label{ahe_set}
+\index{methods}\index{methods!Header!set}
+\index{set}
+%
+The header class contains a method to set individual items in a header.
+The item is specified via its index.
+
+\prgrf{Usage}
+adata\_object.header[index] = new\_entry\\
+{\it or}\\
+header\_entry = operator.setitem(adata\_object.header, index, new\_entry)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to be set\\
+new\_entry &{\it string}& the new content of the header item\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[1] = 'a new header entry?'
+>>> print example
+#
+#a new header entry?
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\item Change the third header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[2] = '   >>> dont forget leading spaces if desired!'
+>>> print example
+#
+# most important sources!!
+#   >>> dont forget leading spaces if desired!
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method del}
+\label{ahe_del}
+\index{methods}\index{methods!Header!del}
+\index{del}
+%
+The header class contains a method to delete individual items in a header.
+The item is specified via its index.
+
+\prgrf{Usage}
+del adata\_object.header[index]\\
+{\it or}\\
+operator.delitem(adata\_object.header, index)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to be deleted\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> del example.header[1]
+>>> print example
+#
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method str()}
+\label{ahe_str}
+\index{methods}\index{methods!Header!str()}
+\index{str()}
+%
+This method converts the entire \ah instance into a string. The {\tt print}
+command called with an \ah instance as first parameter also prints the
+string created using this method {\tt str()}.
+
+\prgrf{Usage}
+str(adata\_object.header)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the string representation of the \ah instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> print example.header
+#
+# most important sources!!
+#
+
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method len()}
+\label{ahe_len}
+\index{methods}\index{methods!Header!len()}
+\index{len()}
+%
+The method defines the length of an \ah instance, which
+equals the number of the comment entries. Please note that
+empty lines are are counted as well.
+
+\prgrf{Usage}
+len(adata\_object.header)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the length of the \ah instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the length of an \ah:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> header_length = len(example.header)
+>>> header_length
+3
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header iterator type}
+\label{ahe_iterator}
+\index{methods}\index{methods!Header!iterator}
+\index{iterator}
+%
+This defines an iterator over an \ah instance. The iteration is finished after
+{\tt len(adata\_object.header)} calls and returns each header element
+in subsequent calls. Please not that it is {\bf not} possible to change these
+elements.
+
+\prgrf{Usage}
+for element in adata\_object.header:\\
+... $<do\ something>$
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Iterate over an \ah instance and print the elements:
+\begin{small}
+\begin{verbatim}
+>>> print example
+@
+@Some objects in the GOODS field
+@ -classification
+@ -RA
+@ -DEC
+@ -MAG
+@ -extent
+unknown   $ 189.2207323$ 62.2357983$ 26.87$ 0.32
+ galaxy   $        Null$ 62.2376331$ 24.97$ 0.15
+   star   $ 189.1409453$ 62.1696844$ 25.30$ Null
+      Null$ 188.9014716$       Null$ 25.95$ 0.20
+>>> for h_entry in example.header:
+...     print h_entry.strip()
+...
+
+Some objects in the GOODS field
+-classification
+-RA
+-DEC
+-MAG
+-extent
+>>>
+
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method reset()}
+\label{ahe_res}
+\index{methods}\index{methods!Header!reset()}
+\index{reset()}
+%
+The method deletes all entries from an \ah instance and provides
+a clean, empty header.
+
+\prgrf{Usage}
+adata\_object.header.reset()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Reset an \ah instance:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header.reset()
+>>> print example
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method append()}
+\label{ahe_append}
+\index{methods}\index{methods!Header!append()}
+\index{append()}
+The method appends a string or a list of strings to the header
+of an \ad object.
+
+\prgrf{Usage}
+adata\_object.header.append(hlist)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+hlist &{\it string}& the list of strings to be appended to the header\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the column name from 'column1' to 'newname':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.header.append('Now a header line is appended!')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+@ Now a header line is appended!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.header.append("""And now we try to put
+... even a set of lines
+... into the header!!""")
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+@ Now a header line is appended!
+@ And now we try to put
+@ even a set of lines
+@ into the header!!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}

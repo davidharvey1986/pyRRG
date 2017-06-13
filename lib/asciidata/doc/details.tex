@@ -1,0 +1,2325 @@
+\section{The detailed description}
+\label{details}
+The \AAD module was developed in Python using an Object Oriented (OO) approach
+with classes and methods. This can not be hidden in the usage of the
+\AAD module.
+Working with \AAD means creating its class objects, accessing the class data
+and executing class methods. This might be confusing for users who are
+not familiar with this terminology and its meaning.
+
+However this manual makes no attempt to introduce the OO terminology,
+and its complete understanding is not really necessary in order to use
+the \AAD module . The user can simply stick to
+a strictly {\it phenomenological} approach by looking at the examples
+and transferring them to his/her own applications. Nevertheless the OO terms
+are used to structure this section of the manual.
+
+%
+% Section for functions
+%
+\subsection{Functions}
+\label{functions}
+\index{functions}
+The \AAD module contains the two functions {\tt open()} and {\tt create()}.
+These function serve as a starting point for the work with ASCII tables,
+since both return an \ad object by either opening  and loading
+an existing ASCII file using {\tt open()} or creating an empty \ad object
+from scratch with {\tt create()}.
+
+\subsubsection{open()}
+\label{functions_open}
+\index{functions!open()}
+This function loads an existing ASCII table file. An \ad object is
+created and the data stored in the ASCII table is transferred to the
+AsciiData object. Various function parameters specify e.g. the
+character used as a delimiter to separate adjacent column elements.
+
+\prgrf{Usage}
+open(filename, null=None, delimiter=None, comment=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+filename &{\it string}& the name of the ASCII table\\
+         &            &  file to be loaded\\
+null     &{\it string}& the character/string representing\\
+         &            & a null-entry\\
+delimiter&{\it string}& the delimiter separating the\\
+         &            & columns \\
+comment  &{\it string}& the character/string indicating\\
+         &            & a comment\\
+\end{tabular}
+
+\prgrf{Return}
+- an \ad object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Load the file 'example.txt' and print the result. The file 'example.txt
+looks like:
+\begin{small}
+\begin{verbatim}
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+The command sequence is:
+\begin{small}
+\begin{verbatim}
+>>> example = asciidata.open('example.txt')
+>>> print example
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+
+\item Load the file 'example2.txt' and print the results. 'example2.txt':
+\begin{small}
+\begin{verbatim}
+@
+@ Some objects in the GOODS field
+@
+unknown $ 189.2207323 $ 62.2357983 $ 26.87 $ 0.32
+ galaxy $      *      $ 62.2376331 $ 24.97 $ 0.15
+   star $ 189.1409453 $ 62.1696844 $ 25.30 $  *
+ *      $ 188.9014716 $     *      $ 25.95 $ 0.20
+\end{verbatim}
+\end{small}
+
+Load and print:
+\begin{small}
+\begin{verbatim}
+>>> example2 = asciidata.open('example2.txt', null='*', \
+                              delimiter='$', comment='@')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+
+\end{enumerate}
+
+\subsubsection{create()}
+\label{functions_create}
+\index{functions!create()}
+
+\prgrf{Usage}
+create(ncols, nrows, null=None, delimiter=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+ncols    &{\it int}& number of columns to be created\\
+nrows    &{\it int}& number of rows to be created\\
+null     &{\it string}& the character/string representing a null-entry\\
+delimiter&{\it string}& the delimiter separating the columns \\
+\end{tabular}
+
+\prgrf{Return}
+- an \ad object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Create an \ad object with 3 columns and 2 rows, print the result:
+\begin{verbatim}
+>>> example3 = asciidata.create(3,2)
+>>> print (example3)
+      Null       Null       Null
+      Null       Null       Null
+\end{verbatim}
+
+\item As in 1., but use a different delimiter and NULL value, print the result:
+\begin{verbatim}
+>>> example4 = asciidata.create(3,2,delimiter='|', null='<*>')
+>>> print (example4)
+       <*> |        <*> |        <*>
+       <*> |        <*> |        <*>
+\end{verbatim}
+\end{enumerate}
+
+%
+% Section the asciidata class
+%
+\subsection{The AsciiData class}
+\label{adclass}
+\index{classes}\index{classes!AsciiData}
+\index{AsciiData class}
+The \ad class is the central class in the \AAD module.
+After creating \ad objects with one of the functions introduced in
+Sect.\ \ref{functions}, the returned objects are modified using
+its methods.
+
+\subsubsection{AsciiData data}
+\label{add}
+\index{class data}\index{AsciiData!data}
+\ad objects contain some information which is important to the user
+and can be used in the processing. Although it is possible,
+this class data should {\bf never} be changed directly by the user.
+All book-keeping is done internally such that e.g. the value of
+{\tt ncols} is adjusted when deleting a column.
+
+\prgrf{Data}
+\begin{tabular}{lcl}
+filename &{\it string}& file name associated to the object\\
+ncols    &{\it int}& number of columns\\
+nrows    &{\it int}& number of rows\\
+\end{tabular}
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Go over all table entries an store values:
+\begin{small}
+\begin{verbatim}
+>>> example3 = asciidata.create(100,100)
+>>> for cindex in range(example3.ncols):
+...     for rindex in range(example3.nrows):
+...             example3[cindex][rindex] = do_something(rindex, rindex)
+...
+\end{verbatim}
+\end{small}
+\item Derive a new filename and save the table to this filename:
+\begin{verbatim}
+>>> print example2.filename
+example2.txt
+>>> newname = example2.filename + '.old'
+>>> print newname
+example2.txt.old
+>>> example2.writeto(newname)
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{AsciiData method get}
+\label{adm_get}
+\index{methods}\index{methods!AsciiData!get}
+\index{get}
+%
+This method retrieves list members of an \ad instance. These list members
+are the \ac instances, which are accessed via their column name or
+column number.\\
+The method returns only the {\it reference} to the column, therefore
+changing the returned \ac instance means also changing the original \ad
+instance (see Example 2)! For a deep copy of an item the method
+{\tt deepcopy()} \index{deep copy} in the python module {\tt copy}
+(see \htmladdnormallink{www.python.org}{www.python.org}) or the
+method {\tt copy} of the \ac class (see Sect. \ref{acm_copy}) must be
+used instead.
+
+\prgrf{Usage}
+adata\_column = adata\_object[col\_spec]\\
+{\it or}\\
+adata\_column = operator.getitem(adata\_object, col\_spec)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+col\_spec &{\it string/int}& column specification, either by column name or column number\\
+\end{tabular}
+
+\prgrf{Return}
+- an \ac instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Retrieve the second column of the table:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> aad_col = example[1]
+>>> print aad_col
+Column: column2
+ 1.0
+ 9.5
+ 3.5
+>>>
+\end{verbatim}
+\end{small}
+\item Retrieve the second column of the table. Demonstrate that only
+a shallow copy (reference) is returned:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> ad_col = operator.getitem(example, 'column1')
+>>> print ad_col
+Column: column1
+    1
+    2
+    3
+>>> ad_col[1] = 'new!'
+>>> print ad_col
+Column: column1
+   1
+new!
+   3
+>>> print example
+#
+# most important sources!!
+#
+   1  1.0  red  23.08932 -19.34509
+new!  9.5 blue  23.59312 -19.94546
+   3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method set}
+\label{adm_set}
+\index{methods}\index{methods!AsciiData!set}
+\index{set}
+%
+This methods sets list members, which means columns, of an \ad instance.
+The list member to be changed is addressed either via its column name or
+the column number.\\
+Obviously the replacing object must be an \ac instance which contains
+an equal number of rows. Otherwise an exception is risen.
+
+\prgrf{Usage}
+adata\_object[col\_spec] = adata\_column\\
+{\it or}\\
+operator.setitem(adata\_object, col\_spec, adata\_column)
+
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+col\_spec &{\it string/int}& column specification, either by column name or column number\\
+adata\_column &{\it AsciiColumn}& the \ac instance to replace the previous column\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Replace the third row of the table 'exa\_1' with the third row of table 'exa\_2'.
+Please note the interplay between the {\tt get}- and the {\tt set}-method of
+the \ad class:
+\begin{small}
+\begin{verbatim}
+>>> exa_1 = asciidata.open('some_objects.cat')
+>>> exa_2 = asciidata.open('some_objects_2.cat', delimiter='|', comment='@', null='*')
+>>> print exa_1
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> print exa_2
+@
+@
+@
+   10| 0.0|  pink | 130.3757| 69.87343
+   25| 5.3| green | 130.5931| 69.89343
+   98| 3.5|      *| 130.2984| 69.30948
+>>> exa_1[2] = exa_2[2]
+>>> print exa_1
+#
+# most important objects
+#
+    1  1.0   pink   23.08932 -19.34509
+    2  9.5  green   23.59312 -19.94546
+    3  3.5    Null  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method tofits()}
+\label{adm_tofits}
+\index{methods}\index{methods!AsciiData!tofits()}
+\index{tofits()}
+%
+The method transforms an \ad instance to a fits-table extension\index{FITS}.
+This extension might be used with other extensions to build a
+multi-extension fits-file.\\
+Please use the \ad method {\tt writetofits()}
+(see Sect.\ \ref{adm_writetofits}) to make both, the conversions and
+storing as a fits-file onto hard disk in one step.\\
+The module \index{PyFITS}{\tt PyFITS} (see \htmladdnormallink{http://www.stsci.edu/resources/software\_hardware/pyfits}{http://www.stsci.edu/resources/software_hardware/pyfits})
+must be installed to run this method. The transformation fails if the
+\ad instance contains any {\tt Null} elements (due to a limitation
+of the {\tt numarray} objects, which are essential for the method).
+
+
+\prgrf{Usage}
+aad\_object.tofits()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- a table fits extension
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Convert an \ad object to a fits-table extension and append it to an
+already existing fits-table (the example is executed in PyRAF):
+\begin{small}
+\begin{verbatim}
+--> catfits exa_table.fits
+EXT#  FITSNAME      FILENAME              EXTVE DIMENS       BITPI OBJECT
+0     exa_table.fit                                          16
+1       BINTABLE    BEAM_1A                     14Fx55R            1
+--> exa = asciidata.open('some_objects.cat')
+--> tab_hdu = exa.tofits()
+--> tab_all = pyfits.open('exa_table.fits', 'update')
+--> tab_all.append(tab_hdu)
+--> tab_all.close()
+--> catfits exa_table.fits
+EXT#  FITSNAME      FILENAME              EXTVE DIMENS       BITPI OBJECT
+0     exa_table.fit                                          16
+1       BINTABLE    BEAM_1A                     14Fx55R            1
+2       BINTABLE                                5Fx3R
+-->
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method writetofits()}
+\label{adm_writetofits}
+\index{methods}\index{methods!AsciiData!writetofits()}
+\index{writetofits()}
+%
+The method transforms an \ad instance to a fits-table\index{FITS} and stores
+the fits-table to the disk. The filename is either specified as a parameter
+or is derived from the filename of the original ascii-table. In the latter
+case the file extension is changed '.fits'\\
+The module \index{PyFITS}{\tt PyFITS} (see \htmladdnormallink{http://www.stsci.edu/resources/software\_hardware/pyfits}{http://www.stsci.edu/resources/software_hardware/pyfits})
+must be installed to run this method. The transformation fails if the
+\ad instance contains any {\tt Null} elements (due to a limitation
+of the {\tt numarray} objects, which are essential for the method).
+
+\prgrf{Usage}
+aad\_object.writetofits(fits\_name=None)
+
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+fits\_name & {\it string} & the name of the fits-file\\
+\end{tabular}
+
+\prgrf{Return}
+- the fits file to which the \ad instance was written
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Store an \ad instance as a fits-file, using the default name:
+\begin{small}
+\begin{verbatim}
+test>ls
+some_objects.cat
+test>python
+Python 2.4.2 (#1, Nov 10 2005, 11:34:38)
+[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import asciidata
+>>> exa = asciidata.open('some_objects.cat')
+>>> fits_name = exa.writetofits()
+>>> fits_name
+'some_objects.fits'
+>>>
+test>ls
+some_objects.cat  some_objects.fits
+test>
+\end{verbatim}
+\end{small}
+
+
+\item Store an \ad instance to the fits-file 'test.fits':
+\begin{small}
+\begin{verbatim}
+test>ls
+some_objects.cat
+test>python
+Python 2.4.2 (#1, Nov 10 2005, 11:34:38)
+[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import asciidata
+>>> exa = asciidata.open('some_objects.cat')
+>>> fits_name = exa.writetofits('test.fits')
+>>> fits_name
+'test.fits'
+>>>
+test>ls
+some_objects.cat  test.fits
+test>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method writetohtml()}
+\label{adm_writetohtml}
+\index{methods}\index{methods!AsciiData!writetohtml()}
+\index{writetohtml()}
+%
+The method writes the data of an \ad instance formatted as the content of
+an html-table to the disk. Strings used as attributes can be specified
+for the tags {\tt<tr>} and {\tt <td>}. The name of the html-file is either
+given as parameter or is derived from the name of the original ascii-table.
+In the latter case the file extension is changed '.html'.\\
+The html-table is neither opened nor closed at
+the beginning and end of the file, respectively. Also column names and
+other meta information is NOT used in the html.
+
+\prgrf{Usage}
+aad\_object.writetohtml(html\_name=None, tr\_attr=None, td\_attr=None)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+html\_name & {\it string} & the name of the html-file\\
+tr\_attr & {\it string} & attribute string for the tr-tag\\
+td\_attr & {\it string} & attribute string for the td-tag\\
+\end{tabular}
+
+\prgrf{Return}
+- the name of the html-file
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Write an \ad instance to an html-file:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> exa.writetohtml()
+'some_objects.html'
+>>>
+test>more 'some_objects.html'
+<tr><td>    1</td><td> 1.0</td><td> red</td><td> 23.08932</td><td>-19.34509</td></tr>
+<tr><td>    2</td><td> 9.5</td><td>blue</td><td> 23.59312</td><td>-19.94546</td></tr>
+<tr><td>    3</td><td> 3.5</td><td>blue</td><td> 23.19843</td><td>-19.23571</td></tr>
+test>
+\end{verbatim}
+\end{small}
+\item Write an \ad instance to the html-file 'mytab.tab', using attributes
+for the tags:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> html_name = exa.writetohtml('mytab.tab',tr_attr='id="my_tr"',td_attr='bgcolor="RED"')
+>>> print html_name
+mytab.tab
+>>>
+test>more mytab.tab
+<tr id="my_tr"><td bgcolor="RED">    1</td><td bgcolor="RED"> 1.0</td><td bgcolor="RED">
+ red</td><td bgcolo
+r="RED"> 23.08932</td><td bgcolor="RED">-19.34509</td></tr>
+<tr id="my_tr"><td bgcolor="RED">    2</td><td bgcolor="RED"> 9.5</td><td bgcolor="RED">
+blue</td><td bgcolo
+r="RED"> 23.59312</td><td bgcolor="RED">-19.94546</td></tr>
+<tr id="my_tr"><td bgcolor="RED">    3</td><td bgcolor="RED"> 3.5</td><td bgcolor="RED">
+blue</td><td bgcolo
+r="RED"> 23.19843</td><td bgcolor="RED">-19.23571</td></tr>
+test>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method writetolatex()}
+\label{adm_writetolatex}
+\index{methods}\index{methods!AsciiData!writetolatex()}
+\index{writetolatex()}
+%
+The method writes the data of an \ad instance formatted as the content of
+a latex-table to the disk. The name of the html-file is either
+given as parameter or is derived from the name of the original ascii-table.
+In the latter case the file extension is changed '.tex'.
+
+\prgrf{Usage}
+aad\_object.writetolatex(latex\_name=None)
+
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+latex\_name & {\it string} & the name of the latex-file\\
+\end{tabular}
+
+\prgrf{Return}
+- the name of the latex-file
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Write the content of an \ad instance to 'latextab.tb':
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> latex_name = exa.writetolatex('latex.tb')
+>>> print latex_name
+latex.tb
+>>>
+test>more latex.tb
+    1& 1.0& red& 23.08932&-19.34509\\
+    2& 9.5&blue& 23.59312&-19.94546\\
+    3& 3.5&blue& 23.19843&-19.23571\\
+test>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method sort()}
+\label{adm_sort}
+\index{methods}\index{methods!AsciiData!sort()}
+\index{sort()}
+%
+This method sorts the data in an \ad instance according to the values
+in a specified column. Sorting in ascending and descending order is
+possible.\\
+There are two different sorting algorithms implemented. A very fast algorithm
+can be used for making a single, 'isolated' sort process. If the desired result
+of the sort process can only be reached with consequtive sortings on different
+columns, a slower algorithm must be used which does not introduce random
+swaps of rows (see the Examples and Sect.??? for details).
+
+
+\prgrf{Usage}
+adata\_object.sort(colname, descending=0, ordered=0)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+colname & {\it string/integer} & the specification of the sort column\\
+descending & {\it integer} & sort in ascending ($=0$) or descending ($=1$) order\\
+ordered & {\it integer} & use the fast ($=0$) algorithm or the slow
+($=1$) which avoids unnecessary row swaps\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Sort a table in ascending order of the values in the second column:
+\begin{small}
+\begin{verbatim}
+>>> sort = asciidata.open('sort_objects.cat')
+>>> print sort
+    1     0     1     1
+    2     1     0     3
+    3     1     2     4
+    4     0     0     2
+    5     1     2     1
+    6     0     0     3
+    7     0     2     4
+    8     1     1     2
+    9     0     1     5
+   10     1     2     6
+   11     0     0     6
+   12     1     1     5
+>>> sort.sort(1)
+>>> print sort
+    1     0     1     1
+    6     0     0     3
+    9     0     1     5
+   11     0     0     6
+    7     0     2     4
+    4     0     0     2
+   12     1     1     5
+    2     1     0     3
+   10     1     2     6
+    3     1     2     4
+    5     1     2     1
+    8     1     1     2
+>>>
+\end{verbatim}
+\end{small}
+
+\item Use the result from example 1, and sort the table in descending
+order of the first column:
+\begin{small}
+\begin{verbatim}
+>>> sort.sort(0, descending=1)
+>>> print sort
+   12     1     1     5
+   11     0     0     6
+   10     1     2     6
+    9     0     1     5
+    8     1     1     2
+    7     0     2     4
+    6     0     0     3
+    5     1     2     1
+    4     0     0     2
+    3     1     2     4
+    2     1     0     3
+    1     0     1     1
+>>>
+\end{verbatim}
+\end{small}
+
+\item Sort the table first along column 3 and then along column 2. The
+resulting table is sorted along column 2, but in addition it is
+ordered along column 3 for equal values in column 2.
+This works only using the slower, ordered sorting algorithm:
+\begin{small}
+\begin{verbatim}
+>>> sort.sort(2, ordered=1)
+>>> sort.sort(1, ordered=1)
+>>> print sort
+   11     0     0     6
+    6     0     0     3
+    4     0     0     2
+    9     0     1     5
+    1     0     1     1
+    7     0     2     4
+    2     1     0     3
+   12     1     1     5
+    8     1     1     2
+   10     1     2     6
+    5     1     2     1
+    3     1     2     4
+>>>
+\end{verbatim}
+\end{small}
+\item As the previous example, but using the faster, un-ordered sorting
+algorithm. Generally the values are not sorted according  to column 3 if
+equal in column 2:
+\begin{small}
+\begin{verbatim}
+>>> sort.sort(2, ordered=0)
+>>> sort.sort(1, ordered=0)
+>>> print sort
+    1     0     1     1
+    4     0     0     2
+    7     0     2     4
+   11     0     0     6
+    9     0     1     5
+    6     0     0     3
+   12     1     1     5
+    2     1     0     3
+    3     1     2     4
+   10     1     2     6
+    5     1     2     1
+    8     1     1     2
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method len()}
+\label{adm_len}
+\index{methods}\index{methods!AsciiData!len()}
+\index{len()}
+%
+This method defines a length for every \ad instance, which is the number
+of columns.
+
+\prgrf{Usage}
+len(aad\_object)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the length of the \ad instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Determine and print the length of an \ad instance:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> length = len(exa)
+>>> print length
+5
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData iterator type}
+\label{adm_iterator}
+\index{methods}\index{methods!AsciiData!iterator}
+\index{iterator}
+%
+This defines an iterator over an \ad instance. The iteration is finished after
+{\tt aad\_object.ncols} calls and returns each column in subsequent calls.
+Please not that it is {\bf not} possible to change these columns.
+\prgrf{Usage}
+for iter in aad\_object:\\
+... $<do\ something>$
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Iterate over an \ad instance and print each column name:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('sort_objects.cat')
+>>> for col in exa:
+...     print col.colname
+...
+column1
+column2
+column3
+column4
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method append()}
+\label{adm_append}
+\index{methods}\index{methods!AsciiData!append()}
+\index{append()}
+Invoking this method is the formal way to append an new column
+to and \ad object. When created there are only {\tt Null} entries in the
+new column. The alternative way is just to specify a column
+with an unknown name (see Sect.\ \ref{existingdata}).
+
+\prgrf{Usage}
+adata\_object.append(col\_name)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+col\_name &{\it string}& the name of the new column\\
+\end{tabular}
+
+\prgrf{Return}
+- the number of the columns created
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Append a new column {\tt 'newcolumn'} to the \ad object:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+>>> cnum = example2.append('newcolumn')
+>>> print cnum
+5
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32 $          *
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15 $          *
+   star  $  189.1409453 $  62.1696844 $  25.30 $     * $          *
+       * $  188.9014716 $           * $  25.95 $  0.20 $          *
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiData method str()}
+\label{adm_str}
+\index{methods}\index{methods!AsciiData!str()}
+\index{str()}
+This methods converts the whole \ad object into a string.
+Columns are separated with the delimiter, empty elements are represented
+by the Null-string and the header is indicated by a comment-string at
+the beginning. In this method the class object appears as a function
+argument and the method call is different from the usual form such as
+in Sect.\ \ref{adm_append}
+
+\prgrf{Usage}
+str(adata\_object)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the string representing the \ad object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print an \ad object to the screen:
+\begin{verbatim}
+>>> print str(example2)
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\item Store the sting representation of an \ad object:
+\begin{verbatim}
+>>> big_string = str(example2)
+>>> print big_string
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{AsciiData method del}
+\label{adm_del}
+\index{methods}\index{methods!AsciiData!del}
+\index{del}
+This method deletes a column specified either by its name or
+by the column number. Also this method call is slightly
+different from the usual form such as in Sect.\ \ref{adm_append}
+or \ref{adm_delete}.
+
+\prgrf{Usage}
+del adata\_obj[col\_spec]
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+col\_spec &{\it string/int}& column specification either by name or by
+the column number\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the column with name 'column1':
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+>>> del example2['column5']
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87
+ galaxy  $            * $  62.2376331 $  24.97
+   star  $  189.1409453 $  62.1696844 $  25.30
+       * $  188.9014716 $           * $  25.95
+\end{verbatim}
+\item Delete the second column:
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy  $            * $  62.2376331 $  24.97 $  0.15
+   star  $  189.1409453 $  62.1696844 $  25.30 $     *
+       * $  188.9014716 $           * $  25.95 $  0.20
+>>> del example2[1]
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown  $  62.2357983 $  26.87 $  0.32
+ galaxy  $  62.2376331 $  24.97 $  0.15
+   star  $  62.1696844 $  25.30 $     *
+       * $           * $  25.95 $  0.20
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{AsciiData method delete()}
+\label{adm_delete}
+\index{methods}\index{methods!AsciiData!delete()}
+\index{delete()}
+This method deletes rows in an \ad object. The rows to be deleted
+are specified in the parameters.
+
+\prgrf{Usage}
+adata\_obj.delete(start, end)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+start &{\it int}& the first row to be deleted\\
+end   &{\it int}& the first row {\bf not} to be deleted\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the row with index 1:
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.delete(1,2)
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{AsciiData method find()}
+\label{adm_find}
+\index{methods}\index{methods!AsciiData!find()}
+\index{find()}
+The method determines the column number for a given column name.
+The value -1 is returned if a column with this name does not exist.
+
+\prgrf{Usage}
+adata\_obj.find(col\_name)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+col\_name &{\it string}& the name of the column\\
+\end{tabular}
+
+\prgrf{Return}
+- the column number or -1 if the column does not exist
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Search for the column with name 'column3':
+\begin{verbatim}
+>>> example2 = asciidata.open('example2.txt', null='*', \
+                              delimiter='$', comment='@')
+>>> cnum = example2.find('column2')
+>>> cnum
+1
+>>>
+\end{verbatim}
+\item Search for the column with the name 'not\_there':
+\begin{verbatim}
+>>> example2 = asciidata.open('example2.txt', null='*', \
+                              delimiter='$', comment='@')
+>>> cnum = example2.find('not_there')
+>>> cnum
+-1
+>>>
+\end{verbatim}
+Obviously the \ad object example2 does not have a column with this name.
+\end{enumerate}
+
+\subsubsection{AsciiData method flush()}
+\label{adm_flush}
+\index{methods}\index{methods!AsciiData!flush()}
+\index{flush()}
+The method updates the associated file with the newest version of the
+\ad object.
+
+\prgrf{Usage}
+adata\_obj.flush()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Manipulate an \ad object and update the file:
+\begin{small}
+\begin{verbatim}
+work>more example.txt
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy  189.1408929  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+work>python
+Python 2.4.2 (#5, Oct 21 2005, 11:12:03)
+[GCC 3.3.2] on sunos5
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import asciidata
+>>> example = asciidata.open('example.txt')
+>>> del example[4]
+>>> example.flush()
+>>>
+work>more example.txt
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87
+ galaxy  189.1408929  62.2376331  24.97
+   star  189.1409453  62.1696844  25.30
+ galaxy  188.9014716  62.2037839  25.95
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method info()}
+\label{adm_info}
+\index{methods}\index{methods!AsciiData!info()}
+\index{info()}
+The method returns an informative overview on the \ad object as
+a string. This overview gives the user a quick insight
+into e.g. the column names of the object. A further use of the
+information within programmes is {\bf not} recommended, since all information
+can also be retrieved by other in a machine usable format using
+other methods. The overview contains:
+\begin{itemize}
+\item the name of the file associated to the \ad object;
+\item the number of columns;
+\item the number of rows;
+\item the delimiter to separate columns;
+\item the representing Null-values;
+\item the comment string.
+\end{itemize}
+In addition, for every column the column name, type, format and
+Null-representation is given.
+
+\prgrf{Usage}
+adata\_object.info()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the information on an \ad object onto the screen:
+\begin{small}
+\begin{verbatim}
+>>> example = asciidata.open('example.txt')
+>>> print example.info()
+File:       example.txt
+Ncols:      4
+Nrows:      4
+Delimiter:  None
+Null value: ['Null', 'NULL', 'None', '*']
+Comment:    #
+Column name:        column1
+Column type:        <type 'str'>
+Column format:      ['% 7s', '%7s']
+Column null value : ['Null']
+Column name:        column2
+Column type:        <type 'float'>
+Column format:      ['% 11.7f', '%12s']
+Column null value : ['Null']
+Column name:        column3
+Column type:        <type 'float'>
+Column format:      ['% 10.7f', '%11s']
+Column null value : ['Null']
+Column name:        column4
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['Null']
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method insert()}
+\label{adm_insert}
+\index{methods}\index{methods!AsciiData!insert()}
+\index{insert()}
+This method inserts rows into all columns of the \ad object.
+The second parameter controls where exactly the new, empty rows
+are positioned. The number specified there the first empty
+row will be .
+
+\prgrf{Usage}
+adata\_object.insert(nrows, start)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+nrows &{\it int}& number of rows to be inserted\\
+start &{\it int}& index position of the first inserted column\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Insert two rows such that the first row will have the index 1:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.insert(2,1)
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+        * $            * $           * $      * $     *
+        * $            * $           * $      * $     *
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method newcomment()}
+\label{adm_newcomment}
+\index{methods}\index{methods!AsciiData!newcomment()}
+\index{newcomment()}
+The method defines a new comment string for an \ad object.
+
+\prgrf{Usage}
+adata\_object.newcomment(comment)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+comment &{\it string}& the string to indicate a comment\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the comment sign from '@' to '!':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.newcomment('!!')
+>>> print example2
+!!
+!! Some objects in the GOODS field
+!!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method newdelimiter()}
+\label{adm_newdelimiter}
+\index{methods}\index{methods!AsciiData!newdelimiter()}
+\index{newdelimiter()}
+This method specifies a new delimiter for an \ad object.
+
+\prgrf{Usage}
+adata\_object.newdelimiter(delimiter)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+delimiter &{\it string}& the new delimiter to separate columns\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the delimiter sign from '\$' to '\verb+<>+':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+!!
+!! Some objects in the GOODS field
+!!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.newdelimiter('<>')
+>>> print example2
+!!
+!! Some objects in the GOODS field
+!!
+unknown   <>  189.2207323 <>  62.2357983 <>  26.87 <>  0.32
+ galaxy   <>            * <>  62.2376331 <>  24.97 <>  0.15
+   star   <>  189.1409453 <>  62.1696844 <>  25.30 <>     *
+        * <>  188.9014716 <>           * <>  25.95 <>  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method newnull()}
+\label{adm_newnull}
+\index{methods}\index{methods!AsciiData!newnull()}
+\index{newnull()}
+The method specifies a new string to represent Null-entries in an
+\ad object.
+
+\prgrf{Usage}
+adata\_object.newnull(newnull)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+newnull &{\it string}& the representation for Null-entries\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the Null representation from '*' to 'NaN':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.newnull('NaN')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $          NaN $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $   NaN
+      NaN $  188.9014716 $         NaN $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method writeto()}
+\label{adm_writeto}
+\index{methods}\index{methods!AsciiData!writeto()}
+\index{writeto()}
+Write the \ad object to a file. The file name is given in a parameter.
+
+\prgrf{Usage}
+ adata\_object.writeto(filename)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+filename &{\it string}& the filename to save the \ad object to\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Write an \ad object to the file 'newfile.txt':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.writeto('newfile.txt')
+>>>
+> more newfile.txt
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+%
+% Section the AsciiColumn class
+%
+\subsection{The AsciiColumn class}
+\label{acclass}
+\index{classes}\index{classes!AsciiColumn}
+\index{AsciiColumn class}
+The \ac class is the the second important class in the \AAD module.
+The \ac manages all column related issues, which means that even the
+actual data is stored in \ac objects. These \ac object are accessed
+via the \ad object, either specifying the column name
+(such as e.g.\ \verb+adata_object['diff1']+) or the column index
+(such as e.g.\ \verb+adata_object[3]+).
+
+\subsubsection{AsciiColumn data}
+\label{acd}
+\index{class data}\index{AsciiColumn!data}
+\ac objects contain some information which is important to the user
+and can be used in the processing. Although it is possible,
+this class data should {\bf never} be changed directly by the user.
+All book-keeping is done internally.
+
+\prgrf{Data}
+\begin{tabular}{lcl}
+colname &{\it string}& file name associated to the object\\
+\end{tabular}
+
+
+\subsubsection{AsciiColumn method get}
+\label{acm_get}
+\index{methods}\index{methods!AsciiColumn!get}
+\index{get}
+%
+This method retrieves one list element of an \ac instance.
+The element is specified with the row number.
+
+\prgrf{Usage}
+elem = acol\_object[row]\\
+{\it or}\\
+elem = operator.getitem(acol\_object, row)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+row &{\it int}& the row number of the entry to be replaced\\
+\end{tabular}
+
+
+\prgrf{Return}
+- the requested column element
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Retrieve and print the first element of the \ac instance which is the
+third column of the \ad instance {\tt 'exa'}:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> elem = exa[2][0]
+>>> print elem
+ red
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiData method set}
+\label{acm_set}
+\index{methods}\index{methods!AsciiColumn!set}
+\index{set}
+%
+This methods sets list members, which means elements, of an \ac instance.
+The list member to be changed is addressed via their row number.
+
+\prgrf{Usage}
+acol\_object[row] = an\_entry\\
+{\it or}\\
+operator.setitem(acol\_object, row, adata\_column)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+row &{\it int}& the row number of the entry to be replaced\\
+an\_entry &{\it string/integer/float}& the data to replace the previous entry\\
+\end{tabular}
+%
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Replace the third entry of the column which is the third column
+in the \ad instance {\tt 'exa'}:
+\begin{small}
+\begin{verbatim}
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> exa[2][2] = 'green'
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 green  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method len()}
+\label{acm_len}
+\index{methods}\index{methods!AsciiColumn!len()}
+\index{len()}
+%
+This method defines a length of an \ac instance, which euqals the
+number of row ins the \ac.
+
+\prgrf{Usage}
+len(ac\_object)
+
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the length (= number of rows) of the \ac
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the length of the fifth column onto the screen:
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> print len(exa[4])
+3
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn iterator type}
+\label{acm_iterator}
+\index{methods}\index{methods!AsciiColumn!iterator}
+\index{iterator}
+%
+This defines an iterator over an \ac instance. The iteration is finished after
+{\tt acolumn\_object.nrows} calls and returns each element in subsequent calls.
+Please not that it is {\bf not} possible to change these elements.
+
+\prgrf{Usage}
+for element in acolumn\_object:\\
+... $<do\ something>$
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Iterate over an \ac instance and print the elements:
+\begin{small}
+\begin{verbatim}
+>>> print exa
+#
+# most important objects
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> acol = exa[4]
+>>> for element in acol:
+...     print element
+...
+-19.34509
+-19.94546
+-19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+
+\subsubsection{AsciiColumn method copy()}
+\label{acm_copy}
+\index{methods}\index{methods!AsciiColumn!copy()}
+\index{copy()}
+This method generates a so-called {\it deep copy} \index{deep copy}
+of a column. This means the copy is not only a reference to an
+existing column, but a real copy with all data.
+
+\prgrf{Usage}
+adata\_object[colname].copy()
+
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the copy of the column
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Copy the column 5 of \ad object 'example2' to column 2 of \ad
+object 'example1'
+\begin{small}
+\begin{verbatim}
+>>> print example1
+#
+# Some objects in the GOODS field
+#
+unknown  189.2207323  62.2357983  26.87  0.32
+ galaxy            *  62.2376331  24.97  0.15
+   star  189.1409453  62.1696844  25.30  0.12
+ galaxy  188.9014716  62.2037839  25.95  0.20
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example1[1] = example2[4].copy()
+>>> print example1
+#
+# Some objects in the GOODS field
+#
+unknown  0.32  62.2357983  26.87  0.32
+ galaxy  0.15  62.2376331  24.97  0.15
+   star     *  62.1696844  25.30  0.12
+ galaxy  0.20  62.2037839  25.95  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_format()}
+\label{acm_getformat}
+\index{methods}\index{methods!AsciiColumn!get\_format()}
+\index{get\_format()}
+The method returns the format of the \ac object
+The format description in \AAD is taken from Python. The Python Library
+Reference
+(\htmladdnormallink{Chapt.\ 2.3.6.2 in Python 2.4 }{http://www.python.org/doc/2.4.2/lib/typesseq-strings.html\#l2h-211})
+gives a list of all possible formats.
+
+\prgrf{Usage}
+adata\_object[colname].get\_format()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the format of the \ac object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the format of \ac 0:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[0].get_format()
+'% 9s'
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_type()}
+\label{acm_gettype}
+\index{methods}\index{methods!AsciiColumn!get\_type()}
+\index{get\_type()}
+The method returns the type of an \ac object
+
+\prgrf{Usage}
+adata\_object[colname].get\_type()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the type of the \ac
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the type of \ac 0:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[0].get_type()
+<type 'str'>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method get\_nrows()}
+\label{acm_getnrows}
+\index{methods}\index{methods!AsciiColumn!get\_nrows()}
+\index{get\_nrows()}
+This method offers a way to derive the number of rows in a \ac instance.
+
+\prgrf{Usage}
+acolumn\_object.get\_nrows()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the number of rows
+
+\prgrf{Examples}
+\begin{enumerate}
+\item get the number of rows in the column named 'column1':
+\begin{small}
+\begin{verbatim}
+>>> exa = asciidata.open('sort_objects.cat')
+>>> exa['column1'].get_nrows()
+12
+>>> print exa
+    1     0     1     1
+    2     1     0     3
+    3     1     2     4
+    4     0     0     2
+    5     1     2     1
+    6     0     0     3
+    7     0     2     4
+    8     1     1     2
+    9     0     1     5
+   10     1     2     6
+   11     0     0     6
+   12     1     1     5
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method get\_unit()}
+\label{acm_getunit}
+\index{methods}\index{methods!AsciiColumn!get\_unit()}
+\index{get\_unit()}
+%
+The method returns the unit of an \ac instance.
+
+\prgrf{Usage}
+acolumn\_object.get\_unit()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the unit of the column
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the overview of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+test>more some_objects.cat
+# 1 NUMBER          Running object number
+# 2 X_Y
+# 3 COLOUR
+# 4 RA              Barycenter position along world x axis          [deg]
+# 5 DEC             Barycenter position along world y axis          [deg]
+#
+# most important objects
+#
+1 1.0  red 23.08932 -19.34509
+2 9.5 blue 23.59312 -19.94546
+3 3.5 blue 23.19843 -19.23571
+test>python
+Python 2.4.2 (#1, Nov 10 2005, 11:34:38)
+[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import asciidata
+>>> exa = asciidata.open('some_objects.cat')
+>>> print exa['RA'].get_unit()
+deg
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{AsciiColumn method info()}
+\label{acm_info}
+\index{methods}\index{methods!AsciiColumn!info()}
+\index{info()}
+The method gives an overview on an \ac object including its type,
+format and the number of elements.
+
+\prgrf{Usage}
+adata\_object[colname].info()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the overview on the \ac object
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Print the overview of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> print example2[1].info()
+Column name:        column2
+Column type:        <type 'float'>
+Column format:      ['% 11.7f', '%12s']
+Column null value : ['*']
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method reformat()}
+\label{acm_reformat}
+\index{methods}\index{methods!AsciiColumn!reformat()}
+\index{reformat()}
+The method gives a new format\index{format} to an \ac object. Please note
+that the new format does {\bf not} change the column content,
+but only the string representation of the content.
+The format description in \AAD is taken from Python. The Python Library
+Reference
+(\htmladdnormallink{Chapt.\ 2.3.6.2 in Python 2.4 }{http://www.python.org/doc/2.4.2/lib/typesseq-strings.html\#l2h-211})
+gives a list of all possible formats.
+
+
+\prgrf{Usage}
+adata\_object[colname].reformat('newformat')
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+new\_format &{\it string}& the new format of the \ac \\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the format of the \ac with index 1:
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2[1].reformat('% 6.2f')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.22 $  62.2357983 $  26.87 $  0.32
+ galaxy   $       * $  62.2376331 $  24.97 $  0.15
+   star   $  189.14 $  62.1696844 $  25.30 $     *
+        * $  188.90 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method rename()}
+\label{acm_rename}
+\index{methods}\index{methods!AsciiColumn!rename()}
+\index{rename()}
+The method changes the name on \ac object.
+
+\prgrf{Usage}
+adata\_object[colname].rename('newname')
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+newname &{\it string}& the filename to save the \ad object to\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the column name from 'column1' to 'newname':
+\begin{small}
+\begin{verbatim}
+>>> print example2[3].info()
+Column name:        column4
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['*']
+
+>>> example2[3].rename('newname')
+>>> print example2[3].info()
+Column name:        newname
+Column type:        <type 'float'>
+Column format:      ['% 5.2f', '%6s']
+Column null value : ['*']
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{AsciiColumn method tonumarray()}
+\label{acm_tonumarray}
+\index{methods}\index{methods!AsciiColumn!tonumarray()}
+\index{tonumarray()}
+The method converts the content of an \ad object into a numarray
+object. Note that this is only possible if there are no Null-entries
+in the column, since numarray would not allow these Null-entries.
+
+\prgrf{Usage}
+adata\_object[colname].tonumarray()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the \ac content in a numarray object.
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the column name from 'column1' to 'newname':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> numarr =  example2[3].tonumarray()
+>>> numarr
+array([ 26.87,  24.97,  25.3 ,  25.95])
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+
+%
+% Section the Header class
+%
+\subsection{The Header class}
+\label{hclass}
+\index{classes}\index{classes!Header}
+\index{Header class}
+The Header class manages the header of an \ad object.
+The header contains a list of comments.
+Any kind of meta-data such as column names are part of the
+columns and therefore the AsciiColumn (see Sect.\ \ref{acclass})
+class. The header object is accessed through various
+methods to e.g. get or set items.
+
+\subsubsection{Header method get}
+\label{ahe_get}
+\index{methods}\index{methods!Header!get}
+\index{get}
+%
+The header class contains a method to get individual items from a header
+instance via their index.
+
+\prgrf{Usage}
+header\_entry = adata\_object.header[index]\\
+{\it or}\\
+header\_entry = operator.getitem(adata\_object.header, index)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to retrieve\\
+\end{tabular}
+
+\prgrf{Return}
+- one entry of the header
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Retrieve the second entry of this table header:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> header_entry = example.header[1]
+>>> print header_entry
+ most important sources!!
+
+>>>
+\end{verbatim}
+\end{small}
+\item Access the third entry of this table header:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[2]
+'\n'
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method set}
+\label{ahe_set}
+\index{methods}\index{methods!Header!set}
+\index{set}
+%
+The header class contains a method to set individual items in a header.
+The item is specified via its index.
+
+\prgrf{Usage}
+adata\_object.header[index] = new\_entry\\
+{\it or}\\
+header\_entry = operator.setitem(adata\_object.header, index, new\_entry)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to be set\\
+new\_entry &{\it string}& the new content of the header item\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[1] = 'a new header entry?'
+>>> print example
+#
+#a new header entry?
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\item Change the third header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header[2] = '   >>> dont forget leading spaces if desired!'
+>>> print example
+#
+# most important sources!!
+#   >>> dont forget leading spaces if desired!
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method del}
+\label{ahe_del}
+\index{methods}\index{methods!Header!del}
+\index{del}
+%
+The header class contains a method to delete individual items in a header.
+The item is specified via its index.
+
+\prgrf{Usage}
+del adata\_object.header[index]\\
+{\it or}\\
+operator.delitem(adata\_object.header, index)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+index &{\it int}& the index of the item to be deleted\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> del example.header[1]
+>>> print example
+#
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method str()}
+\label{ahe_str}
+\index{methods}\index{methods!Header!str()}
+\index{str()}
+%
+This method converts the entire \ah instance into a string. The {\tt print}
+command called with an \ah instance as first parameter also prints the
+string created using this method {\tt str()}.
+
+\prgrf{Usage}
+str(adata\_object.header)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the string representation of the \ah instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Delete the second header item:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> print example.header
+#
+# most important sources!!
+#
+
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method len()}
+\label{ahe_len}
+\index{methods}\index{methods!Header!len()}
+\index{len()}
+%
+The method defines the length of an \ah instance, which
+equals the number of the comment entries. Please note that
+also empty lines are are counted.
+
+\prgrf{Usage}
+len(adata\_object.header)
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+- the length of the \ah instance
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Get the length of an \ah:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> header_length = len(example.header)
+>>> header_length
+3
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+
+\subsubsection{Header method reset()}
+\label{ahe_res}
+\index{methods}\index{methods!Header!reset()}
+\index{reset()}
+%
+The method deletes all entries from an \ah instance and provides
+a clean, empty header.
+
+\prgrf{Usage}
+adata\_object.header.reset()
+
+\prgrf{Parameters}
+-
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Reset an \ah instance:
+\begin{small}
+\begin{verbatim}
+>>> print example
+#
+# most important sources!!
+#
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>> example.header.reset()
+>>> print example
+    1  1.0  red  23.08932 -19.34509
+    2  9.5 blue  23.59312 -19.94546
+    3  3.5 blue  23.19843 -19.23571
+>>>
+\end{verbatim}
+\end{small}
+\end{enumerate}
+
+\subsubsection{Header method append()}
+\label{ahe_append}
+\index{methods}\index{methods!Header!append()}
+\index{append()}
+The method appends a string or a list of strings to the header
+of an \ad object.
+
+\prgrf{Usage}
+adata\_object.header.append(hlist)
+
+\prgrf{Parameters}
+\begin{tabular}{lcl}
+hlist &{\it string}& the list of strings to be appended to the header\\
+\end{tabular}
+
+\prgrf{Return}
+-
+
+\prgrf{Examples}
+\begin{enumerate}
+\item Change the column name from 'column1' to 'newname':
+\begin{small}
+\begin{verbatim}
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.header.append('Now a header line is appended!')
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+@ Now a header line is appended!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+>>> example2.header.append("""And now we try to put
+... even a set of lines
+... into the header!!""")
+>>> print example2
+@
+@ Some objects in the GOODS field
+@
+@ Now a header line is appended!
+@ And now we try to put
+@ even a set of lines
+@ into the header!!
+unknown   $  189.2207323 $  62.2357983 $  26.87 $  0.32
+ galaxy   $            * $  62.2376331 $  24.97 $  0.15
+   star   $  189.1409453 $  62.1696844 $  25.30 $     *
+        * $  188.9014716 $           * $  25.95 $  0.20
+\end{verbatim}
+\end{small}
+\end{enumerate}

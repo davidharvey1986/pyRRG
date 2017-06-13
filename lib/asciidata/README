@@ -1,0 +1,60 @@
+# asciidata README
+#
+# Martin Kuemmel & Jonas Haase, March 2008
+#
+
+1. Installation
+----------------
+This is release 1.1.1 of the python module 'asciidata'.
+For installation do the following procedure:
+
+a. Build the executables:
+-> python setup.py build
+
+b. Run the unit tests
+-> python setup.py test
+
+There should be no problems with these test.
+All should finish with an 'OK'.
+None of them should end with a 'FAILED' and a
+description of the test failure.
+
+c. Install the module
+-> python setup.py install
+
+If you could proceed to here, you have succesfully installed
+the package and now can work with it.
+
+
+2. Documentation
+----------------
+The directory 'doc' contains the manual 'asciidata.tex'.
+Via latex you can print this manual.
+Visa latex2html you can convert it to html files
+and browse them on your disk.
+
+The identical manual is also available for download from the
+home page of the asciidata module at:
+http://www.stecf.org/software/PYTHONtools/astroasciidata/
+
+There it can be downloaded in various formats (ps, pdf, html).
+
+
+3. Inline documentation
+-----------------------
+A rich inline documentation exists in epydoc-style throughout
+the whole module. The command:
+ -> epydoc Lib/
+
+  creates and stores this inline documentation in the directory
+  './html', of course only if 'epydoc' is installed on your system.
+  The inline documentation may be a good starting point for your
+  own software development using the classes and methods defined in
+  the  asciidata module.
+
+4. Questions, comments and so on
+--------------------------------
+If you have questions, comments, problems or development requests,
+please do not hesitate to contact us at:
+
+AstroAsciiData@stecf.org
