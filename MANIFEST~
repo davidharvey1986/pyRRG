@@ -167,13 +167,11 @@ src/psf_lib/850/TinyTim_f3.moms
 src/psf_lib/850/TinyTim_f4.moms
 src/psf_lib/850/TinyTim_f5.moms
 src/sex_files/HFF_cold.param
-src/sex_files/HFF_cold.param~
 src/sex_files/HFF_hot.param
-src/sex_files/HFF_hot.param~
 src/sex_files/default.nnw
 src/sex_files/gauss_5.0_9x9.conv
 src/sex_files/rrg.param
-src/sex_files/rrg.param~lib/asciidata/__init__.py
+lib/asciidata/__init__.py
 lib/asciidata/asciicolumn.py
 lib/asciidata/asciidata.py
 lib/asciidata/asciidata_SExtest.py
