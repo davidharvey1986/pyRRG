@@ -7,11 +7,9 @@ import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
 import idlsave as idlsave
 import rotate_moments as rm
-
 import star_galaxy_separation as sgs
 import copy as cp
 import directories
-
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -62,19 +60,22 @@ def psf_cor(    mom_file,
     dirs = directories.return_dirs( )
 
     moms = py.open(mom_file)[1].data
-    uncorrected_xx = moms.xx
-    uncorrected_yy = moms.yy
-    radius = np.sqrt( ( moms.xx + moms.yy)/2.)
-    nGalaxies=len(moms.x)
-    
 
-    sigma =  cp.copy(moms.radius)
+    radius = np.sqrt( ( moms.xx + moms.yy)/2.)
+    
+    
+    galaxies, stars = \
+      sgs.star_galaxy_separation( moms, \
+                                      restore=True,\
+                                      savefile=dirs.data_dir+'/galStar.locus')
+    sigma =  cp.copy(moms.radius[galaxies])
    
     sigma[ sigma < min_rad ] = min_rad
     
 
     w2=(1./(sigma*sigma));
     w4=(1./(2.*sigma*sigma*sigma*sigma))
+    
 
 
 
@@ -110,12 +111,21 @@ def psf_cor(    mom_file,
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
+    py.writeto('galaxies.fits', moms[galaxies], clobber=True)
+    print("Getting position of galaxies in each exposure")
+    galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
+                                            py.open('galaxies.fits')[1].data, \
+                                            dataDir=dirs.data_dir)
+    uncorrected_xx = galaxy_moms.xx
+    uncorrected_yy = galaxy_moms.yy
     
-    moms = \
-      dp.drizzle_position( drizzle_file, images, moms, dataDir=dirs.data_dir)
-
+    py.writeto('stars.fits', moms[stars], clobber=True)
+    print("Getting position of stars in each exposure")
+    star_moms = \
+      dp.drizzle_position( drizzle_file, images,  \
+                               py.open('stars.fits')[1].data, \
+                               dataDir=dirs.data_dir)
     
-
     #Also get the Orientations in terms of the drizzled image, not
     #WCS
 
@@ -127,7 +137,8 @@ def psf_cor(    mom_file,
     #image, interpolating the psf to this point, 
 
     #PsfMoms is an vector of many classes of moments
-    psf_moms = moments( moms.x, moms.y, nGalaxies )
+    nGalaxies=len(galaxy_moms.x)
+    psf_moms = moments( galaxy_moms.x, galaxy_moms.y, nGalaxies )
 
     FocusArray = np.zeros(nImages)
 
@@ -136,7 +147,7 @@ def psf_cor(    mom_file,
    
         #Which positions are in the cluster frame
         iImage_name = images[iImage].split('/')[-1]
-        inFrame = moms[iImage_name+'_INFRAME'] == 1
+        inFrame = galaxy_moms[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
         #position of the image in question
@@ -144,7 +155,7 @@ def psf_cor(    mom_file,
         #So get the focus position by fitting the true image stars to the
         #model
         
-        focus = adf.acs_determine_focus(  images[iImage], moms, \
+        focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, wavelength)
 
         #Just keep track of the focii i have used through out
@@ -155,12 +166,13 @@ def psf_cor(    mom_file,
         #image  to the X,Y of the drizzled image
         
        
-        iPsfMoms=acs_3dpsf.acs_3dpsf( moms[iImage_name+'_X_IMAGE'][inFrame], 
-                                    moms[iImage_name+'_Y_IMAGE'][inFrame],
-                                    np.zeros(len(moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
+        iPsfMoms=\
+          acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
+                                   galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
+                                    np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
                                     radius, scat, degree=[3,2,2] )
         #now rotate the moments according to the angle in orient
-        iPsfMomsRot = rm.rotate_moments( iPsfMoms, moms[iImage_name+'_ORIENTAT'][inFrame])
+        iPsfMomsRot = rm.rotate_moments( iPsfMoms, galaxy_moms[iImage_name+'_ORIENTAT'][inFrame])
         
         #CHECK THAT ANGLES ARE CORRECT HERE PLEASE
         
@@ -258,27 +270,35 @@ def psf_cor(    mom_file,
 
     #So the problem is that i am timesing a which is a 
     # [1,10000] psf_vector, we moms which is a vector [a,b]
-    ixxa=a*(1-w2*2*moms.xx+w4*(moms.xxxx-moms.xx*moms.xx));
-    ixxb=b*(w4*(moms.xxxy-moms.xx*moms.xy));
-    ixxc=c*(-w2*(2*moms.xy)+w4*(moms.xxxy-moms.xx*moms.xy));
-    ixxd=d*(w4*(moms.xxyy-moms.xx*moms.yy));
+    ixxa=a*(1-w2*2*galaxy_moms.xx+w4*\
+                (galaxy_moms.xxxx-galaxy_moms.xx*galaxy_moms.xx));
+    ixxb=b*(w4*(galaxy_moms.xxxy-galaxy_moms.xx*galaxy_moms.xy));
+    ixxc=c*(-w2*(2*galaxy_moms.xy)+\
+                w4*(galaxy_moms.xxxy-galaxy_moms.xx*galaxy_moms.xy));
+    ixxd=d*(w4*(galaxy_moms.xxyy-galaxy_moms.xx*galaxy_moms.yy));
 
 
 
 
-    iyya=a*(w4*(moms.xxyy-moms.xx*moms.yy));
-    iyyb=b*(w4*(moms.xyyy-moms.yy*moms.xy));
-    iyyc=c*(-w2*(2*moms.xy)+w4*(moms.xyyy-moms.yy*moms.xy));
-    iyyd=d*(1-w2*2*moms.yy+w4*(moms.yyyy-moms.yy*moms.yy));
+    iyya=a*(w4*(galaxy_moms.xxyy-galaxy_moms.xx*galaxy_moms.yy));
+    iyyb=b*(w4*(galaxy_moms.xyyy-galaxy_moms.yy*galaxy_moms.xy));
+    iyyc=c*(-w2*(2*galaxy_moms.xy)+\
+                w4*(galaxy_moms.xyyy-galaxy_moms.yy*galaxy_moms.xy));
+    iyyd=d*(1-w2*2*galaxy_moms.yy+\
+                w4*(galaxy_moms.yyyy-galaxy_moms.yy*galaxy_moms.yy));
     
-    ixya=a*(-w2*moms.xy+w4*(moms.xxxy-moms.xy*moms.xx));
-    ixyb=b*(1-w2*moms.xx+w4*(moms.xxyy-moms.xy*moms.xy));
-    ixyc=c*(-w2*moms.yy+w4*(moms.xxyy-moms.xy*moms.xy));
-    ixyd=d*(-w2*moms.xy+w4*(moms.xyyy-moms.xy*moms.yy));
+    ixya=a*(-w2*galaxy_moms.xy+\
+                w4*(galaxy_moms.xxxy-galaxy_moms.xy*galaxy_moms.xx));
+    ixyb=b*(1-w2*galaxy_moms.xx+\
+                w4*(galaxy_moms.xxyy-galaxy_moms.xy*galaxy_moms.xy));
+    ixyc=c*(-w2*galaxy_moms.yy+\
+                w4*(galaxy_moms.xxyy-galaxy_moms.xy*galaxy_moms.xy));
+    ixyd=d*(-w2*galaxy_moms.xy+\
+                w4*(galaxy_moms.xyyy-galaxy_moms.xy*galaxy_moms.yy));
     
-    ixx_corr=moms.xx-ixxa-ixxb-ixxc-ixxd;
-    iyy_corr=moms.yy-iyya-iyyb-iyyc-iyyd;
-    ixy_corr=moms.xy-ixya-ixyb-ixyc-ixyd;
+    ixx_corr=galaxy_moms.xx-ixxa-ixxb-ixxc-ixxd;
+    iyy_corr=galaxy_moms.yy-iyya-iyyb-iyyc-iyyd;
+    ixy_corr=galaxy_moms.xy-ixya-ixyb-ixyc-ixyd;
 
 
 
@@ -288,7 +308,8 @@ def psf_cor(    mom_file,
          shear=np.zeros(number)+np.sqrt(0.5*(a(0)+d(0)+trace(0)))
 
 
-    corrected_moments = moments( moms.x, moms.y, len(moms.x))
+    corrected_moments = moments( galaxy_moms.x, galaxy_moms.y, \
+                                     len(galaxy_moms.x))
 
     gw=np.sqrt( (shear*shear*sigma*sigma)/(shear*shear+sigma*sigma));
     corrected_moments.xx = ((shear/gw)**4)*(ixx_corr-gw*gw);
@@ -300,11 +321,17 @@ def psf_cor(    mom_file,
     
 
 
-    corrected_moments.xxxx = moms.xxxx-e-6*pxxc*moms.xx+6*pxxc*pxxc;
-    corrected_moments.xxxy = moms.xxxy-f-3*(pxyc*moms.xx+pxxc*moms.xy)+6*pxyc*pxxc;
-    corrected_moments.xxyy = moms.xxyy-z-pxxc*moms.yy-pyyc*moms.xx-4*pxyc*moms.xy+2*pxxc*pyyc+4*pxyc*pxyc;
-    corrected_moments.xyyy = moms.xyyy-h-3*(pxyc*moms.yy+pyyc*moms.xy)+6*pxyc*pyyc;
-    corrected_moments.yyyy = moms.yyyy-k-6*pyyc*moms.yy+6*pyyc*pyyc;
+    corrected_moments.xxxx = galaxy_moms.xxxx-e-\
+      6*pxxc*galaxy_moms.xx+6*pxxc*pxxc;
+    corrected_moments.xxxy = galaxy_moms.xxxy-f-\
+      3*(pxyc*galaxy_moms.xx+pxxc*galaxy_moms.xy)+6*pxyc*pxxc;
+    corrected_moments.xxyy = galaxy_moms.xxyy-z-\
+      pxxc*galaxy_moms.yy-pyyc*galaxy_moms.xx-\
+      4*pxyc*galaxy_moms.xy+2*pxxc*pyyc+4*pxyc*pxyc;
+    corrected_moments.xyyy = galaxy_moms.xyyy-h-\
+      3*(pxyc*galaxy_moms.yy+pyyc*galaxy_moms.xy)+6*pxyc*pyyc;
+    corrected_moments.yyyy = galaxy_moms.yyyy-\
+      k-6*pyyc*galaxy_moms.yy+6*pyyc*pyyc;
 
     corrected_moments['e1'] = (corrected_moments.xx-corrected_moments.yy)/\
       (corrected_moments.xx+corrected_moments.yy)
@@ -314,26 +341,25 @@ def psf_cor(    mom_file,
     #Those moments that were originally zero and -99 make them again hgere
     for i in corrected_moments.keys():
         if i in moms.columns.names:
-            corrected_moments[i][moms[i] == -99] = -99
-            corrected_moments[i][moms[i] == 0] = 0
-            moms[i] = corrected_moments[i]
+            corrected_moments[i][galaxy_moms[i] == -99] = -99
+            corrected_moments[i][galaxy_moms[i] == 0] = 0
+            galaxy_moms[i] = corrected_moments[i]
             
     
 
       
-    moms['gal_size'] = np.sqrt( (corrected_moments.xx +corrected_moments.yy)/2.)
+    galaxy_moms['gal_size'] = np.sqrt( (corrected_moments.xx +corrected_moments.yy)/2.)
     newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
                py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
                          array=psf_moms.nExposures),
-                py.Column('xx_uncorrected', format=moms.xx.dtype, array=uncorrected_xx),
-                py.Column('yy_uncorrected', format=moms.yy.dtype, array=uncorrected_yy)]
+                py.Column('xx_uncorrected', format=galaxy_moms.xx.dtype, array=uncorrected_xx),
+                py.Column('yy_uncorrected', format=galaxy_moms.yy.dtype, array=uncorrected_yy)]
     
-    orig_cols = moms.columns
+    orig_cols = galaxy_moms.columns
     new_cols = py.ColDefs(newcol)
     
     hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
     hdu.writeto( outfile, clobber=True)
-    
 
 class moments( dict ):
 

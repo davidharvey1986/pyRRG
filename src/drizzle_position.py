@@ -44,7 +44,8 @@ def drizzle_position(      drizzle_file,
     drizzle_obj = py.open(dataDir+'/'+drizzle_file)
     ImageData = drizzle_obj[0].data
     header =  drizzle_obj[0].header
-  
+    orig_cols = moments.columns
+
     #Get orientation of the drizzled image
     drizzle_orientation=header['ORIENTAT']  
   
@@ -57,7 +58,7 @@ def drizzle_position(      drizzle_file,
     #Now convert into wcs
     
     ra, dec = at.pix2deg( drizzle_file, moments.X_IMAGE, moments.Y_IMAGE)
-
+    
     newcol = []
     for iImage in xrange(nImages):
         print( "%i/%i" %(iImage+1, nImages))
@@ -103,14 +104,10 @@ def drizzle_position(      drizzle_file,
         newcol.append( y_column )
         newcol.append( inFrame )
         newcol.append( orientat )
-        
-    orig_cols = moments.columns
-    new_cols = py.ColDefs(newcol)
-    
-    hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
-    
-    num_exposures = np.sum(InDrizzleFrame[:, 2, :], axis=0).shape
 
+    new_cols = py.ColDefs(newcol)
+    hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
+    num_exposures = np.sum(InDrizzleFrame[:, 2, :], axis=0).shape
     return hdu.data
 
 

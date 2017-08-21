@@ -2,7 +2,7 @@ import numpy as np
 
 import pyfits as py
 
-def calc_shear( corrected_moments, galaxies, outfile,
+def calc_shear( corrected_moments, outfile,
                 min_rad=6, mult=2,
                 size_cut=[0., 100.],
                 mag_cut=[22.5, 30],
@@ -54,8 +54,8 @@ def calc_shear( corrected_moments, galaxies, outfile,
     uncor_size = np.sqrt( 0.5*(corrected_moments.xx_uncorrected + \
                                corrected_moments.yy_uncorrected))
           
-    good = np.zeros(len(corrected_moments.x))
-    good[ galaxies ] = 1
+    good = np.ones(len(corrected_moments.x))
+
     good[ (corrected_moments.xx + corrected_moments.yy < 0)] = 0
     good[ (uncut_ell_sqr > 2 ) ]  = 0
     good[ (uncor_size < size_cut[0] )]  = 0 

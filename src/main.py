@@ -168,7 +168,7 @@ def main(  infile, hst_filter=None,
   
     sheared_cat = field[:-5]+".shears"
     
-    cs.calc_shear( corrected_moments, galaxies,
+    cs.calc_shear( corrected_moments,
                    sheared_cat, 
                     min_rad=min_rad, mult=mult,
                     signal_noise_cut=signal_noise_cut,

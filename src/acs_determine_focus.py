@@ -1,4 +1,3 @@
-import star_galaxy_separation as sgs
 import numpy as np
 import measure_moms as mm
 import acs_model_e as acs_model
@@ -21,7 +20,7 @@ def acs_determine_focus_metric( true, model ):
 # **************************************************************************
 
 def acs_determine_focus( unknown_focus_image,
-                         observed_moments,
+                         observed_moments_stars,
                          drizzle_file,
                          wavelength,
                          data_dir=None,
@@ -70,15 +69,6 @@ def acs_determine_focus( unknown_focus_image,
  
     dirs = directories.return_dirs()
 
-    
-    #I need to get the positions of just the stars
-    galaxies, stars = sgs.star_galaxy_separation( observed_moments, \
-                                                      restore=True,\
-                                                    savefile=dirs.data_dir+'/galStar.locus')
-    
-    #Filter the stars out
-    observed_moments_stars = observed_moments[ stars ]
-    
     
     #Now I need measure the moments of the stars in the individual image
     #But the x and y here are in the frame of the drizzled frame
