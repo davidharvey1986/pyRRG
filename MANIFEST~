@@ -25,6 +25,7 @@ src/directories.py
 src/drizzle_position.py
 src/ellipse_to_reg.py
 src/main.py
+src/masking_stars.py
 src/measure_moms.py
 src/mmm.py
 src/plot_shears.py

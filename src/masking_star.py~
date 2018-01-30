@@ -6,34 +6,11 @@ Rewite the idl rountine: inpoly.pro, instar.pro to python version
 """
 import pyfits as fits
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt;
 import os as os
-import star_galaxy_separation as sgs
-import ipdb as pdb
-import RRGtools as tools
 
 
 def instar(xl,yl,xs,ys,m):
-      ##define some parameters------------------------------------------------------------------------
-    # Spikes of stars in pixels
-    e=18                          #width of spike
-    
-    spike1=200      	      #length of first spike
-    spike2=500                    # length of second spike
-    spike3=900                    # length of third spike
-    spike4=1500           	      # length of fourth spike
-
-    r1=50               # radius of mask
-    r2=120
-    r3=200
-    r4=260
-
-    mcut1=16.8            		# magnitude cut
-    mcut2=15.9              	# magnitude cut
-    mcut3=13.8	      		# magnitude cut
-    
-    r_close=1.5                     #radius for looking for bright objects in arcmin
-    #---------------------------------------------------------------------------------------------
     if m>mcut1: 
         l=spike1
         R=r1
@@ -133,27 +110,34 @@ def inpoly(Px,Py,xl,yl):
     return nc
 
 
-def main(  shear_catalog, object_catalog_fits, \
-               mask_file='mask.reg', outFile='Shear_remove.fits' ):
-    '''
-    This algoritm will do two things.
-    a) Draw masks around detected stars automatically
-    b) Take an additional optional mask file (defaulted to mask.reg) and remove
-    any object that lies within those regions. This file MUST be a ds9 region file with a
-    formatting with degrees and not sexidecimal. 
-    '''
-  
+def main( image_file, shear_catalog, object_catalog ):
+    ##define some parameters------------------------------------------------------------------------
+    # Spikes of stars in pixels
+    e=18                          #width of spike
+    
+    spike1=200      	      #length of first spike
+    spike2=500                    # length of second spike
+    spike3=900                    # length of third spike
+    spike4=1500           	      # length of fourth spike
+
+    r1=50               # radius of mask
+    r2=120
+    r3=200
+    r4=260
+
+    mcut1=16.8            		# magnitude cut
+    mcut2=15.9              	# magnitude cut
+    mcut3=13.8	      		# magnitude cut
+    
+    r_close=1.5                     #radius for looking for bright objects in arcmin
+    #---------------------------------------------------------------------------------------------
     #-------------------------select the stars from the size vs mag diagram----------------------------------------------------
 
-    object_catalog = fits.open(object_catalog_fits)[1].data
     
     galaxies, stars = sgs.star_galaxy_separation( object_catalog,
-                                                  savefile='galStar.locus',
-                                                      restore=True,
-                                                      include_sat=False)
-    
-    Star_catalogue = object_catalog[ stars]
+                                                  savefile='galStar.locus' )
 
+    
     
     ##---------------------add a new column 'clean' to shear catalogue---------------------------------
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
@@ -167,8 +151,7 @@ def main(  shear_catalog, object_catalog_fits, \
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
       shear_catalog.split('.')[1]
-    hdu.writeto(clean_catalog, clobber=True)
-
+    hdu.writeto(clean_catalog)
 
 
 ##-------------------------------start masking-------------------------------
@@ -187,36 +170,7 @@ def main(  shear_catalog, object_catalog_fits, \
             break
         
     Shears_remove=Shears[Shears['clean']==0]
-
-    if os.path.isfile(mask_file):
-        mask_obj = open(mask_file, 'rb')
-        for mask in mask_obj:
-            if mask[0:3] != 'box':
-                continue
-            else:
-                
-                mask_x = np.float(mask.split('(')[1].split(',')[0])
-                mask_y = np.float(mask.split('(')[1].split(',')[1])
-                mask_sizex = np.float(mask.split('(')[1].split(',')[2][:-1])
-                mask_sizey = np.float(mask.split('(')[1].split(',')[3][:-1])
-
-                mask_angle = np.float(mask.split('(')[1].split(',')[4][:-2])
-                #rotate the shears into fram of reference of the mask
-                shears_x_mask_ref = tools.ra_separation(Shears_remove['X_WORLD'], mask_y, mask_x , mask_y)
-                shears_y_mask_ref = (Shears_remove['Y_WORLD'] - mask_y)*3600.
-                
-                shears_x_mask_rot = np.cos(mask_angle*np.pi/180.)*shears_x_mask_ref +  np.sin(mask_angle*np.pi/180.)*shears_y_mask_ref
-                shears_y_mask_rot = -np.sin(mask_angle*np.pi/180.)*shears_x_mask_ref + np.cos(mask_angle*np.pi/180.)*shears_y_mask_ref
-
-                inBox =  (shears_x_mask_rot < mask_sizex/2.) & \
-                               (shears_x_mask_rot > -mask_sizex/2.) &\
-                               (shears_y_mask_rot < mask_sizey/2.) &\
-                               (shears_y_mask_rot > -mask_sizey/2.)
-
-                Shears_remove = Shears_remove[ inBox == False ]
-
-    
-    fits.writeto(outFile,Shears_remove, clobber=True )
+    fits.writeto('Shear_remove.fits',Shears_remove )
 
 
 ##------------------------------polygen defined by hand------------------------------

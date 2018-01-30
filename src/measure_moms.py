@@ -184,6 +184,13 @@ def measure_moms(fits_image, sex_catalog, outfile,
                 begin_y = np.round(yc-cut_rad[i]-1).astype(int)
                 end_x = np.round(xc+cut_rad[i]+2).astype(int)
                 end_y = np.round(yc+cut_rad[i]+2).astype(int)
+                #Make sure the postage stamp doesnt go out the end
+                #of the imgae.
+                begin_x = np.max( [0, begin_x])
+                begin_y = np.max( [0, begin_y])
+                end_x = np.min( [img.shape[1], end_x])
+                end_y = np.min( [img.shape[0], end_y])
+                
             
             
                 xvec = np.arange(begin_x, end_x)
@@ -194,7 +201,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                 
                 #Dist will also be used throughout the loop
                 uncut_dist = np.sqrt( (uncut_xgrid - xc + 0.5)**2 + \
-                                    (uncut_ygrid-yc+0.5)**2)
+                                    (uncut_ygrid - yc + 0.5)**2)
             
                 #Also cut the images at the cut_radi
                 dist = uncut_dist[uncut_dist < cut_rad[i]]

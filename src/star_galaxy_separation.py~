@@ -6,8 +6,7 @@ import sys as sys
 import numpy as np
 import ipdb as pdb
 def star_galaxy_separation( sources, restore=False,
-                            savefile='galStar.sav',
-                                include_sat=False):
+                            savefile='galStar.sav'):
 
     '''
     PURPORSE : To separate out the stars and galaxies in the input
@@ -19,7 +18,6 @@ def star_galaxy_separation( sources, restore=False,
      restore : restore a saved file of classes without prompting user 
                to re-separate stars anda galaixes
      savefile : save the file to the given string
-     include_sat: include the saturated stars (used for masking stars)
     
     RETURNS : A vector of N galaxies and stars 
               with the indexes associated with SOURCES
@@ -35,37 +33,32 @@ def star_galaxy_separation( sources, restore=False,
     INFO : For more information on how this works and how it is used by the user please see 
            the documentation
     '''
-    plt.ion()
+  
     object_indexes = np.arange( len(sources['X_IMAGE']) )
   
     if not os.path.isfile( savefile ):
         #If the file does not exist get the user inputs for stars / galaxies
         print('Save file not found, separating, please follow instructions')
         print('found in the top left plot. Please only select here')
-        gal_star = galStar( savefile, sources, \
-                                set_defaults=True, include_sat=include_sat)
+        gal_star = galStar( savefile, sources, set_defaults=True)
         return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
     else:
         if restore:
             #Dont ask, just get the stars and galaxies and return
             print 'Restoring '+savefile
-            gal_star = galStar( savefile, sources, \
-                                    set_defaults=False, \
-                                    include_sat=include_sat)   
+            gal_star = galStar( savefile, sources, set_defaults=False)   
             gal_star.get_galaxies( sources )
             gal_star.get_stars( sources )
             return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
         
         print 'Loading savefile: '+savefile
-        gal_star = galStar( savefile, sources,
-                                set_defaults=False, \
-                                include_sat=include_sat)   
+        gal_star = galStar( savefile, sources, set_defaults=False)   
         gal_star.get_galaxies( sources )
         gal_star.get_stars( sources )
         gal_star.generate_axes( sources )
         gal_star.plot_boundaries(  sources )
         gal_star.plot_stars_galaxies( sources, gal_star.axes, overwrite=True )
-        plt.show( block=True)
+        plt.show()
 
         
         overwrite = \
@@ -96,14 +89,13 @@ def star_galaxy_separation( sources, restore=False,
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
-        def __init__( self, filename, sources, \
-                          set_defaults=True, include_sat=False ):
+        def __init__( self, filename, sources, set_defaults=True ):
 
             #These store the plotted points and the order they are plotted
             #so they can be removed if the user decideds to undo a line
             self.star_points = []
             self.gal_points = []
-            self.include_sat = include_sat
+            
             if set_defaults:
                 self.generate_axes( sources)
                 self.defaults( filename, sources )
@@ -234,11 +226,9 @@ class galStar():
             '''
             
             #Write on the plot some useful directions for the user
-            self.ax3.annotate( 'Use double left click to select point',\
-                                       xy=( 0.01, 0.9), \
+            self.ax3.annotate( 'Use double left click to select point', xy=( 0.01, 0.9), \
                                     xycoords='axes fraction', fontsize=10)
-            self.ax3.annotate( 'Use double right click to undo point',\
-                                       xy=( 0.01, 0.85), \
+            self.ax3.annotate( 'Use double right click to undo point', xy=( 0.01, 0.85), \
                                     xycoords='axes fraction', fontsize=10)
             self.ann = self.ax3.annotate( 'First draw boundary between galaxies and stars', \
                                               xy=( 0.01, 0.95), weight='bold', \
@@ -275,7 +265,7 @@ class galStar():
 
                     #Plot the point clicked by the user
                     event.inaxes.figure.canvas.draw()
-                    print ix
+
                     
                     if len(self.xcoords) == 2:
                         #Once there are two points plot this
@@ -405,11 +395,11 @@ class galStar():
                     self.xcoords = self.xcoords[:-2]
                     self.ycoords = self.ycoords[:-2]
                     event.inaxes.figure.canvas.draw()
-                plt.show(block=True)
+                plt.show()
 
             #tell python to have interactive plotting using the onclick function
             cid = self.fig.canvas.mpl_connect('button_press_event', onclick)
-            plt.show(block=True)
+            plt.show()
 
 
 
@@ -471,23 +461,12 @@ class galStar():
             INPUT :
                sources : a fits record of the sources from source extractor
             '''
-            if self.include_sat:
-                self.stars = \
-                  (sources['MU_MAX'] < \
-                       sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
-                (sources['MU_MAX'] > \
-                     sources['MAG_AUTO']*self.GradStarsLowCut + \
-                self.IntStarsLowCut) & \
-                (sources['MU_MAX'] < self.StarsUpCut)
-            else:
-                self.stars = \
-                  (sources['MU_MAX'] < \
-                       sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
-                (sources['MU_MAX'] > \
-                     sources['MAG_AUTO']*self.GradStarsLowCut + \
-                self.IntStarsLowCut) & \
-                (sources['MU_MAX'] > self.StarsLowCut) & \
-                (sources['MU_MAX'] < self.StarsUpCut)
+            self.stars = (sources['MU_MAX'] < \
+                        sources['MAG_AUTO']*self.GradGal + self.IntGal) & \
+                            (sources['MU_MAX'] > \
+                    sources['MAG_AUTO']*self.GradStarsLowCut + self.IntStarsLowCut) & \
+                            (sources['MU_MAX'] > self.StarsLowCut) & \
+                            (sources['MU_MAX'] < self.StarsUpCut)
 
                 
 def coords_to_line( x, y):

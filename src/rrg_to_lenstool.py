@@ -14,7 +14,6 @@ def rrg_to_lenstool( rrg_catalogue,
                          image_file,
                          output_catalogue=None,
                          lenstool_catalogue=None,
-                         mask='mask.reg',
                          reference=None,
                          default_src_redshift=1.0):
     '''
@@ -37,23 +36,19 @@ def rrg_to_lenstool( rrg_catalogue,
     default_src_redshift : a scalar  of redshifts that the sources galaxies are at
     '''
     image = py.open(image_file)
-    rrgCat = py.open( rrg_catalogue )
-    
-    if os.path.isfile( mask ):
-        MaskedRRGCat = mask_catalogue.mask( rrgCat, mask )
-    else:
-        print 'WARNING: NO MASK FILE FOUND'
-        MaskedRRGCat = rrgCat[1].data
+    MaskedRRGCat = py.open( rrg_catalogue )[1].data
+
 
     nGalaxies = len( MaskedRRGCat )
 
     theta = np.arctan2( MaskedRRGCat.gamma2, MaskedRRGCat.gamma1 )*180./np.pi/2.
     rotang = image[0].header['ORIENTAT']
     theta += rotang
-    print image[0].header['ORIENTAT']
+    #print image[0].header['ORIENTAT']
     gamma = np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
-    
-    size = np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.)
+
+    size = np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.)/2.
+    print gamma
     semi_major = size*np.sqrt(1.+gamma)
     semi_minor = size*np.sqrt(1.-gamma)
 

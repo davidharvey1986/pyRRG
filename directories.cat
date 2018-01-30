@@ -1,0 +1,5 @@
+DATA_DIR: /Users/DavidHarvey/Library/Code/python/lensing/rrg/ 
+SEX_FILES: /Library/Python/2.7/site-packages/pyRRG-0.0.14-py2.7.egg/pyRRG/sex_files/ 
+PSF_MODEL_DIR: /Library/Python/2.7/site-packages/pyRRG-0.0.14-py2.7.egg/pyRRG/psf_lib//814/ 
+CODE_DIR: /Library/Python/2.7/site-packages/pyRRG-0.0.14-py2.7.egg/pyRRG 
+STILTS_DIR: /Users/DavidHarvey/Library/Stilts 
