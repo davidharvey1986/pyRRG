@@ -61,7 +61,7 @@ def plot_shears( moments_catalogue, nbins=None,
     
 
     quiveropts = dict(color='black', headlength=0, pivot='middle', 
-                    linewidth=.5, units='xy', width=.5, headwidth=1, alpha=1) 
+                    linewidth=.5, units='xy', width=.5, headwidth=1) 
     ax1.quiver( xgrid, ygrid, e1_map, e2_map, headaxislength=0,\
                     **quiveropts )
     plt.show()

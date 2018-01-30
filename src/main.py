@@ -14,6 +14,7 @@ import directories as directories
 import rrg_to_lenstool as rtl
 import subprocess
 import check_external_packages as cep
+import masking_star as mask
 
 def main(  infile, hst_filter=None,
             data_dir=None,
@@ -177,11 +178,16 @@ def main(  infile, hst_filter=None,
                     dataDir=data_dir)
     
 
+
+    clean_cat = field[:-5]+"_clean.shears"
+    mask.main( sheared_cat, corrected_moments_cat,
+                   outFile=clean_cat)
     
-    plot.plot_shears( sheared_cat )
-    etr.ellipse_to_reg( sheared_cat )
+    plot.plot_shears( clean_cat )
+
+    etr.ellipse_to_reg( clean_cat )
 
     lenstool_file =  field[:-5]+".lenstool"
-    rtl.rrg_to_lenstool( sheared_cat, field)
+    rtl.rrg_to_lenstool( clean_cat, field)
   
 

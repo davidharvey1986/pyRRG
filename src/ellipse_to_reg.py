@@ -3,7 +3,7 @@ import pyfits as py
 
 
 
-def ellipse_to_reg( catalogue_name ):
+def ellipse_to_reg( catalogue_name, regName='ellipse.reg' ):
     '''
     Creat a region file to check thta i have measured ellipses correctedly
     '''
@@ -12,7 +12,7 @@ def ellipse_to_reg( catalogue_name ):
     catalogue = py.open( catalogue_name )[1].data
 
 
-    regionFile = open( 'ellipse.reg', 'wb')
+    regionFile = open( regName, 'wb')
 
     ellipticity = np.sqrt( catalogue.e1**2 +
                            catalogue.e2**2 )
