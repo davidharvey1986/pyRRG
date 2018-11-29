@@ -3,6 +3,7 @@ import pyfits as py
 import numpy as np
 from matplotlib import gridspec as gridspec
 import ipdb as pdb
+import matplotlib.colors as colors
 
 def plot_shears( moments_catalogue, nbins=None,
                  min_gals_per_bins=100., catalogue=None ):
@@ -45,25 +46,36 @@ def plot_shears( moments_catalogue, nbins=None,
               (catalogue.x < xbins[i+1] ) &\
               (catalogue.y > ybins[j] ) & \
               (catalogue.y < ybins[j+1] )
-
-            theta = np.arctan2( np.mean(catalogue.gamma2[ in_bin ]),
-                                np.mean(catalogue.gamma1[ in_bin ]) )/2.
+            if len(catalogue.gamma2[ in_bin ]) == 0:
+                theta = 0.
+                gamma = 0.
+            else:
+                theta = np.arctan2( np.nanmean(catalogue.gamma2[ in_bin ]),
+                                    np.nanmean(catalogue.gamma1[ in_bin ]) )/2.
             
             
-            gamma = np.sqrt( np.mean(catalogue.gamma1[ in_bin ])**2 +
-                             np.mean(catalogue.gamma2[ in_bin ])**2 )
+                gamma = np.sqrt( np.nanmean(catalogue.gamma1[ in_bin ])**2 +
+                             np.nanmean(catalogue.gamma2[ in_bin ])**2 )
             
             e1_map[ j, i] = gamma*np.cos(theta) #np.mean(catalogue.gamma1[ in_bin ])
             e2_map[ j, i] = gamma*np.sin(theta) #np.mean(catalogue.gamma2[ in_bin ])
             theta_map[ j, i] = theta
     
     
-    
+    gammaMap = np.sqrt(e1_map**2+e2_map**2)
 
-    quiveropts = dict(color='black', headlength=0, pivot='middle', 
-                    linewidth=.5, units='xy', width=.5, headwidth=1, alpha=1) 
-    ax1.quiver( xgrid, ygrid, e1_map, e2_map, headaxislength=0,\
+    width = 0.005*(np.max(xgrid) - np.min(xgrid) )
+    
+    quiveropts = dict( headlength=0, pivot='middle', 
+                        linewidth=5., units='xy', width=width, \
+                          headwidth=1, alpha=1.,cmap='autumn') 
+    ax1.quiver( xgrid+np.mean( xbins), \
+                    ygrid+np.mean( ybins), \
+                    e1_map, e2_map, \
+                    gammaMap/np.max(gammaMap),\
                     **quiveropts )
+
+    
     plt.show()
 
     #bin the x and y
