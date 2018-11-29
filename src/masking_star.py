@@ -150,7 +150,7 @@ def main(  shear_catalog, object_catalog_fits, \
     galaxies, stars = sgs.star_galaxy_separation( object_catalog,
                                                   savefile='galStar.locus',
                                                       restore=True,
-                                                      include_sat=False)
+                                                      include_sat=True)
     
     Star_catalogue = object_catalog[ stars]
 
