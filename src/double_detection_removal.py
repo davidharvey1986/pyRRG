@@ -37,6 +37,6 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     sort_data=temp_sort[temp_sort[:, 3].argsort()]  ##sorting by the original index
     data_org=data_org[sort_data[:, 3].astype(int)]
 
-    print "num of objects after removing double-dectation:",len(data_org)
+    print("Num of objects after removing double-detection: %i" % len(data_org))
         
     fits.writeto(output_catalogue, data=data_org, header=hdulist[1].header)

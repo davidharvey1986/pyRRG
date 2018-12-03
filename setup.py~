@@ -13,7 +13,7 @@ in Hubble Space Telescope data
 #python setup.py register -r pypi
 #sudo python setup.py sdist upload -r pypi
 
-version='0.0.15'
+version='0.0.16'
          
     
 INCDIRS=['.']
