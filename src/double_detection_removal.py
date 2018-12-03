@@ -39,4 +39,6 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
 
     print("Num of objects after removing double-detection: %i" % len(data_org))
         
-    fits.writeto(output_catalogue, data=data_org, header=hdulist[1].header)
+    fits.writeto(output_catalogue, data=data_org, \
+                     header=hdulist[1].header, \
+                     clobber=True)
