@@ -9,6 +9,7 @@ def deg2pix( fits, ra, dec, coordfile=None, postage_stamp=0,
     x and y pix
 
     '''
+    os.system('rm -fr pyraf')
     from pyraf import iraf
 
     os.system( 'mkdir .tmp')
@@ -58,6 +59,7 @@ def pix2deg( fits, x_image, y_image, coordfile=None, ):
     x and y pix
 
     '''
+    os.system('rm -fr pyraf')
     from pyraf import iraf
 
     os.system("cp "+fits+" xy2sky.fits")
@@ -142,12 +144,14 @@ def hmstodd( ra, dec ):
     ra_float = np.array(ra.split(':')).astype(float)
     dec_float = np.array(dec.split(':')).astype(float)
 
+    
     ra_deg = (ra_float[0] + ra_float[1]/60. + ra_float[2]/3600.)/24.*360.
-    if dec_float[0] < 0:
+    if '-' in dec.split(':')[0]:
         hem = -1.
     else:
         hem = 1.
-    dec_deg = hem*dec_float[0]+hem*dec_float[1]/60. + hem*dec_float[2]/3600.
-
+    
+    dec_deg = dec_float[0]+hem*dec_float[1]/60. + hem*dec_float[2]/3600.
+     
     return ra_deg, dec_deg
     
