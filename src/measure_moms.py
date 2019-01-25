@@ -144,7 +144,12 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
     
     galaxy_moments = moms( nGalaxies, radius=radius )
-    
+
+    #log this stuff as i want this for the star galaxy separation
+    galaxy_moments['skymed'] = skymed
+    galaxy_moments['skysd'] = skysd
+    galaxy_moments['skysw'] = skysw
+    galaxy_moments['exp_time'] = exp_time
     for i in xrange( nGalaxies ):
         
         #following changed by jrhodes to account for different indexing in SExtractor and IDL
@@ -402,6 +407,12 @@ class moms( dict ):
         self.__dict__['xyyy'] = np.zeros( ngalaxies)
         self.__dict__['xxxy'] = np.zeros( ngalaxies)
         self.__dict__['prob'] = np.zeros( ngalaxies)
+        #more information for the SVM star galaxy divider
+        self.__dict__['skymed'] = np.zeros( ngalaxies)
+        self.__dict__['skysd'] =  np.zeros( ngalaxies)
+        self.__dict__['skysw'] =  np.zeros( ngalaxies)
+        self.__dict__['exp_time'] =  np.zeros( ngalaxies)
+
         if radius is not None:
             self.__dict__['radius'] = radius
 

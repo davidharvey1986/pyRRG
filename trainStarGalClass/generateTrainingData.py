@@ -22,11 +22,11 @@ def generateTrainingData():
     Generate a table of data using the data in the file trainingData
     '''
 
-    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')
-    trainingStarsFiles = glob.glob('trainingData/*stars*')
+    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[1:]
+    trainingStarsFiles = glob.glob('trainingData/*stars*')[1:]
 
-    trainingGalaxy = filesToRecArray( trainingGalaxyFiles[0:-1] )
-    trainingStars = filesToRecArray( trainingStarsFiles[0:-1] )
+    trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
+    trainingStars = filesToRecArray( trainingStarsFiles )
     
     allTrainingData = np.vstack((trainingGalaxy,trainingStars))
     allTrainingAnswers = np.append(np.ones(len(trainingGalaxy)), \
@@ -60,8 +60,8 @@ def generateTestData():
     
     '''
 
-    trainingGalaxyFiles = [glob.glob('trainingData/*galaxies*')[-1]]
-    trainingStarsFiles = [glob.glob('trainingData/*stars*')[-1]]
+    trainingGalaxyFiles = ['trainingData/A2744_galaxies.fits']
+    trainingStarsFiles = ['trainingData/A2744_stars.fits']
                                                                  
     
     trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
@@ -85,9 +85,11 @@ def rec2array( recArray):
     for i, iField in enumerate(recArray.dtype.names):
         newArray[:,i] = recArray[iField]
 
-    #remove nans
+    #remove nan
+    newArray[ np.isfinite(newArray) == False ] = -99
     nanCheck = np.isfinite(np.sum(newArray, axis=1))
     newArrayNansRemoved = newArray[nanCheck, :]
+
     return newArrayNansRemoved
         
 def getFeatureLabels( fitsFile ):

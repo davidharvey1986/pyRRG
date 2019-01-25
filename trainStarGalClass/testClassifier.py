@@ -13,13 +13,12 @@ def testClassifier(retrain=False):
         td.trainData()
     featureLabels, testFeatures, testAnswers = \
       gtd.generateTestData()
-    print  featureLabels.shape
+
     mlClassifier = pkl.load(open('starGalaxyModel.pkl'))
-    print testFeatures.shape
+
     predictClassification = mlClassifier.predict(testFeatures)
-    print plt.plot(predictClassification-testAnswers)
-    plt.figure(2)
-    print mlClassifier.score(testFeatures, testAnswers)
+    print("Number of objects in test data is %i"% len(testFeatures))
+
     plt.plot( testFeatures[predictClassification==1,\
                                featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==1,\
