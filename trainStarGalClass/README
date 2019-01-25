@@ -1,0 +1,23 @@
+So the idea to improve and automate the star - galaxy classification is to 
+learn what is a start and galaxy through the various different probes and then 
+using the input data, learn what is a star and what is a galaxy
+
+To do this, I will take the moments of a lot of objects from a ton of exposures
+and run some moment measuring. From this I will then classify the stars to create a training set.
+
+I will learn on this training set, using features, which will be the raw moments and combinations of the raw moments.
+- Moments
+- Size
+- Magnitude
+- Exposure depth
+- RA
+- DEC
+
+Once learnt i should be able to transmit this to all future data sets.
+With the idea that everytime someone uses the data set, it improves it.
+
+1. Generate training set
+2. Learn training set
+3. Test model
+4. Implement auto-update
+5. Merge with master

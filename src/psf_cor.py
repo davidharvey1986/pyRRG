@@ -111,7 +111,7 @@ def psf_cor(    mom_file,
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
-    py.writeto('galaxies.fits', moms[galaxies], clobber=True)
+
     print("Getting position of galaxies in each exposure")
     galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
                                             py.open('galaxies.fits')[1].data, \

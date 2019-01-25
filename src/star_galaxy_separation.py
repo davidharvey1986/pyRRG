@@ -5,6 +5,7 @@ from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
 import ipdb as pdb
+import pyfits as fits
 def star_galaxy_separation( sources, restore=False,
                             savefile='galStar.sav',
                                 include_sat=False):
@@ -80,6 +81,8 @@ def star_galaxy_separation( sources, restore=False,
             print 'Writing over gal file and removing j*uncor.cat'
             os.system('rm -fr j*uncor.cat *_cor.cat')
             gal_star.write( savefile )
+            fits.write('galaxies.fits', sources[gal_star.galaxies], clobber=True)
+            fits.write('stars.fits', sources[gal_star.stars], clobber=True)
             return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
         else:
             if overwrite == 'c':
@@ -88,6 +91,8 @@ def star_galaxy_separation( sources, restore=False,
                 #If i reseparate i will want to remeasure all stars and galaxies
                 print 'Reseparating'
                 os.system('rm -fr '+savefile)
+                os.system('rm -fr stars.fits')
+                os.system('rm -fr galaxies.fits')
                 os.system('rm -fr j*uncor.cat *_cor.cat')
                 galaxies, stars = star_galaxy_separation( sources, savefile=savefile )
                 return galaxies, stars

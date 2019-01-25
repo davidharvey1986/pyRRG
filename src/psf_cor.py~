@@ -199,8 +199,7 @@ def psf_cor(    mom_file,
     for i in xrange(nImages):
         ExpName = images[i].split('/')[-1].split('_')[0]
         focuslist.write( "%s %3.1f \n" % \
-                             ((ExpName, FocusArray[i]))
-
+                             (ExpName, FocusArray[i]))
 
 
     #Now take the mean of each moment
