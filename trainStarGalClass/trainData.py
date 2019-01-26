@@ -13,10 +13,10 @@ def trainData():
 
     trainingFeatures, trainingAnswers = \
       gt.generateTrainingData()
-
+    standardGamma = 1./(trainingFeatures.shape[1] * trainingFeatures.std())
     print("Size of training data is %i with %i features" %\
               (trainingFeatures.shape[0], trainingFeatures.shape[1]))
-    clf = SVC( )
+    clf = SVC( gamma=standardGamma*1000,tol=1e-4)
     
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
     

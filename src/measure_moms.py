@@ -1,7 +1,7 @@
 import mmm as mmm
 import pyfits as py
 import numpy as np
-
+import ipdb as pdb
 from matplotlib import pyplot as plt
 import RRGtools as at
 def measure_moms(fits_image, sex_catalog, outfile,
@@ -145,11 +145,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
     galaxy_moments = moms( nGalaxies, radius=radius )
 
-    #log this stuff as i want this for the star galaxy separation
-    galaxy_moments['skymed'] = skymed
-    galaxy_moments['skysd'] = skysd
-    galaxy_moments['skysw'] = skysw
-    galaxy_moments['exp_time'] = exp_time
+
     for i in xrange( nGalaxies ):
         
         #following changed by jrhodes to account for different indexing in SExtractor and IDL
@@ -384,6 +380,11 @@ def measure_moms(fits_image, sex_catalog, outfile,
     galaxy_moments.dec = recentred_dec
    
     galaxy_moments.calc_e1e2( mult_rad=mult)     
+    #log this stuff as i want this for the star galaxy separation
+    galaxy_moments['skymed'][:] = skymed
+    galaxy_moments['skysd'][:] = skysd
+    galaxy_moments['skysw'][:] = skysw
+    galaxy_moments['exp_time'][:] = exp_time
 
     galaxy_moments.write_to_fits( object_catalogue, outfile )
 
@@ -407,6 +408,8 @@ class moms( dict ):
         self.__dict__['xyyy'] = np.zeros( ngalaxies)
         self.__dict__['xxxy'] = np.zeros( ngalaxies)
         self.__dict__['prob'] = np.zeros( ngalaxies)
+
+        
         #more information for the SVM star galaxy divider
         self.__dict__['skymed'] = np.zeros( ngalaxies)
         self.__dict__['skysd'] =  np.zeros( ngalaxies)

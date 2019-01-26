@@ -17,14 +17,15 @@ def testClassifier(retrain=False):
     mlClassifier = pkl.load(open('starGalaxyModel.pkl'))
 
     predictClassification = mlClassifier.predict(testFeatures)
+    print mlClassifier.score(testFeatures, testAnswers)
     print("Number of objects in test data is %i"% len(testFeatures))
 
     plt.plot( testFeatures[predictClassification==1,\
                                featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==1,\
-                                   featureLabels=='gal_size'],'r.')
+                                   featureLabels=='MU_MAX'],'r.')
     plt.plot( testFeatures[predictClassification==0,\
                             featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==0,\
-                                   featureLabels=='gal_size'],'y.')
+                                   featureLabels=='MU_MAX'],'y.')
     plt.show()

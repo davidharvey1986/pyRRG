@@ -22,8 +22,8 @@ def generateTrainingData():
     Generate a table of data using the data in the file trainingData
     '''
 
-    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[1:]
-    trainingStarsFiles = glob.glob('trainingData/*stars*')[1:]
+    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[:-1]
+    trainingStarsFiles = glob.glob('trainingData/*stars*')[:-1]
 
     trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
     trainingStars = filesToRecArray( trainingStarsFiles )
@@ -44,7 +44,7 @@ def filesToRecArray( files ):
     '''
     for i, iFile in enumerate(files):
         data = fits.open(iFile)[1].data
-        
+        print iFile
         if i==0:
             allData = rec2array( data )
         else:
@@ -60,9 +60,13 @@ def generateTestData():
     
     '''
 
-    trainingGalaxyFiles = ['trainingData/A2744_galaxies.fits']
-    trainingStarsFiles = ['trainingData/A2744_stars.fits']
-                                                                 
+
+    trainingGalaxyFiles = [glob.glob('trainingData/*galaxies*')[-1]]
+    trainingStarsFiles = [glob.glob('trainingData/*stars*')[-1]]
+    print trainingStarsFiles
+    #trainingGalaxyFiles = [glob.glob('trainingData/clusters/*galaxies*')[-1]]
+    #trainingStarsFiles = [glob.glob('trainingData/clusters/*stars*')[-1]]
+    
     
     trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
     trainingStars = filesToRecArray( trainingStarsFiles )
@@ -80,17 +84,40 @@ def rec2array( recArray):
 
     '''
 
-    newArray = np.zeros((len(recArray),len(recArray.columns.dtype)), float)
+    #dont include the errors in this fit
+    includeNames = [ i for i in list(recArray.columns.names) if not 'err' in i ]
+    #includeNames.remove('skymed')
+    #includeNames.remove('exp_time')
+    #includeNames.remove('skysw')
+    #includeNames.remove('skysd')
 
-    for i, iField in enumerate(recArray.dtype.names):
+    includeNames=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','BACKGROUND']
+    
+    newArray = np.zeros((len(recArray),len(includeNames)), float)
+
+    for i, iField in enumerate(includeNames):
         newArray[:,i] = recArray[iField]
 
     #remove nan
-    newArray[ np.isfinite(newArray) == False ] = -99
+    #newArray[ np.isfinite(newArray) == False ] = -99
     nanCheck = np.isfinite(np.sum(newArray, axis=1))
     newArrayNansRemoved = newArray[nanCheck, :]
+    Nremoved = newArray.shape[0] - newArrayNansRemoved.shape[0]
+    
+    print("%i/%i removed due to nans" % (Nremoved, newArray.shape[0]))
 
+    nanCheckField = np.isfinite(np.sum(newArray, axis=0))
+    
     return newArrayNansRemoved
         
 def getFeatureLabels( fitsFile ):
-    return np.array(fits.open(fitsFile)[1].data.columns.names)
+    includeNames = fits.open(fitsFile)[1].data.columns.names
+    #remove all those with err in it
+    namesNoErr = [ i for i in includeNames if not 'err' in i ]
+    #includeNames.remove('skymed')
+    #includeNames.remove('exp_time')
+    #includeNames.remove('skysw')
+    #includeNames.remove('skysd')
+    namesNoErr=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+    print includeNames
+    return np.array(namesNoErr)
