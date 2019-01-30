@@ -49,8 +49,8 @@ def rrg_to_lenstool( rrg_catalogue,
 
     size = np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.)/2.
     print gamma
-    semi_major = size*np.sqrt(1.+gamma)
-    semi_minor = size*np.sqrt(1.-gamma)
+    semi_major = size*(1.+gamma) ##RRG returns shear(gamma) and lenstool defines a=sqrt(1+e),b=sqrt(1-e), where e~2gamma. Thus,we define a=(1.+gamma) and b=(1.-gamma) here to match the definition of lenstool input.    
+    semi_minor = size*(1.-gamma)
 
     if reference is None:
         reference = [ np.mean( MaskedRRGCat.RA ), 
