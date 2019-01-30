@@ -22,8 +22,8 @@ def generateTrainingData():
     Generate a table of data using the data in the file trainingData
     '''
 
-    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[:-1]
-    trainingStarsFiles = glob.glob('trainingData/*stars*')[:-1]
+    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[1:]
+    trainingStarsFiles = glob.glob('trainingData/*stars*')[1:]
 
     trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
     trainingStars = filesToRecArray( trainingStarsFiles )
@@ -61,8 +61,8 @@ def generateTestData():
     '''
 
 
-    trainingGalaxyFiles = [glob.glob('trainingData/*galaxies*')[-1]]
-    trainingStarsFiles = [glob.glob('trainingData/*stars*')[-1]]
+    trainingGalaxyFiles = [glob.glob('trainingData/*galaxies*')[0]]
+    trainingStarsFiles = [glob.glob('trainingData/*stars*')[0]]
     print trainingStarsFiles
     #trainingGalaxyFiles = [glob.glob('trainingData/clusters/*galaxies*')[-1]]
     #trainingStarsFiles = [glob.glob('trainingData/clusters/*stars*')[-1]]

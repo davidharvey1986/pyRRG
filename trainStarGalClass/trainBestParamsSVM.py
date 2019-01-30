@@ -11,6 +11,7 @@ But i need to research some more
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 import generateTrainingData as gt
+import pickle as pkl
 
 def gridSearch():
     '''
@@ -30,7 +31,7 @@ def gridSearch():
     grid_clf = GridSearchCV(SVC(class_weight='balanced'), params_grid)
 
     #Fit the data with the best possible parameters
-    grid_clf = clf.fit(trainingFeatures, trainingAnswers)
-
-    #Print the best estimator with it's parameters
-    print grid_clf.best_estimators
+    grid_clf = grid_clf.fit(trainingFeatures, trainingAnswers)
+    pkl.dump(grid_clf,open("bestSVMparams.pkl",'wb'))
+    #Print the best estimator with it's parameter
+    print grid_clf.best_estimator
