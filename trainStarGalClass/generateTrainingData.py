@@ -12,25 +12,30 @@ But in the future i will require varying depth
 
 '''
 import ipdb as pdb
-
+import RRGtools as at
 import glob as glob
 import pyfits as fits
 import numpy as np
-
-def generateTrainingData():
+import numpy.lib.recfunctions as rec
+import pickle as pkl
+import os as os
+def generateTrainingData(allGalaxyFiles=None, \
+                             trainingDataPklFile='DataTrained.pkl'):
     '''
     Generate a table of data using the data in the file trainingData
     '''
+    if allGalaxyFiles is None:
+        allGalaxyFiles = glob.glob('trainingData/*uncor*')[1:]
 
-    trainingGalaxyFiles = glob.glob('trainingData/*galaxies*')[1:]
-    trainingStarsFiles = glob.glob('trainingData/*stars*')[1:]
-
-    trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
-    trainingStars = filesToRecArray( trainingStarsFiles )
-    
-    allTrainingData = np.vstack((trainingGalaxy,trainingStars))
-    allTrainingAnswers = np.append(np.ones(len(trainingGalaxy)), \
-                                       np.zeros(len(trainingStars)))
+         
+    if os.path.isfile( trainingDataPklFile ):
+        allTrainingData, allTrainingAnswers = \
+          pkl.load(open(trainingDataPklFile,'rb'))
+    else:
+        allTrainingData, allTrainingAnswers = \
+          filesToRecArray( allGalaxyFiles )
+        pkl.dump([allTrainingData, allTrainingAnswers], \
+                     open(trainingDataPklFile,'wb'))
     
     return allTrainingData, allTrainingAnswers
     
@@ -42,16 +47,31 @@ def filesToRecArray( files ):
     
     They MUST have the same dtypes
     '''
-    for i, iFile in enumerate(files):
-        data = fits.open(iFile)[1].data
-        print iFile
-        if i==0:
-            allData = rec2array( data )
-        else:
-            iFileData = rec2array( data )
-            allData = np.vstack( (allData, iFileData))
     
-    return allData
+    for i, iFile in enumerate(files):
+        data, iStarGalClass = matchStarGalaxiesToData( iFile )
+        
+        if i==0:
+            allDataArray = rec2array( data )
+
+            iDataNoNan, starGalNoNan = \
+              removeNans( allDataArray, iStarGalClass )
+
+            
+            starGalClass = starGalNoNan
+            allData = iDataNoNan
+        else:
+            
+            iFileData = rec2array( data )
+            iDataNoNan, starGalNoNan = \
+              removeNans( iFileData, iStarGalClass )
+              
+            allData = np.vstack( (allData, iDataNoNan))
+            
+            starGalClass = np.append(starGalClass, starGalNoNan)
+        
+        
+    return allData, starGalClass
     
 def generateTestData():
     '''
@@ -61,21 +81,14 @@ def generateTestData():
     '''
 
 
-    trainingGalaxyFiles = [glob.glob('trainingData/*galaxies*')[0]]
-    trainingStarsFiles = [glob.glob('trainingData/*stars*')[0]]
-    print trainingStarsFiles
-    #trainingGalaxyFiles = [glob.glob('trainingData/clusters/*galaxies*')[-1]]
-    #trainingStarsFiles = [glob.glob('trainingData/clusters/*stars*')[-1]]
+    testGalaxyFiles = [glob.glob('trainingData/*uncor*')[0]]
+    featureLabels = getFeatureLabels( testGalaxyFiles[0] )
     
-    
-    trainingGalaxy = filesToRecArray( trainingGalaxyFiles )
-    trainingStars = filesToRecArray( trainingStarsFiles )
+    testFeatures, testAnswers = \
+      generateTrainingData(allGalaxyFiles=testGalaxyFiles, \
+                             trainingDataPklFile='testData.pkl')
 
-    allTrainingData = np.vstack((trainingGalaxy,trainingStars))
-    allTrainingAnswers = np.append(np.ones(len(trainingGalaxy)), \
-                                       np.zeros(len(trainingStars)))
-    featureLabels = getFeatureLabels(trainingGalaxyFiles[0])
-    return featureLabels, allTrainingData, allTrainingAnswers
+    return featureLabels, testFeatures, testAnswers
 
 def rec2array( recArray):
     '''
@@ -98,17 +111,7 @@ def rec2array( recArray):
     for i, iField in enumerate(includeNames):
         newArray[:,i] = recArray[iField]
 
-    #remove nan
-    #newArray[ np.isfinite(newArray) == False ] = -99
-    nanCheck = np.isfinite(np.sum(newArray, axis=1))
-    newArrayNansRemoved = newArray[nanCheck, :]
-    Nremoved = newArray.shape[0] - newArrayNansRemoved.shape[0]
-    
-    print("%i/%i removed due to nans" % (Nremoved, newArray.shape[0]))
-
-    nanCheckField = np.isfinite(np.sum(newArray, axis=0))
-    
-    return newArrayNansRemoved
+    return newArray
         
 def getFeatureLabels( fitsFile ):
     includeNames = fits.open(fitsFile)[1].data.columns.names
@@ -121,3 +124,53 @@ def getFeatureLabels( fitsFile ):
     namesNoErr=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
     print includeNames
     return np.array(namesNoErr)
+
+
+def matchStarGalaxiesToData( iFile ):
+    '''
+    I need to add a column to 'data' that has the classifcation
+    of stars (0), galaxies(1) and neither (-1)
+    
+    '''
+    cluster=iFile.split('_')[0]
+
+    data = fits.open(iFile)[1].data
+    classification = np.zeros(len(data))-1
+
+    newIDcol = \
+      [fits.Column(name='ID', format='D', array=np.arange(len(data)))]
+
+
+    dataCols = data.columns + fits.ColDefs(newIDcol)
+    dataWithID =  fits.BinTableHDU.from_columns(dataCols)
+    
+    dataWithID.writeto('DataID.fits', clobber=True)
+    matchedGalaxyData = at.run_match(cluster+'_galaxies.fits',\
+                                         'DataID.fits')[1].data
+
+    
+    classification[matchedGalaxyData['ID'].astype(int)] = 1
+
+    matchedStarData = at.run_match(cluster+'_stars.fits',\
+                                       'DataID.fits')[1].data
+                                    
+    classification[matchedStarData['ID'].astype(int)] = 0
+
+    
+
+    return data, classification
+
+def removeNans( newArray, starGal ):
+
+    #remove nan
+    #newArray[ np.isfinite(newArray) == False ] = -99
+    nanCheck = np.isfinite(np.sum(newArray, axis=1))
+    newArrayNansRemoved = newArray[nanCheck, :]
+    Nremoved = newArray.shape[0] - newArrayNansRemoved.shape[0]
+    
+    print("%i/%i removed due to nans" % (Nremoved, newArray.shape[0]))
+
+    nanCheckField = np.isfinite(np.sum(newArray, axis=0))
+
+
+    return newArrayNansRemoved, starGal[nanCheck]
