@@ -36,8 +36,7 @@ def generateTrainingData(allGalaxyFiles=None, \
           filesToRecArray( allGalaxyFiles )
         pkl.dump([allTrainingData, allTrainingAnswers], \
                      open(trainingDataPklFile,'wb'))
-    
-    return allTrainingData, allTrainingAnswers
+    return  allTrainingData, allTrainingAnswers
     
 
 def filesToRecArray( files ):
@@ -49,6 +48,7 @@ def filesToRecArray( files ):
     '''
     
     for i, iFile in enumerate(files):
+        
         data, iStarGalClass = matchStarGalaxiesToData( iFile )
         
         if i==0:
@@ -65,7 +65,7 @@ def filesToRecArray( files ):
             iFileData = rec2array( data )
             iDataNoNan, starGalNoNan = \
               removeNans( iFileData, iStarGalClass )
-              
+
             allData = np.vstack( (allData, iDataNoNan))
             
             starGalClass = np.append(starGalClass, starGalNoNan)
@@ -99,12 +99,14 @@ def rec2array( recArray):
 
     #dont include the errors in this fit
     includeNames = [ i for i in list(recArray.columns.names) if not 'err' in i ]
-    #includeNames.remove('skymed')
-    #includeNames.remove('exp_time')
-    #includeNames.remove('skysw')
-    #includeNames.remove('skysd')
 
-    includeNames=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','BACKGROUND']
+    if 'skymed' in includeNames:
+        includeNames.remove('skymed')
+        includeNames.remove('exp_time')
+        includeNames.remove('skysw')
+        includeNames.remove('skysd')
+
+    #includeNames=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','BACKGROUND']
     
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
@@ -117,11 +119,11 @@ def getFeatureLabels( fitsFile ):
     includeNames = fits.open(fitsFile)[1].data.columns.names
     #remove all those with err in it
     namesNoErr = [ i for i in includeNames if not 'err' in i ]
-    #includeNames.remove('skymed')
-    #includeNames.remove('exp_time')
-    #includeNames.remove('skysw')
-    #includeNames.remove('skysd')
-    namesNoErr=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+    includeNames.remove('skymed')
+    includeNames.remove('exp_time')
+    includeNames.remove('skysw')
+    includeNames.remove('skysd')
+    #namesNoErr=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
     print includeNames
     return np.array(namesNoErr)
 

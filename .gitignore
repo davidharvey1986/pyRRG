@@ -1,6 +1,8 @@
 log
 virtualenv
 trainStarGalClass/trainingData
+trainStarGalClass/*.fits
+trainStarGalClass/*.pkl
 docs/Manual.synctex.aux
 docs/Manual.synctex.gz
 docs/Manual.log
