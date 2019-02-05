@@ -139,7 +139,8 @@ def main(  infile, hst_filter=None,
         measure_moms.measure_moms( infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,
-                                    min_rad=min_rad, mult=mult)
+                                    min_rad=min_rad, mult=mult,
+                                       silent=True)
 
     uncorrected_moments = py.open( uncorrected_moments_cat )[1].data
  

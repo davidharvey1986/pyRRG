@@ -41,7 +41,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ;   mult- multiplier used to find gaussian width from area
     ;   min_rad- stellar radius
     ;   startx, starty- lower left corner of image in pixel values, default to zero
-    ;   verbose set to False to supress messages
+    ;   silent set to 1 to supress messages
     ;   stellar set to 1 to evaluate all objects with the same radius (min_rad)
     ;   weight=use a weight image to determine good/bad pixels (yes=1 0=no/default)
     ;   wt_ext= extension of weight image in fits file
@@ -57,7 +57,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     IF N_PARAMS(0) LT 1 THEN BEGIN
     PRINT, 'rrg_measure_moms,fits_image,sex_catalog,outfile,width=width,saturation=saturation,'
     PRINT, '    badval=badval,cut_off=cut_off,fieldback=fieldback,mult=mult,min_rad=min_rad,'
-    PRINT, '    startx=startx,starty=starty,verbose=verbose,stellar=stellar,'
+    PRINT, '    startx=startx,starty=starty,silent=silent,stellar=stellar,'
     PRINT, '    weight=weight,wt_ext=wt_ext,nocenter=nocenter,name_weight_im=name_weight_im'
     return
     ENDIF
@@ -167,7 +167,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
             (xc+cut_rad[i]+1 > xsize ) | \
             (yc+cut_rad[i]+1 > ysize ):
 
-            if verbose:
+            if not silent:
                 print(' %i %f %f too close to edge at iteration 1\n' % (i,xGal[i],yGal[i]))
             offedge=offedge+1
             go_on=0
@@ -242,7 +242,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                     ( yc-cut_rad[i]-1 < starty) | \
                     ( xc+cut_rad[i]+1 > xsize ) | \
                     ( yc+cut_rad[i]+1 > ysize) :
-                    if verbose:
+                    if not silent:
                         print( ' %i %f %f too close to edge at iteration %i' % \
                             (i,xGal[i],yGal[i],(count-1)) )
                    
@@ -251,7 +251,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
                 if (badpix_centroid == 'yes'):
                     go_on=0
-                    if verbose:
+                    if not silent:
                         print( '%i %f %f  bad pix in centroid at iteration %f' %
                                     (i,xGal[i],yGal[i],(count-1)) )
                                 
@@ -262,7 +262,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                 #this ends the while
             if (count > 100):
                 centerprob=centerprob+1
-                if verbose:
+                if not silent:
                     print( '%i %f %f Too many centering iterations %i' % \
                             (i,xGal[i],yGal[i],count))
                 galaxy_moments.prob[i] += 2
@@ -270,7 +270,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
             if np.sqrt( (xc-xGal[i])**2 + (yc-yGal[i])**2) > mult*radius[i]:
                 go_on=0
                 centerprob += 1
-                if verbose:
+                if not silent:
                     print( '%i %f %f Centroid shift too large ' % (i,xGal[i],yGal[i]) )
                 
                 galaxy_moments.prob[i] += 2
