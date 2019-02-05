@@ -62,8 +62,12 @@ def psf_cor(    mom_file,
 
     moms = py.open(mom_file)[1].data
 
-    radius = np.sqrt( ( moms.xx + moms.yy)/2.)
+    momsDiagnolSum = (moms.xx + moms.yy)/2.
+    UnphysicalSum = momsDiagnolSum < 0
+    momsDiagnolSum[ UnphysicalSum ] = 0.
     
+    radius = np.sqrt( momsDiagnolSum )
+    radius[UnphysicalSum] = np.nan
     
     galaxies, stars = \
       sgs.star_galaxy_separation( moms, \
