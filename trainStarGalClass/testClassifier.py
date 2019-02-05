@@ -23,15 +23,15 @@ def testClassifier(retrain=False):
     plt.plot( testFeatures[predictClassification==1,\
                                featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==1,\
-                                   featureLabels=='gal_size'],'r.')
+                                   featureLabels=='MU_MAX'],'r.')
                                    
     plt.plot( testFeatures[predictClassification==0,\
                             featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==0,\
-                                   featureLabels=='gal_size'],'y.')
+                                   featureLabels=='MU_MAX'],'y.')
     plt.plot( testFeatures[predictClassification==-1,\
                             featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==-1,\
-                                   featureLabels=='gal_size'],'g.')
+                                   featureLabels=='MU_MAX'],'g.')
 
     plt.show()

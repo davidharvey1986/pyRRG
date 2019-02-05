@@ -99,15 +99,15 @@ def rec2array( recArray):
 
     #dont include the errors in this fit
     includeNames = [ i for i in list(recArray.columns.names) if not 'err' in i ]
+    #includeNames.remove('skymed')
+    #includeNames.remove('exp_time')
+    #includeNames.remove('skysw')
+    #includeNames.remove('skysd')
 
-    if 'skymed' in includeNames:
-        includeNames.remove('skymed')
-        includeNames.remove('exp_time')
-        includeNames.remove('skysw')
-        includeNames.remove('skysd')
 
-    #includeNames=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','BACKGROUND']
-    
+    includeNames = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+        'xxxx','yyyy','xyyy','xxyy','ell']#,'skymed']
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
     for i, iField in enumerate(includeNames):
@@ -119,12 +119,19 @@ def getFeatureLabels( fitsFile ):
     includeNames = fits.open(fitsFile)[1].data.columns.names
     #remove all those with err in it
     namesNoErr = [ i for i in includeNames if not 'err' in i ]
-    includeNames.remove('skymed')
-    includeNames.remove('exp_time')
-    includeNames.remove('skysw')
-    includeNames.remove('skysd')
-    #namesNoErr=['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+    #includeNames.remove('skymed')
+    #includeNames.remove('exp_time')
+    #includeNames.remove('skysw')
+    #includeNames.remove('skysd')
     print includeNames
+    namesNoErr = \
+        ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+            'xxxx','yyyy','xyyy','xxyy','ell']
+
+
+      #,'skymed']
+    print namesNoErr
+
     return np.array(namesNoErr)
 
 
