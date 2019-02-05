@@ -477,7 +477,7 @@ class moms( dict ):
 
             
         fits_table = py.BinTableHDU.from_columns( fits_columns )
-        fits_table.writeto( filename, clobber=True )
+        fits_table.writeto( filename, clobber=True,output_verify='ignore' )
 
 
 

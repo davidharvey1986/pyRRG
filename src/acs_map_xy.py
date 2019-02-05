@@ -222,7 +222,6 @@ def acs_map_xy( x, y,
 
     # Perform transformation via the polynomial model.
     # THIS IS BLOODY SLOW IF THERE ARE A LOT OF POSITIONS!
-    print n_chip1
     if n_chip1 > 0 :
         k=0
         for i in xrange(order+1):

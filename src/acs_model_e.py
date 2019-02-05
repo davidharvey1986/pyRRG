@@ -1,4 +1,4 @@
-import idlsave as idl
+from scipy.io import readsav as readSave
 import numpy as np
 import pyfits as py
 import directories
@@ -86,7 +86,7 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     
     # Loop over each focus value in turn
     for f in xrange(n_focus):
-        moms = idl.read( filenames1+str(catalogues_focus[f])+filenames2).moms
+        moms = readSave( filenames1+str(catalogues_focus[f])+filenames2).moms
         
         
         # Loop over each position in which we're interested

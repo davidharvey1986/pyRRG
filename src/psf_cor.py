@@ -5,7 +5,7 @@ import glob as glob
 import drizzle_position as dp
 import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
-import idlsave as idlsave
+from scipy.io import readsav as readSave
 import rotate_moments as rm
 import star_galaxy_separation as sgs
 import copy as cp
@@ -88,7 +88,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    scat = idlsave.read( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
+    scat = readSave( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat',verbose=False )['scat']
 
     #so this function interpolates.
  
@@ -105,7 +105,6 @@ def psf_cor(    mom_file,
 
     images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
     if len(images) == 0:
-        print()
         useStacked = \
           raw_input('Cant find single exposures of field, infer PSF from stacked image? (y,n)')
         while ( useStacked != 'y') & (useStacked!='n'):
@@ -125,7 +124,7 @@ def psf_cor(    mom_file,
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
-    py.writeto('galaxies.fits', moms[galaxies], clobber=True)
+    py.writeto('galaxies.fits', moms[galaxies], clobber=True,output_verify='ignore')
     print("Getting position of galaxies in each exposure")
     galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
                                             py.open('galaxies.fits')[1].data, \
@@ -133,7 +132,7 @@ def psf_cor(    mom_file,
     uncorrected_xx = galaxy_moms.xx
     uncorrected_yy = galaxy_moms.yy
     
-    py.writeto('stars.fits', moms[stars], clobber=True)
+    py.writeto('stars.fits', moms[stars], clobber=True,output_verify='ignore')
     print("Getting position of stars in each exposure")
     star_moms = \
       dp.drizzle_position( drizzle_file, images,  \
@@ -373,7 +372,7 @@ def psf_cor(    mom_file,
     new_cols = py.ColDefs(newcol)
     
     hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
-    hdu.writeto( outfile, clobber=True)
+    hdu.writeto( outfile, clobber=True,output_verify='ignore')
 
 class moments( dict ):
 

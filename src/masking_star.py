@@ -167,7 +167,7 @@ def main(  shear_catalog, object_catalog_fits, \
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
       shear_catalog.split('.')[1]
-    hdu.writeto(clean_catalog, clobber=True)
+    hdu.writeto(clean_catalog, clobber=True,output_verify='ignore')
 
 
 
@@ -216,7 +216,7 @@ def main(  shear_catalog, object_catalog_fits, \
                 Shears_remove = Shears_remove[ inBox == False ]
 
     
-    fits.writeto(outFile,Shears_remove, clobber=True )
+    fits.writeto(outFile,Shears_remove, clobber=True,output_verify='ignore' )
 
 
 ##------------------------------polygen defined by hand------------------------------
