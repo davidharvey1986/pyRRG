@@ -104,7 +104,17 @@ def psf_cor(    mom_file,
 
     images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
     if len(images) == 0:
-        raise ValueError('Cant find single exposures of field')
+        print()
+        useStacked = \
+          raw_input('Cant find single exposures of field, infer PSF from stacked image? (y,n)')
+        while ( useStacked != 'y') | (useStacked!='n'):
+            useStacked = \
+              raw_input('Dont recognise input, please type "y" or "n"')
+        if useStacked == 'n':
+            raise ValueError('Cant find single exposures of field')
+        else:
+            images = glob.glob( dirs.data_dir+'/'+drizzle_file)
+
 
     nImages = len(images)
 
