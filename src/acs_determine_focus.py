@@ -76,7 +76,6 @@ def acs_determine_focus( unknown_focus_image,
     
     image_name = unknown_focus_image.split('/')[-1] 
     inframe_stars = observed_moments_stars[observed_moments_stars[image_name+'_INFRAME'] == 1]
-    
 
     if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
         mm.measure_moms( unknown_focus_image,  'NOCAT_NEED',

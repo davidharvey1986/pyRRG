@@ -10,6 +10,7 @@ import rotate_moments as rm
 import star_galaxy_separation as sgs
 import copy as cp
 import directories
+
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -107,15 +108,18 @@ def psf_cor(    mom_file,
         print()
         useStacked = \
           raw_input('Cant find single exposures of field, infer PSF from stacked image? (y,n)')
-        while ( useStacked != 'y') | (useStacked!='n'):
+        while ( useStacked != 'y') & (useStacked!='n'):
             useStacked = \
               raw_input('Dont recognise input, please type "y" or "n"')
         if useStacked == 'n':
             raise ValueError('Cant find single exposures of field')
         else:
-            images = glob.glob( dirs.data_dir+'/'+drizzle_file)
-
-
+            #Create a new version of the fits file
+            #for the purpose of PSF
+            #This needs to be updated to use the wht file
+            os.system('cp '+dirs.data_dir+'/'+drizzle_file+' '+dirs.data_dir+'/PSFmeasure.fits')
+            images = [ dirs.data_dir+'/PSFmeasure.fits' ]
+            
     nImages = len(images)
 
 
@@ -164,7 +168,6 @@ def psf_cor(    mom_file,
 
         #So get the focus position by fitting the true image stars to the
         #model
-        
         focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, wavelength)
 
