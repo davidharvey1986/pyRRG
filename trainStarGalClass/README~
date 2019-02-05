@@ -16,3 +16,25 @@ I will learn on this training set, using features, which will be the raw moments
 Once learnt i should be able to transmit this to all future data sets.
 With the idea that everytime someone uses the data set, it improves it.
 
+1. Generate training set
+2. Learn training set
+3. Test model
+4. Implement auto-update
+5. Merge with master
+
+
+Notes
+-----
+So it seems that it works pretty well (0.8243876080691642)
+if we use the standard features. 
+['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+This model was saved as 
+starGalaxyModelNoExpTime.pkl
+
+Im going to try with exposure time of the image
+This didnt seem to want to work, or at least it took far too long to
+train so sack it off
+
+I tried swapping out MAG_ISO and put in FLUX_AUTO
+Score = 0.9747838616714697
+modelName = 
