@@ -108,6 +108,7 @@ def rec2array( recArray):
     includeNames = \
       ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
         'xxxx','yyyy','xyyy','xxyy','ell']#,'skymed']
+    includeNames = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
     for i, iField in enumerate(includeNames):
@@ -131,6 +132,7 @@ def getFeatureLabels( fitsFile ):
 
       #,'skymed']
     print namesNoErr
+    namesNoErr = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
 
     return np.array(namesNoErr)
 
