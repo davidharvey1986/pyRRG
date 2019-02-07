@@ -9,6 +9,7 @@ dist
 test
 build
 example
+src/*.pyc
 src/__init__.pyc
 src/acs_3dpsf.pyc
 src/acs_determine_focus.pyc

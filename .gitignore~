@@ -1,5 +1,6 @@
 log
 virtualenv
+trainStarGalClass
 docs/Manual.synctex.aux
 docs/Manual.synctex.gz
 docs/Manual.log
