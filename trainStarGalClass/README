@@ -37,6 +37,7 @@ train so sack it off
 
 I tried swapping out MAG_ISO and put in FLUX_AUTO
 Score = 0.9747838616714697
+<<<<<<< HEAD
 modelName = starGalaxyModelFluxAuto.pkl
 
 Random forests are doing a much better job and is much quicker 
@@ -103,3 +104,13 @@ Or any less features. Seems like more the better...
 
 
 1. Larger training set required
+=======
+I have improved the training set by using all the clash clusters
+The results are
+Number of correct stars: 18/27
+Number of correct galaxies: 4943/5399
+Number of correct noise: 120/126
+Classifier score is 0.92
+So much better at the galaxies but not noise nor stars. So now i will increase number trees
+
+

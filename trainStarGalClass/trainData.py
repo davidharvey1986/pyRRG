@@ -6,11 +6,13 @@ logisitic regression
 import os as os
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier as RF
+
 from sklearn.svm import SVC
 import generateTrainingData as gt
 import pickle as pkl
 import time
 import ipdb as pdb
+
 def trainDataSVM(nSamples=60000):
     pickleFileName = 'starGalaxyModelSVM.pkl'
     
@@ -42,6 +44,7 @@ def trainDataSVM(nSamples=60000):
     endTime = time.time()
     fitTime= endTime - startTime
     print("Time to fit classifier is %0.2f seconds" % fitTime)
+
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
     
@@ -62,7 +65,7 @@ def trainDataRF(nSamples=60000, retrain=True):
               
 
  
-    clf = RF( n_estimators=100, criterion="gini")
+    clf = RF( n_estimators=1000, criterion="gini")
     print("Training started at %s" % time.ctime())
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
@@ -73,3 +76,4 @@ def trainDataRF(nSamples=60000, retrain=True):
     
     
     return pickleFileName
+

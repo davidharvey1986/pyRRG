@@ -37,6 +37,7 @@ train so sack it off
 
 I tried swapping out MAG_ISO and put in FLUX_AUTO
 Score = 0.9747838616714697
+<<<<<<< HEAD
 modelName = starGalaxyModelFluxAuto.pkl
 
 Random forests are doing a much better job and is much quicker 
@@ -99,6 +100,12 @@ namesNoErr = \
        'exp_time','skysd']
 Not worth it
 
+Or any less features. Seems like more the better...
 
 
 1. Larger training set required
+=======
+I have improved the training set by using all the clash clusters
+The results are
+
+

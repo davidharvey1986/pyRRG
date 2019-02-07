@@ -5,11 +5,13 @@ from matplotlib import pyplot as plt
 import ipdb as pdb
 import trainData as td
 import numpy as np
+
 def testClassifier(retrain=False):
     '''
     This will generate some test data and plot the stars and galaxies
     on the standard plot
     '''
+
         
     modelName = td.trainDataRF(retrain=retrain)
         
@@ -30,7 +32,21 @@ def testClassifier(retrain=False):
                   testFeatures[predictClassification==1,\
                                    featureLabels=='MU_MAX'],'r.',\
                   label='Galaxies')
-                                   
+    if retrain:
+        td.trainData()
+    featureLabels, testFeatures, testAnswers = \
+      gtd.generateTestData()
+
+    mlClassifier = pkl.load(open('starGalaxyModel.pkl'))
+
+    predictClassification = mlClassifier.predict(testFeatures)
+    print mlClassifier.score(testFeatures, testAnswers)
+    print("Number of objects in test data is %i"% len(testFeatures))
+
+    plt.plot( testFeatures[predictClassification==1,\
+                               featureLabels=='MAG_AUTO'], \
+                  testFeatures[predictClassification==1,\
+                                   featureLabels=='MU_MAX'],'r.')
     plt.plot( testFeatures[predictClassification==0,\
                             featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==0,\
@@ -39,7 +55,8 @@ def testClassifier(retrain=False):
     plt.plot( testFeatures[predictClassification==-1,\
                             featureLabels=='MAG_AUTO'], \
                   testFeatures[predictClassification==-1,\
-                                   featureLabels=='MU_MAX'],'g.', label='Noise')
+                                   featureLabels=='MU_MAX'],'g.', \
+                  label='Noise')
     plt.xlim(15,30)
     plt.xlabel('Magnitdue')
     plt.ylabel('Mu Max')
@@ -58,3 +75,5 @@ def classifierScore( answer, predict):
     print("Number of correct stars: %i/%i" % (NstarCorrect,Nstars))
     print("Number of correct galaxies: %i/%i"% (NgalCorrect,Ngalaxies))
     print("Number of correct noise: %i/%i"% (NnoiseCorrect, Nnoise))
+
+

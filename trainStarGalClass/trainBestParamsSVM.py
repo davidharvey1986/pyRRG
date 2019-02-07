@@ -12,7 +12,11 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 import generateTrainingData as gt
 import pickle as pkl
+<<<<<<< HEAD
 import os
+=======
+
+>>>>>>> 9612e29a36b8184d15ec4d63e8353856fab0d68c
 def gridSearch():
     '''
     Using the grid search technique automatically with the 
@@ -28,6 +32,7 @@ def gridSearch():
 
     
     #Create the GridSearchCV object
+<<<<<<< HEAD
     pickleFile = 'grid_clf.pkl'
     if not os.path.isfile( pickleFile ):
         grid_clf = GridSearchCV(SVC(class_weight='balanced'), \
@@ -41,6 +46,12 @@ def gridSearch():
     print("Finding best fit parameters")
     grid_clf = grid_clf.fit(trainingFeatures, trainingAnswers)
     
+=======
+    grid_clf = GridSearchCV(SVC(class_weight='balanced'), params_grid)
+
+    #Fit the data with the best possible parameters
+    grid_clf = grid_clf.fit(trainingFeatures, trainingAnswers)
+>>>>>>> 9612e29a36b8184d15ec4d63e8353856fab0d68c
     pkl.dump(grid_clf,open("bestSVMparams.pkl",'wb'))
     #Print the best estimator with it's parameter
     print grid_clf.best_estimator

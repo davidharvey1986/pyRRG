@@ -25,6 +25,7 @@ def generateTrainingData(allGalaxyFiles=None, \
     Generate a table of data using the data in the file trainingData
     '''
     if allGalaxyFiles is None:
+
         allGalaxyFiles = glob.glob('trainingData/*uncor*')
 
         allGalaxyFiles = \
@@ -86,7 +87,9 @@ def generateTestData():
     '''
 
 
+
     testGalaxyFiles = ['trainingData/abell2744_uncor.cat']
+
     featureLabels = getFeatureLabels( testGalaxyFiles[0] )
     
     testFeatures, testAnswers = \
@@ -130,6 +133,7 @@ def getFeatureLabels( fitsFile ):
     #includeNames.remove('exp_time')
     #includeNames.remove('skysw')
     #includeNames.remove('skysd')
+
     print namesNoErr
     #namesNoErr = \
     #    ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
