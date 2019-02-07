@@ -3,15 +3,17 @@ This script will train the data at the moment using a very simple
 logisitic regression
 
 '''
-
+import os as os
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.svm import SVC
 import generateTrainingData as gt
 import pickle as pkl
 import time
 import ipdb as pdb
-def trainData(nSamples=60000):
-
+def trainDataSVM(nSamples=60000):
+    pickleFileName = 'starGalaxyModelSVM.pkl'
+    
     trainingFeatures, trainingAnswers = \
       gt.generateTrainingData()
     nStart = 17040
@@ -40,6 +42,34 @@ def trainData(nSamples=60000):
     endTime = time.time()
     fitTime= endTime - startTime
     print("Time to fit classifier is %0.2f seconds" % fitTime)
-    pkl.dump(fitClassifier, open('starGalaxyModel.pkl','wb'))
-
+    pkl.dump(fitClassifier, open(pickleFileName,'wb'))
+    return pickleFileName
     
+def trainDataRF(nSamples=60000, retrain=True):
+    '''
+    This uses a random forest to classify the data
+    '''
+    pickleFileName = 'starGalaxyModelRF.pkl'
+
+    if (os.path.isfile(pickleFileName)) & (not retrain):
+        return pickleFileName
+    trainingFeatures, trainingAnswers = \
+      gt.generateTrainingData()
+  
+
+    print("Size of training data is %i with %i features" %\
+              (trainingFeatures.shape[0], trainingFeatures.shape[1]))
+              
+
+ 
+    clf = RF( n_estimators=100, criterion="gini")
+    print("Training started at %s" % time.ctime())
+    startTime = time.time()
+    fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
+    endTime = time.time()
+    fitTime= endTime - startTime
+    print("Time to fit classifier is %0.2f seconds" % fitTime)
+    pkl.dump(fitClassifier, open(pickleFileName,'wb'))
+    
+    
+    return pickleFileName

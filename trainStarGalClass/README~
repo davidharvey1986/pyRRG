@@ -37,4 +37,68 @@ train so sack it off
 
 I tried swapping out MAG_ISO and put in FLUX_AUTO
 Score = 0.9747838616714697
-modelName = 
+modelName = starGalaxyModelFluxAuto.pkl
+
+Random forests are doing a much better job and is much quicker 
+so i have now altered so it does this now.
+So the models now have 10 features 
+names = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+        'xxxx','yyyy','xyyy','xxyy','ell']
+with 1000 decision trees. Taking ~200seconds to train.
+With criterion 'entropy'
+starGalaxyModelRFa.pkl
+
+I will try it with the global features now (skymed, exp_time etc)
+starGalaxyModelRFb.pkl
+    includeNames = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+        'xxxx','yyyy','xyyy','xxyy','ell','skymed','exp_time','skysd']
+This has an improved rating of 0.8845461095100865
+Number of correct stars: 24/27
+Number of correct galaxies: 4761/5399
+Number of correct noise: 124/126
+Classifier score is 0.88
+With criterion 'entropy'
+
+If i try with all the features then it takes
+Time to fit classifier is 366.20 seconds
+and the score is
+0.8650936599423631
+With criterion 'entropy'
+
+Selective feature but generous. with 1000 trees still
+ includeNames = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+        'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob','ell','skymed','exp_time','skysd']
+Number of correct stars: 24/27
+Number of correct galaxies: 4773/5399
+Number of correct noise: 124/126
+Classifier score is 0.89
+With criterion 'entropy'
+starGalaxyModelRF_20features_1000.pkl
+
+Trees: 100
+Criterion: 'entropy'
+Number of correct stars: 24/27
+Number of correct galaxies: 4772/5399
+Number of correct noise: 122/126
+Classifier score is 0.89
+starGalaxyModelRF_20features_100.pkl
+
+Trees:100
+Criterion: 'gini'
+Number of correct stars: 24/27
+Number of correct galaxies: 4788/5399
+Number of correct noise: 123/126
+Classifier score is 0.89
+starGalaxyModelRF_20features_100_gini.pkl
+
+
+namesNoErr = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+       'exp_time','skysd']
+Not worth it
+
+
+
+1. Larger training set required

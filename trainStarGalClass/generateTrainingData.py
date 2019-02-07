@@ -106,9 +106,8 @@ def rec2array( recArray):
 
 
     includeNames = \
-      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
-        'xxxx','yyyy','xyyy','xxyy','ell']#,'skymed']
-    includeNames = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO']
+   
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
     for i, iField in enumerate(includeNames):
@@ -124,15 +123,17 @@ def getFeatureLabels( fitsFile ):
     #includeNames.remove('exp_time')
     #includeNames.remove('skysw')
     #includeNames.remove('skysd')
-    print includeNames
-    namesNoErr = \
-        ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
-            'xxxx','yyyy','xyyy','xxyy','ell']
+    print namesNoErr
+    #namesNoErr = \
+    #    ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+    #        'xxxx','yyyy','xyyy','xxyy','ell']
 
 
       #,'skymed']
+    namesNoErr = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO']
+   
     print namesNoErr
-    namesNoErr = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
 
     return np.array(namesNoErr)
 
