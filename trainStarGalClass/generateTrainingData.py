@@ -25,7 +25,12 @@ def generateTrainingData(allGalaxyFiles=None, \
     Generate a table of data using the data in the file trainingData
     '''
     if allGalaxyFiles is None:
-        allGalaxyFiles = glob.glob('trainingData/*uncor*')[1:]
+        allGalaxyFiles = glob.glob('trainingData/*uncor*')
+
+        allGalaxyFiles = \
+          np.array([ i for i in allGalaxyFiles if not '2744' in i])
+
+
 
          
     if os.path.isfile( trainingDataPklFile ):
@@ -81,7 +86,7 @@ def generateTestData():
     '''
 
 
-    testGalaxyFiles = [glob.glob('trainingData/*uncor*')[0]]
+    testGalaxyFiles = ['trainingData/abell2744_uncor.cat']
     featureLabels = getFeatureLabels( testGalaxyFiles[0] )
     
     testFeatures, testAnswers = \
@@ -106,7 +111,9 @@ def rec2array( recArray):
 
 
     includeNames = \
-      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO']
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+           'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
+      'ell','skymed','exp_time','skysd']
    
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
@@ -131,8 +138,9 @@ def getFeatureLabels( fitsFile ):
 
       #,'skymed']
     namesNoErr = \
-      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO']
-   
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+           'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
+      'ell','skymed','exp_time','skysd']
     print namesNoErr
 
     return np.array(namesNoErr)

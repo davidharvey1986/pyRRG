@@ -45,6 +45,8 @@ def star_galaxy_separation( sources, restore=False,
         print('found in the top left plot. Please only select here')
         gal_star = galStar( savefile, sources, \
                                 set_defaults=True, include_sat=include_sat)
+        fits.writeto('galaxies.fits', sources[gal_star.galaxies], clobber=True)
+        fits.writeto('stars.fits', sources[gal_star.stars], clobber=True)
         return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
     else:
         if restore:

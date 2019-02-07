@@ -81,8 +81,8 @@ def star_galaxy_separation( sources, restore=False,
             print 'Writing over gal file and removing j*uncor.cat'
             os.system('rm -fr j*uncor.cat *_cor.cat')
             gal_star.write( savefile )
-            fits.write('galaxies.fits', sources[gal_star.galaxies], clobber=True)
-            fits.write('stars.fits', sources[gal_star.stars], clobber=True)
+            fits.writeto('galaxies.fits', sources[gal_star.galaxies], clobber=True)
+            fits.writeto('stars.fits', sources[gal_star.stars], clobber=True)
             return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
         else:
             if overwrite == 'c':
