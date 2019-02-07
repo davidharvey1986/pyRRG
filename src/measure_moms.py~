@@ -1,7 +1,7 @@
 import mmm as mmm
 import pyfits as py
 import numpy as np
-import sys
+
 from matplotlib import pyplot as plt
 import RRGtools as at
 def measure_moms(fits_image, sex_catalog, outfile,
@@ -146,10 +146,6 @@ def measure_moms(fits_image, sex_catalog, outfile,
     galaxy_moments = moms( nGalaxies, radius=radius )
     
     for i in xrange( nGalaxies ):
-        if not verbose:
-            sys.stdout.write("Measuring moment of galax: %i/%i\r" % \
-                                 (i,nGalaxies))
-            sys.stdout.flush()
         
         #following changed by jrhodes to account for different indexing in SExtractor and IDL
        
