@@ -1,9 +1,10 @@
 log
 virtualenv
 trainStarGalClass/trainingData
-<<<<<<< HEAD
 trainStarGalClass/*.fits
 trainStarGalClass/*.pkl
+<<<<<<< HEAD
+trainStarGalClass/models
 =======
 >>>>>>> 9612e29a36b8184d15ec4d63e8353856fab0d68c
 docs/Manual.synctex.aux
