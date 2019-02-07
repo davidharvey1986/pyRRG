@@ -147,7 +147,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
     for i in xrange( nGalaxies ):
         if not verbose:
-            sys.stdout.write("Measuring moment of galax: %i/%i\r" % \
+            sys.stdout.write("Measuring moment of object: %i/%i\r" % \
                                  (i,nGalaxies))
             sys.stdout.flush()
         
