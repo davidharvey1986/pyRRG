@@ -14,6 +14,9 @@ import directories as directories
 import rrg_to_lenstool as rtl
 import subprocess
 import check_external_packages as cep
+import masking_star as mask
+import double_detection_removal as remove_doubles
+import sys
 
 def main(  infile, hst_filter=None,
             data_dir=None,
@@ -89,7 +92,7 @@ def main(  infile, hst_filter=None,
                                        code_dir, stilts_dir)
     dirs.check_dirs()
     dirs.write_dirs()
-    cep.check_external_pacakges()
+    cep.check_external_packages()
 
     
     #Check files exist
@@ -126,10 +129,6 @@ def main(  infile, hst_filter=None,
     else:
         sources = py.open( sex_catalogue )[1].data
 
-     
-        
-    print sex_catalogue
-  
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
     
@@ -137,8 +136,9 @@ def main(  infile, hst_filter=None,
         measure_moms.measure_moms( infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,
-                                    min_rad=min_rad, mult=mult)
-
+                                    min_rad=min_rad, mult=mult,
+                                       silent=True)
+    return 
     uncorrected_moments = py.open( uncorrected_moments_cat )[1].data
  
 
@@ -168,7 +168,7 @@ def main(  infile, hst_filter=None,
   
     sheared_cat = field[:-5]+".shears"
     
-    cs.calc_shear( corrected_moments, galaxies,
+    cs.calc_shear( corrected_moments,
                    sheared_cat, 
                     min_rad=min_rad, mult=mult,
                     signal_noise_cut=signal_noise_cut,
@@ -177,11 +177,28 @@ def main(  infile, hst_filter=None,
                     dataDir=data_dir)
     
 
-    
-    plot.plot_shears( sheared_cat )
-    etr.ellipse_to_reg( sheared_cat )
 
+    beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
+    mask.main( sheared_cat, corrected_moments_cat,
+                   outFile=beforeDoubles_cat)
+
+    clean_cat = field[:-5]+"_clean.shears"
+
+    remove_doubles.remove_object(beforeDoubles_cat, clean_cat, FWHM_to_radius=1)
+    
+    plot.plot_shears( clean_cat )
+
+    etr.ellipse_to_reg( clean_cat )
+    
     lenstool_file =  field[:-5]+".lenstool"
-    rtl.rrg_to_lenstool( sheared_cat, field)
+    rtl.rrg_to_lenstool( clean_cat, field)
   
 
+if __name__ == "__main__":
+    print len(sys.argv)
+    if len(sys.argv) == 1:
+        print("Please to add image name")
+        print("python main.py <image_name>")
+        raise ValueError()
+    
+    main(sys.argv[1])

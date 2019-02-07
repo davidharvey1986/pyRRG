@@ -129,10 +129,6 @@ def main(  infile, hst_filter=None,
     else:
         sources = py.open( sex_catalogue )[1].data
 
-     
-        
-    print sex_catalogue
-  
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
     
