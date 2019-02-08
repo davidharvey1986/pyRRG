@@ -32,16 +32,11 @@ def testClassifier(retrain=False):
                   testFeatures[predictClassification==1,\
                                    featureLabels=='MU_MAX'],'r.',\
                   label='Galaxies')
-    if retrain:
-        td.trainData()
+
     featureLabels, testFeatures, testAnswers = \
       gtd.generateTestData()
 
-    mlClassifier = pkl.load(open('starGalaxyModel.pkl'))
-
-    predictClassification = mlClassifier.predict(testFeatures)
-    print mlClassifier.score(testFeatures, testAnswers)
-    print("Number of objects in test data is %i"% len(testFeatures))
+    
 
     plt.plot( testFeatures[predictClassification==1,\
                                featureLabels=='MAG_AUTO'], \
