@@ -1,5 +1,6 @@
 log
 virtualenv
+trainStarGalClass/TestData
 trainStarGalClass/trainingData
 trainStarGalClass/*.fits
 trainStarGalClass/*.pkl
