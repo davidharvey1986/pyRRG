@@ -28,8 +28,7 @@ def generateTrainingData(allGalaxyFiles=None, \
 
         allGalaxyFiles = glob.glob('trainingData/*uncor*')
 
-        allGalaxyFiles = \
-          np.array([ i for i in allGalaxyFiles if not '2744' in i])
+
 
 
 
@@ -88,7 +87,7 @@ def generateTestData():
 
 
 
-    testGalaxyFiles = ['trainingData/abell2744_uncor.cat']
+    testGalaxyFiles = glob.glob('TestData/*uncor.cat')
 
     featureLabels = getFeatureLabels( testGalaxyFiles[0] )
     

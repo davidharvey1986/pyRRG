@@ -107,5 +107,16 @@ Or any less features. Seems like more the better...
 =======
 I have improved the training set by using all the clash clusters
 The results are
+Number of correct stars: 18/27
+Number of correct galaxies: 4943/5399
+Number of correct noise: 120/126
+Classifier score is 0.92
+So much better at the galaxies but not noise nor stars. So now i will increase number trees
 
+Over the entire CLASH clusters, 20 features
+100 trees
+Number of correct stars: 795/1076
+Number of correct galaxies: 84792/86284
+Number of correct noise: 9784/18084
+Classifier score is 0.90
 
