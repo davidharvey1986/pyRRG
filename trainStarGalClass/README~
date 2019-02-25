@@ -120,3 +120,30 @@ Number of correct galaxies: 84792/86284
 Number of correct noise: 9784/18084
 Classifier score is 0.90
 
+1000 Trees
+Number of correct stars: 795/1076
+Number of correct galaxies: 84882/86284
+Number of correct noise: 9790/18084
+Classifier score is 0.91
+
+1000 Trees
+1998/9510 removed due to nans
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95
+But not including the GAL-*
+
+
+Including GAL-* doesnt seem to make a difference
+I think this is because there are so many objects in the CLASH clsuters
+that it dominates the trees, so 
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95
+
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95

@@ -35,56 +35,40 @@ def star_galaxy_separation( sources, restore=False,
     
     INFO : For more information on how this works and how it is used by the user please see 
            the documentation
+    
+    UPDATES:
+
+    I sack of using the galStar as teh savefile as will pass the sourecs through with flags in it.
     '''
     plt.ion()
     object_indexes = np.arange( len(sources['X_IMAGE']) )
   
-    if not os.path.isfile( savefile ):
-        #If the file does not exist get the user inputs for stars / galaxies
-        print('Save file not found, separating, please follow instructions')
-        print('found in the top left plot. Please only select here')
-        gal_star = galStar( savefile, sources, \
-                                set_defaults=True, include_sat=include_sat)
-        fits.writeto('galaxies.fits', sources[gal_star.galaxies], clobber=True)
-        fits.writeto('stars.fits', sources[gal_star.stars], clobber=True)
-        return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
+    if restore:
+        #Dont ask, just get the stars and galaxies and return
+        sourcesNames = sources.columns.names
+        if 'galStarFlag' not in SourceNames:
+            raise ValueError('Cant find the star galaxy flag in the sources')
+        return object_indexes[ sources['galStarFlag']==1], \
+          object_indexes[ sources['galStarFlag']==0]
     else:
-        if restore:
-            #Dont ask, just get the stars and galaxies and return
-            print 'Restoring '+savefile
-            gal_star = galStar( savefile, sources, \
-                                    set_defaults=False, \
-                                    include_sat=include_sat)   
-            gal_star.get_galaxies( sources )
-            gal_star.get_stars( sources )
-            return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
-        
-        print 'Loading savefile: '+savefile
-        gal_star = galStar( savefile, sources,
-                                set_defaults=False, \
-                                include_sat=include_sat)   
-        gal_star.get_galaxies( sources )
-        gal_star.get_stars( sources )
-        gal_star.generate_axes( sources )
-        gal_star.plot_boundaries(  sources )
-        gal_star.plot_stars_galaxies( sources, gal_star.axes, overwrite=True )
-        plt.show( block=True)
-
         
         overwrite = \
-          raw_input('Save file exists, accept or reject current selection?\n'+\
-                        'Yes (y)      : And remove all files and remeasure stars and galaxies\n'+\
-                        'Continue (c) : Use current selection, do not remeasure galaxies and stars\n'+\
-                        'No (n)       : Reject start-gal separation and re-do\n'+\
+          raw_input('Accept or reject automated selection?\n'+\
+          'Yes (y) : And remove all files and remeasure stars and galaxies\n'+\
+           'Continue (c) : Use current selection, do not remeasure galaxies and stars\n'+\
+            'No (n)       : Reject start-gal separation and re-do\n'+\
                         '>>> ')
                   
         
         if overwrite == 'y':
             print 'Writing over gal file and removing j*uncor.cat'
             os.system('rm -fr j*uncor.cat *_cor.cat')
-            gal_star.write( savefile )
-            fits.writeto('galaxies.fits', sources[gal_star.galaxies], clobber=True)
-            fits.writeto('stars.fits', sources[gal_star.stars], clobber=True)
+            fits.writeto('galaxies.fits', \
+                         sources[sources['galStarFlag']==1], \
+                             clobber=True)
+            fits.writeto('stars.fits', \
+                        sources[sources['galStarFlag']==0], \
+                        clobber=True)
             return object_indexes[ gal_star.galaxies], object_indexes[ gal_star.stars ]
         else:
             if overwrite == 'c':

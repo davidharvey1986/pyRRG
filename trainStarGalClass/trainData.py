@@ -48,7 +48,7 @@ def trainDataSVM(nSamples=60000):
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
     
-def trainDataRF(nTrees=1000, retrain=True):
+def trainDataRF(nTrees=100, retrain=True):
     '''
     This uses a random forest to classify the data
     '''

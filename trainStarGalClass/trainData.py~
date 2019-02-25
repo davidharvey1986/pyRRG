@@ -48,7 +48,7 @@ def trainDataSVM(nSamples=60000):
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
     
-def trainDataRF(nSamples=60000, retrain=True):
+def trainDataRF(nTrees=1000, retrain=True):
     '''
     This uses a random forest to classify the data
     '''
@@ -64,9 +64,9 @@ def trainDataRF(nSamples=60000, retrain=True):
               (trainingFeatures.shape[0], trainingFeatures.shape[1]))
               
 
- 
-    clf = RF( n_estimators=1000, criterion="gini")
-    print("Training started at %s" % time.ctime())
+    
+    clf = RF( n_estimators=nTrees, criterion="gini")
+    print("Training started at %s with %i Trees" % (time.ctime(),nTrees))
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
     endTime = time.time()
