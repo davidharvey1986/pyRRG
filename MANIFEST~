@@ -1,3 +1,4 @@
+src/starGalaxyModelRF.pkl
 docs/HowToStarGalaxyClassify.pdf
 docs/Manual.pdf
 galStar.sav
@@ -7,6 +8,7 @@ setup.cfg
 lib/RRGtools/PixSkyTransform.py
 lib/RRGtools/__init__.py
 lib/RRGtools/astro_tools.py
+lib/RRGtools/cluster_member_removal.py
 lib/RRGtools/color_color.py
 lib/RRGtools/match_cat.py
 lib/RRGtools/pysex.py

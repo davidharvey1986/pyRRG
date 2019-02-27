@@ -145,8 +145,7 @@ def main(  infile, hst_filter=None,
  
 
     
-    galaxies, stars = sgs.star_galaxy_separation( uncorrected_moments,
-                                                  savefile='galStar.locus' )
+    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat)
 
     
     n_stars=len(stars)

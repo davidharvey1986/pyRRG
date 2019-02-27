@@ -22,7 +22,7 @@ packages = ['pyRRG', 'RRGtools', 'asciidata']
 package_dir = {'RRGtools':'./lib/RRGtools',
                    'pyRRG':'./src',
                'asciidata':'./lib/asciidata'}
-package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*']}
+package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*','*.pkl']}
 
 
 
@@ -39,7 +39,8 @@ setup   (       name            = "pyRRG",
                 package_data    = package_data,
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
-                install_requires=['idlsave', \
+                install_requires=['scikit-learn',\
+                                      'idlsave', \
                                    'pyfits==3.3', \
                                    'numpy', \
                                    'ipdb', 'pyraf',\
