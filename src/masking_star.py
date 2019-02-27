@@ -166,23 +166,23 @@ def main(  shear_catalog, object_catalog_fits, \
                                                  restore=True,
                                                  include_sat=True)
         
-     Star_catalogue = object_catalog[ stars]
+    Star_catalogue = object_catalog[ stars]
      
      
      ##---------------------add a new column 'clean' to shear catalogue---------------------------------
-     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
-     clean=np.zeros(len(data['ra']))
-     cols = []
-     cols.append(
+    data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
+    clean=np.zeros(len(data['ra']))
+    cols = []
+    cols.append(
                  fits.Column(name='clean', format='D', array= clean)
                  )
-     orig_cols = data.columns
-     new_cols = fits.ColDefs(cols)
-     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
-     clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
-         shear_catalog.split('.')[1]
-     hdu.writeto(clean_catalog, clobber=True,output_verify='ignore')
-
+    orig_cols = data.columns
+    new_cols = fits.ColDefs(cols)
+    hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
+    clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
+        shear_catalog.split('.')[1]
+    hdu.writeto(clean_catalog, clobber=True,output_verify='ignore')
+    
 
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
 ##-------------------------------start masking-------------------------------

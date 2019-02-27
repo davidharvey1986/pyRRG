@@ -37,6 +37,7 @@ setup   (       name            = "pyRRG",
                 packages        = packages,
                 package_dir     = package_dir,
                 package_data    = package_data,
+                scripts         = ['scripts/pyRRG'],
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['idlsave', \
