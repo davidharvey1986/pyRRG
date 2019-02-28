@@ -15,14 +15,12 @@ def testClassifier(retrain=False):
         
     modelName = td.trainDataRF(retrain=retrain)
         
-    featureLabels, testFeatures, testAnswers = \
-      gtd.generateTestData()
+    featureLabels, testFeatures, testAnswers = gtd.generateTestData()
 
     mlClassifier = pkl.load(open(modelName))
 
     predictClassification = mlClassifier.predict(testFeatures)
 
-    
     
     plt.figure(1)
     classifierScore( testAnswers, predictClassification)

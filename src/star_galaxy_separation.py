@@ -7,6 +7,7 @@ import numpy as np
 import ipdb as pdb
 import pyfits as fits
 import sklearn
+import ipdb as pdb
 def star_galaxy_separation( sources, outfile, include_sat=False):
 
     '''
@@ -124,9 +125,13 @@ class galStar():
             galStarFlagClassifier =  pkl.load(open(codeDir+'/'+rfModel,'rb'))
 
             sourcesArray = rec2array( sources)
+            #NEed to test makign all aspect -99
+            sourcesArray[ np.isfinite(sourcesArray) == False] = -99
             nanCheck = np.isfinite(np.sum(sourcesArray, axis=1))
+            print sourcesArray[nanCheck,:].shape
+            pdb.set_trace()
             self.galStarFlag = np.zeros(len(sources))-1
-            self.galStarFlag[nanCheck] = galStarFlagClassifier.predict(sourcesArray[nanCheck,:])
+            self.galStarFlag = galStarFlagClassifier.predict(sourcesArray)
 
 
         def generate_axes( self, sources ):

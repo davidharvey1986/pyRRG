@@ -154,4 +154,8 @@ Number of correct galaxies: 9635/11313
 Number of correct noise: 1004/1678
 Classifier score is 0.82
 
-Maybe add some star fields....
+#All the available
+Number of correct stars: 25/49
+Number of correct galaxies: 5875/6009
+Number of correct noise: 954/994
+Classifier score is 0.97

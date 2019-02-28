@@ -147,3 +147,11 @@ Number of correct stars: 38/73
 Number of correct galaxies: 11207/11313
 Number of correct noise: 1195/1678
 Classifier score is 0.95
+
+With only GAL*
+Number of correct stars: 46/73
+Number of correct galaxies: 9635/11313
+Number of correct noise: 1004/1678
+Classifier score is 0.82
+
+Maybe add some star fields....
