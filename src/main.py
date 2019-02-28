@@ -178,13 +178,13 @@ def main(  infile, hst_filter=None,
     
 
 
-    beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
-    mask.main( sheared_cat, corrected_moments_cat,
-                   outFile=beforeDoubles_cat)
+    #beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
+    #mask.main( sheared_cat, corrected_moments_cat,
+    #               outFile=beforeDoubles_cat)
 
     clean_cat = field[:-5]+"_clean.shears"
 
-    remove_doubles.remove_object(beforeDoubles_cat, clean_cat, FWHM_to_radius=1)
+    remove_doubles.remove_object(sheared_cat, clean_cat, FWHM_to_radius=1)
     
     plot.plot_shears( clean_cat )
 
