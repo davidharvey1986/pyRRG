@@ -146,6 +146,7 @@ Classifier score is 0.95
 Number of correct stars: 38/73
 Number of correct galaxies: 11207/11313
 Number of correct noise: 1195/1678
+<<<<<<< HEAD
 Classifier score is 0.95
 
 With only GAL*
@@ -155,3 +156,6 @@ Number of correct noise: 1004/1678
 Classifier score is 0.82
 
 Maybe add some star fields....
+=======
+Classifier score is 0.95
+>>>>>>> eff6e91ac698eb4883c1e45fb33472f31b5648e5
