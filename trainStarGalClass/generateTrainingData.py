@@ -186,7 +186,7 @@ def matchStarGalaxiesToData( iFile ):
 def removeNans( newArray, starGal ):
 
     #remove nan
-    newArray[ np.isfinite(newArray) == False ] = -99
+    #newArray[ np.isfinite(newArray) == False ] = -99
     
     nanCheck = np.isfinite(np.sum(newArray, axis=1))
     newArrayNansRemoved = newArray[nanCheck, :]

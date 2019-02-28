@@ -7,11 +7,8 @@ import numpy as np
 import ipdb as pdb
 import pyfits as fits
 import sklearn
-<<<<<<< HEAD
-import ipdb as pdb
-=======
->>>>>>> eff6e91ac698eb4883c1e45fb33472f31b5648e5
-def star_galaxy_separation( sources, outfile, include_sat=False):
+
+def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
 
     '''
     PURPORSE : To separate out the stars and galaxies in the input
@@ -47,27 +44,31 @@ def star_galaxy_separation( sources, outfile, include_sat=False):
 
    
     #this first attempt will get the stars and galaxies automatically
-    galStarObject = galStar( sources )
+    galStarObject = galStar( sources, redoML=redoML )
 
         
     overwrite = \
       raw_input('Accept automated selection?\n'+\
             'Yes (y) : And remove all files and remeasure stars and galaxies\n'+\
             'Continue (c) : Use current selection, do not remeasure galaxies and stars\n'+\
-                'No (n)       : Reject start-gal separation and re-do interactively \n'+\
+                'No (n)       : Reject star-gal separation and re-do interactively \n'+\
+                'No (m)       : Reject star-gal separation and re-do automatically \n'+\
                         '>>> ')
                   
     plt.close()
     if overwrite == 'y':
         print 'Writing over gal file and removing j*uncor.cat'
         os.system('rm -fr j*uncor.cat *_cor.cat')
+    elif overwrite == 'm':
+        print 'Reseparating Automatically'
+        star_galaxy_separation( sources, outfile, include_sat=False, redoML=True)
     elif overwrite == 'n':
         #If i reseparate i will want to remeasure all stars and galaxies
         print 'Reseparating Interactively'
         os.system('rm -fr stars.fits')
         os.system('rm -fr galaxies.fits')
         os.system('rm -fr j*uncor.cat *_cor.cat')
-        galStarObject.galStarFlag = np.zeros(len(sources))-1.
+        galStarObject.galStarFlag = np.zeros(len(sources))-2.
         print("Getting params interactively")
         galStarObject.generate_axes( sources)
         galStarObject.get_params_interactively( sources ) 
@@ -88,23 +89,27 @@ def star_galaxy_separation( sources, outfile, include_sat=False):
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
-        def __init__( self, sources, include_sat=False ):
+        def __init__( self, sources, include_sat=False, redoML=False ):
 
             #These store the plotted points and the order they are plotted
             #so they can be removed if the user decideds to undo a line
-            
+
+            self.generateNumpyArrayWithNoNans( sources )
+
             self.include_sat = include_sat
             self.star_points = []
             self.gal_points = []
+            #all sources that are predicted to be noise
+            self.noise_points = []
             
             self.alreadyDefinedStarGalaxySeparation(sources)
             
-            if not self.fieldExists:
+            if (not self.fieldExists) | (redoML):
                 self.defaults( sources )
             else:
                 self.galStarFlag = sources['galStarFlag']
-            self.generate_axes( sources)   
-            self.plot_stars_galaxies(  sources, self.axes )
+            self.generate_axes( sources )   
+            self.plot_stars_galaxies(  sources )
             
         def alreadyDefinedStarGalaxySeparation( self, sources ):
                 checkFieldNames = np.array([ 'galStarFlag' in i for i in sources.columns.names])
@@ -118,6 +123,7 @@ class galStar():
 
             No more galStar file, now it is just a flag
             galStarFlag :
+               == -2 : nan
                == -1 : noise
                == 0 : star
                == 1 : galaxy
@@ -125,24 +131,19 @@ class galStar():
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
 
-            galStarFlagClassifier =  pkl.load(open(codeDir+'/'+rfModel,'rb'))
-
-            sourcesArray = rec2array( sources)
-<<<<<<< HEAD
-            #NEed to test makign all aspect -99
-            sourcesArray[ np.isfinite(sourcesArray) == False] = -99
-            nanCheck = np.isfinite(np.sum(sourcesArray, axis=1))
-            print sourcesArray[nanCheck,:].shape
-            pdb.set_trace()
-            self.galStarFlag = np.zeros(len(sources))-1
-            self.galStarFlag = galStarFlagClassifier.predict(sourcesArray)
-=======
-            nanCheck = np.isfinite(np.sum(sourcesArray, axis=1))
-            self.galStarFlag = np.zeros(len(sources))-1
-            self.galStarFlag[nanCheck] = galStarFlagClassifier.predict(sourcesArray[nanCheck,:])
->>>>>>> eff6e91ac698eb4883c1e45fb33472f31b5648e5
+            galStarFlagClassifier =  \
+              pkl.load(open(codeDir+'/'+rfModel,'rb'))
 
 
+            self.galStarFlag = np.zeros(len(sources))-2
+            self.galStarFlag[self.nanCheck] = \
+              galStarFlagClassifier.predict(self.sourcesArray[self.nanCheck,:])
+
+        def generateNumpyArrayWithNoNans( self, sources ):
+            #Only plot non nan values, also this is used for Random For
+            self.sourcesArray = rec2array( sources )
+            self.nanCheck = np.isfinite(np.sum(self.sourcesArray, axis=1))
+            
         def generate_axes( self, sources ):
             '''
             Generate the axes and label the three plots 
@@ -173,9 +174,10 @@ class galStar():
             self.ax3.set_ylim([10,30])
 
 
-            self.ax1.plot( sources['MAG_AUTO'], sources['gal_size'], 'k,')
-            self.ax2.plot( sources['MAG_AUTO'], sources['RADIUS'],   'k,')
-            self.ax3.plot( sources['MAG_AUTO'], sources['MU_MAX'],   'k,')
+            self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'k,')
+            self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'k,')
+            self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'k,')
+            plt.show(block=False)
             
         def plot_boundaries( self, sources ):
             '''
@@ -187,6 +189,8 @@ class galStar():
             4. ) THe lower cut (constant MU MAX) to remove saturated stars
             5. ) The upper cut (constant MU MAX) to remove noisy stars
             '''
+
+            
             
             self.ax3.plot( sources['MAG_AUTO'], self.GradGal*sources['MAG_AUTO']  + self.IntGal, 'k-')
             self.ax3.plot( sources['MAG_AUTO'], np.zeros(len(sources['MU_MAX']))+ self.GalLowCut, 'k-')
@@ -277,7 +281,7 @@ class galStar():
                         #Get which galaxies the user has chosen
                         self.get_galaxies( sources )
                         #Plot the galaxies on top
-                        self.plot_stars_galaxies(  sources, axes, overwrite=False )
+                        self.plot_stars_galaxies(  sources, overwrite=False )
                         event.inaxes.figure.canvas.draw()
                         
                     if len(self.xcoords) == 4:
@@ -295,7 +299,7 @@ class galStar():
                                             xycoords='axes fraction', fontsize=10)
                         #update galaxy selection and show
                         self.get_galaxies( sources )
-                        self.plot_stars_galaxies(  sources, axes )
+                        self.plot_stars_galaxies(  sources )
                         event.inaxes.figure.canvas.draw()
                     
                     if len(self.xcoords) == 6:
@@ -307,7 +311,7 @@ class galStar():
                         
                         #Now get the current star selection and show
                         self.get_stars(sources)
-                        self.plot_stars_galaxies( sources, axes, overwrite=False )
+                        self.plot_stars_galaxies( sources, overwrite=False )
                         
                         #Remove help message, show next
                         self.ann.remove()
@@ -324,7 +328,7 @@ class galStar():
 
                         #Update star selection and plot
                         self.get_stars(sources)
-                        self.plot_stars_galaxies( sources, axes )
+                        self.plot_stars_galaxies( sources )
                         
                         #Remove help message, show next
                         self.ann.remove()
@@ -333,7 +337,7 @@ class galStar():
                                                 xycoords='axes fraction', fontsize=10)
                                                 
                         
-                        self.plot_stars_galaxies( sources, axes )
+                        self.plot_stars_galaxies( sources)
                         event.inaxes.figure.canvas.draw()
                         
                     if len(self.xcoords) == 10:
@@ -343,7 +347,7 @@ class galStar():
 
                         #Update star selection and show
                         self.get_stars(sources)
-                        self.plot_stars_galaxies( sources, axes)
+                        self.plot_stars_galaxies( sources)
 
                         #Remove help message, show next
                         self.ann.remove()
@@ -369,22 +373,22 @@ class galStar():
                     #Replot the galaxies or stars
                     if len(self.xcoords) == 2:
                         self.galaxies = []
-                        self.plot_stars_galaxies( sources, axes)
+                        self.plot_stars_galaxies( sources)
                     elif len(self.xcoords) == 4:
                         self.GalLowCut = 0.
                         self.get_galaxies( sources )
-                        self.plot_stars_galaxies( sources, axes)
+                        self.plot_stars_galaxies( sources)
                     elif len(self.xcoords) == 6:
                         self.stars = []
-                        self.plot_stars_galaxies( sources, axes)
+                        self.plot_stars_galaxies( sources)
                     elif len(self.xcoords) == 8:
                         self.StarsLowCut = 0
                         self.get_stars(sources)
-                        self.plot_stars_galaxies( sources, axes )
+                        self.plot_stars_galaxies( sources )
                     elif len(self.xcoords) == 10:
                         self.StarsUpCut = 100
                         self.get_stars(sources)
-                        self.plot_stars_galaxies( sources, axes )
+                        self.plot_stars_galaxies( sources )
                     #Remove the coords from x and ycoords
                     self.xcoords = self.xcoords[:-2]
                     self.ycoords = self.ycoords[:-2]
@@ -397,7 +401,7 @@ class galStar():
 
 
 
-        def plot_stars_galaxies( self, sources, axes, overwrite=True ):
+        def plot_stars_galaxies( self, sources, overwrite=True ):
             '''
             Plot all the objects
             Plot the stars in yellow stars
@@ -407,32 +411,43 @@ class galStar():
             if len(self.star_points) > 0:
                 iStar_points = self.star_points[ -1 ]
                 iGal_points = self.gal_points[ -1]
-   
+                iNoise_points =self.noise_points[-1]
+                
                 for i in xrange(len(iStar_points)):
                     #First remove any overlaid galaxy or star points alrady
                     #on the plot
                     iStar_points[i].pop(0).remove()
                     iGal_points[i].pop(0).remove()
+                    iNoise_points[i].pop(0).remove()
                 del self.star_points[ -1 ]
                 del self.gal_points[ -1 ]
+                del self.noise_points[ -1 ]
                 
             #Now plot the stars and galaxies and store the plotted points in
             #star_points and gal_points
-            self.star_points.append( [ axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+            self.star_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
                                                          sources['MU_MAX'][self.galStarFlag==0], 'y*'),
-                                           axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
-                                                             sources['gal_size'][self.galStarFlag==0], 'y*'),
-                                           axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+                                           self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+                                                             sources['gal_size'][self.galStarFlag==0], 'y*', label='Stars'),
+                                           self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
                                                              sources['RADIUS'][self.galStarFlag==0], 'y*') ])
-            self.gal_points.append( [ axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
+                                                             
+            self.gal_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
                                                         sources['MU_MAX'][self.galStarFlag==1], 'r.'  ),
-                                          axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
-                                                            sources['gal_size'][self.galStarFlag==1], 'r.' ),
-                                          axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
+                                          self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
+                                                            sources['gal_size'][self.galStarFlag==1], 'r.', label='Galaxies' ),
+                                          self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
                                                             sources['RADIUS'][self.galStarFlag==1], 'r.' )])
 
 
+            self.noise_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
+                                                        sources['MU_MAX'][self.galStarFlag==-1], 'g.'  ),
+                                          self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
+                                                            sources['gal_size'][self.galStarFlag==-1], 'g.', label='Noise' ),
+                                          self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
+                                                            sources['RADIUS'][self.galStarFlag==-1], 'g.' )])
 
+            self.axes[1].legend()
 
         def get_galaxies( self, sources  ):
             '''

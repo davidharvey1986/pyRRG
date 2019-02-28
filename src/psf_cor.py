@@ -9,6 +9,7 @@ import idlsave as idlsave
 import rotate_moments as rm
 import copy as cp
 import directories
+
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -108,19 +109,18 @@ def psf_cor(    mom_file,
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
 
-    print("Getting position of galaxies in each exposure")
-    galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
-                                            py.open('galaxies.fits')[1].data, \
-                                            dataDir=dirs.data_dir)
+    print("Getting position of stars & galaxies in each exposure")
+
+    momsWithDrizzlePosition =  \
+      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir)
+    galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
+    star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
+
     uncorrected_xx = galaxy_moms.xx
     uncorrected_yy = galaxy_moms.yy
     
-    py.writeto('stars.fits', moms[stars], clobber=True)
-    print("Getting position of stars in each exposure")
-    star_moms = \
-      dp.drizzle_position( drizzle_file, images,  \
-                               py.open('stars.fits')[1].data, \
-                               dataDir=dirs.data_dir)
+   
+   
     
     #Also get the Orientations in terms of the drizzled image, not
     #WCS

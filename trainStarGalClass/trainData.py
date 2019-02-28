@@ -56,11 +56,8 @@ def trainDataRF(nTrees=100, retrain=True):
               
 
     
-<<<<<<< HEAD
     clf = RF( n_estimators=nTrees, criterion="gini", n_jobs=4)
-=======
-    clf = RF( n_estimators=nTrees, criterion="gini")
->>>>>>> eff6e91ac698eb4883c1e45fb33472f31b5648e5
+
     print("Training started at %s with %i Trees" % (time.ctime(),nTrees))
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)

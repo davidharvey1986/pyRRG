@@ -4,6 +4,7 @@ import numpy as np
 import ipdb as pdb
 from matplotlib import pyplot as plt
 import RRGtools as at
+import ipdb as pdb
 def measure_moms(fits_image, sex_catalog, outfile,
                      width=None,
                      saturation=800000000, badval=-99,
@@ -320,11 +321,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
             int_moms.xyyy=  np.sum(weight_gal*(rel_ygrid**3)*rel_xgrid)/ sum_int
             int_moms.yyyy = np.sum(weight_gal*(rel_ygrid**4)) / sum_int
 
-         
-           
-
-            
-            
+      
             #find moment errors and covariances
 
             #Error in internsity
