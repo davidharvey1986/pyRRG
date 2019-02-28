@@ -5,11 +5,11 @@ import glob as glob
 import drizzle_position as dp
 import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
-from scipy.io import readsav as readSave
+import idlsave as idlsave
 import rotate_moments as rm
 import copy as cp
 import directories
-
+import ipdb as pdb
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -61,12 +61,8 @@ def psf_cor(    mom_file,
 
     moms = py.open(mom_file)[1].data
 
-    momsDiagnolSum = (moms.xx + moms.yy)/2.
-    UnphysicalSum = momsDiagnolSum < 0
-    momsDiagnolSum[ UnphysicalSum ] = 0.
+    radius = np.sqrt( ( moms.xx + moms.yy)/2.)
     
-    radius = np.sqrt( momsDiagnolSum )
-    radius[UnphysicalSum] = np.nan
     
  
     sigma =  cp.copy(moms.radius[moms['galStarFlag']==1])
@@ -88,7 +84,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    scat = readSave( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat',verbose=False )['scat']
+    scat = idlsave.read( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -105,39 +101,13 @@ def psf_cor(    mom_file,
 
     images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
     if len(images) == 0:
-        useStacked = \
-          raw_input('Cant find single exposures of field, infer PSF from stacked image? (y,n)')
-        while ( useStacked != 'y') & (useStacked!='n'):
-            useStacked = \
-              raw_input('Dont recognise input, please type "y" or "n"')
-        if useStacked == 'n':
-            raise ValueError('Cant find single exposures of field')
-        else:
-            #Create a new version of the fits file
-            #for the purpose of PSF
-            #This needs to be updated to use the wht file
-            os.system('cp '+dirs.data_dir+'/'+drizzle_file+' '+dirs.data_dir+'/PSFmeasure.fits')
-            images = [ dirs.data_dir+'/PSFmeasure.fits' ]
-            
+        raise ValueError('Cant find single exposures of field')
+
     nImages = len(images)
 
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
-    print("Getting position of galaxies in each exposure")
-    galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
-                                            py.open('galaxies.fits')[1].data, \
-                                            dataDir=dirs.data_dir)
-    uncorrected_xx = galaxy_moms.xx
-    uncorrected_yy = galaxy_moms.yy
-    
-    py.writeto('stars.fits', moms[stars], clobber=True,output_verify='ignore')
-    print("Getting position of stars in each exposure")
-    star_moms = \
-      dp.drizzle_position( drizzle_file, images,  \
-                               py.open('stars.fits')[1].data, \
-                               dataDir=dirs.data_dir)
-
 
     print("Getting position of stars & galaxies in each exposure")
 
@@ -149,6 +119,8 @@ def psf_cor(    mom_file,
     uncorrected_xx = galaxy_moms.xx
     uncorrected_yy = galaxy_moms.yy
     
+   
+   
     
     #Also get the Orientations in terms of the drizzled image, not
     #WCS
@@ -178,6 +150,7 @@ def psf_cor(    mom_file,
 
         #So get the focus position by fitting the true image stars to the
         #model
+        
         focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, wavelength)
 
@@ -389,9 +362,8 @@ def psf_cor(    mom_file,
     orig_cols = galaxy_moms.columns
     new_cols = py.ColDefs(newcol)
     
-    hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
-    hdu.writeto( outfile, clobber=True,output_verify='ignore')
-
+    hdu = py.BinTableHDU.from_columns(orig_cols+new_cols)
+    hdu.writeto( outfile, clobber=True)
 
 class moments( dict ):
 
