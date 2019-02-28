@@ -364,7 +364,7 @@ def psf_cor(    mom_file,
     
     hdu = py.BinTableHDU.from_columns(orig_cols+new_cols)
     hdu.writeto( outfile, clobber=True)
-
+    pdb.set_trace()
 class moments( dict ):
 
     def __init__(self, x, y, n_objects):

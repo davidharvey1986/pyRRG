@@ -130,7 +130,7 @@ def main(  infile, hst_filter=None,
 
      
         
-    print sex_catalogue
+
   
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
@@ -182,7 +182,7 @@ def main(  infile, hst_filter=None,
 
     clean_cat = field[:-5]+"_clean.shears"
 
-    remove_doubles.remove_object(beforeDoubles_cat, clean_cat, FWHM_to_radius=1)
+    remove_doubles.remove_object(sheared_cat, clean_cat, FWHM_to_radius=1)
     
     plot.plot_shears( clean_cat )
 
