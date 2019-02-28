@@ -1,3 +1,4 @@
+src/*.pkl
 log
 virtualenv
 trainStarGalClass/TestData
