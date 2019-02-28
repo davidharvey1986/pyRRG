@@ -36,7 +36,7 @@ def instar(xl,yl,xs,ys,m):
     if m>mcut1: 
         l=spike1
         R=r1
-    if m>mcut2 and m<=mcut2:    
+    if m>mcut2 and m<=mcut1:    
         l=spike2
         R=r2
     if m>mcut3 and m<=mcut2:    
