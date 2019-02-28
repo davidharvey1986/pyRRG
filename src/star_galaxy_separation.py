@@ -53,17 +53,11 @@ def star_galaxy_separation( sources, outfile, include_sat=False):
                 'No (n)       : Reject start-gal separation and re-do interactively \n'+\
                         '>>> ')
                   
-        
+    plt.close()
     if overwrite == 'y':
         print 'Writing over gal file and removing j*uncor.cat'
         os.system('rm -fr j*uncor.cat *_cor.cat')
-        fits.writeto('galaxies.fits', \
-                         sources[sources['galStarFlag']==1], \
-                             clobber=True)
-        fits.writeto('stars.fits', \
-                        sources[sources['galStarFlag']==0], \
-                        clobber=True)
-    else:
+    elif overwrite == 'n':
         #If i reseparate i will want to remeasure all stars and galaxies
         print 'Reseparating Interactively'
         os.system('rm -fr stars.fits')
@@ -85,6 +79,8 @@ def star_galaxy_separation( sources, outfile, include_sat=False):
     else:
         sources['galStarFlag'] = galStarObject.galStarFlag
         fits.writeto(  outfile, sources, clobber=True )
+
+        
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
@@ -250,7 +246,6 @@ class galStar():
 
                     #Plot the point clicked by the user
                     event.inaxes.figure.canvas.draw()
-                    print ix
                     
                     if len(self.xcoords) == 2:
                         #Once there are two points plot this

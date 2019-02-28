@@ -7,7 +7,6 @@ import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
 import idlsave as idlsave
 import rotate_moments as rm
-import star_galaxy_separation as sgs
 import copy as cp
 import directories
 def psf_cor(    mom_file,
@@ -64,11 +63,8 @@ def psf_cor(    mom_file,
     radius = np.sqrt( ( moms.xx + moms.yy)/2.)
     
     
-    galaxies, stars = \
-      sgs.star_galaxy_separation( moms, \
-                                      restore=True,\
-                                      savefile=dirs.data_dir+'/galStar.locus')
-    sigma =  cp.copy(moms.radius[galaxies])
+ 
+    sigma =  cp.copy(moms.radius[moms['galStarFlag']==1])
    
     sigma[ sigma < min_rad ] = min_rad
     

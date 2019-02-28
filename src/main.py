@@ -146,9 +146,6 @@ def main(  infile, hst_filter=None,
 
     
     sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat)
-
-    
-    n_stars=len(stars)
   
     corrected_moments_cat = field[:-5]+"_cor.cat"
 

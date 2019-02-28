@@ -8,7 +8,6 @@ import pyfits as fits
 import numpy as np
 import matplotlib.pyplot as plt
 import os as os
-import star_galaxy_separation as sgs
 import ipdb as pdb
 import RRGtools as tools
 
@@ -147,12 +146,8 @@ def main(  shear_catalog, object_catalog_fits, \
 
     object_catalog = fits.open(object_catalog_fits)[1].data
     
-    galaxies, stars = sgs.star_galaxy_separation( object_catalog,
-                                                  savefile='galStar.locus',
-                                                      restore=True,
-                                                      include_sat=True)
     
-    Star_catalogue = object_catalog[ stars]
+    Star_catalogue = object_catalog[ object_catalog['galStarFlag']==0]
 
     
     ##---------------------add a new column 'clean' to shear catalogue---------------------------------
