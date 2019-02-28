@@ -137,7 +137,7 @@ def psf_cor(    mom_file,
       dp.drizzle_position( drizzle_file, images,  \
                                py.open('stars.fits')[1].data, \
                                dataDir=dirs.data_dir)
-=======
+
 
     print("Getting position of stars & galaxies in each exposure")
 

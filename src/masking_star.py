@@ -160,23 +160,12 @@ def main(  shear_catalog, object_catalog_fits, \
     
     object_catalog = fits.open(object_catalog_fits)[1].data
     
-<<<<<<< HEAD
-    galaxies, stars = sgs.star_galaxy_separation( object_catalog,
-                                                 savefile='galStar.locus',
-                                                 restore=True,
-                                                 include_sat=True)
-        
-    Star_catalogue = object_catalog[ stars]
-     
-     
-     ##---------------------add a new column 'clean' to shear catalogue---------------------------------
-=======
-    
+
     Star_catalogue = object_catalog[ object_catalog['galStarFlag']==0]
 
     
     ##---------------------add a new column 'clean' to shear catalogue---------------------------------
->>>>>>> StarGalaxyML
+
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
     clean=np.zeros(len(data['ra']))
     cols = []
