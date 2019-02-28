@@ -1,6 +1,14 @@
+src/starGalaxyModelRF.pkl
+src/*.pkl
 log
 virtualenv
 trainStarGalClass
+trainStarGalClass/TestData
+trainStarGalClass/trainingData
+trainStarGalClass/*.fits
+trainStarGalClass/*.pkl
+trainStarGalClass/*.pyc
+trainStarGalClass/models
 docs/Manual.synctex.aux
 docs/Manual.synctex.gz
 docs/Manual.log
@@ -9,6 +17,7 @@ dist
 test
 build
 example
+src/*.pyc
 src/__init__.pyc
 src/acs_3dpsf.pyc
 src/acs_determine_focus.pyc

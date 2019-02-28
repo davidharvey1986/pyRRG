@@ -1,0 +1,165 @@
+So the idea to improve and automate the star - galaxy classification is to 
+learn what is a start and galaxy through the various different probes and then 
+using the input data, learn what is a star and what is a galaxy
+
+To do this, I will take the moments of a lot of objects from a ton of exposures
+and run some moment measuring. From this I will then classify the stars to create a training set.
+
+I will learn on this training set, using features, which will be the raw moments and combinations of the raw moments.
+- Moments
+- Size
+- Magnitude
+- Exposure depth
+- RA
+- DEC
+
+Once learnt i should be able to transmit this to all future data sets.
+With the idea that everytime someone uses the data set, it improves it.
+
+1. Generate training set
+2. Learn training set
+3. Test model
+4. Implement auto-update
+5. Merge with master
+
+
+Notes
+-----
+So it seems that it works pretty well (0.8243876080691642)
+if we use the standard features. 
+['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS']
+This model was saved as 
+starGalaxyModelNoExpTime.pkl
+
+Im going to try with exposure time of the image
+This didnt seem to want to work, or at least it took far too long to
+train so sack it off
+
+I tried swapping out MAG_ISO and put in FLUX_AUTO
+Score = 0.9747838616714697
+<<<<<<< HEAD
+modelName = starGalaxyModelFluxAuto.pkl
+
+Random forests are doing a much better job and is much quicker 
+so i have now altered so it does this now.
+So the models now have 10 features 
+names = ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+        'xxxx','yyyy','xyyy','xxyy','ell']
+with 1000 decision trees. Taking ~200seconds to train.
+With criterion 'entropy'
+starGalaxyModelRFa.pkl
+
+I will try it with the global features now (skymed, exp_time etc)
+starGalaxyModelRFb.pkl
+    includeNames = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
+        'xxxx','yyyy','xyyy','xxyy','ell','skymed','exp_time','skysd']
+This has an improved rating of 0.8845461095100865
+Number of correct stars: 24/27
+Number of correct galaxies: 4761/5399
+Number of correct noise: 124/126
+Classifier score is 0.88
+With criterion 'entropy'
+
+If i try with all the features then it takes
+Time to fit classifier is 366.20 seconds
+and the score is
+0.8650936599423631
+With criterion 'entropy'
+
+Selective feature but generous. with 1000 trees still
+ includeNames = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+        'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob','ell','skymed','exp_time','skysd']
+Number of correct stars: 24/27
+Number of correct galaxies: 4773/5399
+Number of correct noise: 124/126
+Classifier score is 0.89
+With criterion 'entropy'
+starGalaxyModelRF_20features_1000.pkl
+
+Trees: 100
+Criterion: 'entropy'
+Number of correct stars: 24/27
+Number of correct galaxies: 4772/5399
+Number of correct noise: 122/126
+Classifier score is 0.89
+starGalaxyModelRF_20features_100.pkl
+
+Trees:100
+Criterion: 'gini'
+Number of correct stars: 24/27
+Number of correct galaxies: 4788/5399
+Number of correct noise: 123/126
+Classifier score is 0.89
+starGalaxyModelRF_20features_100_gini.pkl
+
+
+namesNoErr = \
+      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+       'exp_time','skysd']
+Not worth it
+
+Or any less features. Seems like more the better...
+
+
+1. Larger training set required
+=======
+I have improved the training set by using all the clash clusters
+The results are
+Number of correct stars: 18/27
+Number of correct galaxies: 4943/5399
+Number of correct noise: 120/126
+Classifier score is 0.92
+So much better at the galaxies but not noise nor stars. So now i will increase number trees
+
+Over the entire CLASH clusters, 20 features
+100 trees
+Number of correct stars: 795/1076
+Number of correct galaxies: 84792/86284
+Number of correct noise: 9784/18084
+Classifier score is 0.90
+
+1000 Trees
+Number of correct stars: 795/1076
+Number of correct galaxies: 84882/86284
+Number of correct noise: 9790/18084
+Classifier score is 0.91
+
+1000 Trees
+1998/9510 removed due to nans
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95
+But not including the GAL-*
+
+
+Including GAL-* doesnt seem to make a difference
+I think this is because there are so many objects in the CLASH clsuters
+that it dominates the trees, so 
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95
+
+Number of correct stars: 38/73
+Number of correct galaxies: 11207/11313
+Number of correct noise: 1195/1678
+Classifier score is 0.95
+
+With only GAL*
+Number of correct stars: 46/73
+Number of correct galaxies: 9635/11313
+Number of correct noise: 1004/1678
+Classifier score is 0.82
+
+<<<<<<< HEAD
+#All the available
+Number of correct stars: 25/49
+Number of correct galaxies: 5875/6009
+Number of correct noise: 954/994
+Classifier score is 0.97
+=======
+Maybe add some star fields....
+>>>>>>> eff6e91ac698eb4883c1e45fb33472f31b5648e5

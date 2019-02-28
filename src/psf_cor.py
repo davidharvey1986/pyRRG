@@ -7,7 +7,6 @@ import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
 from scipy.io import readsav as readSave
 import rotate_moments as rm
-import star_galaxy_separation as sgs
 import copy as cp
 import directories
 
@@ -69,11 +68,8 @@ def psf_cor(    mom_file,
     radius = np.sqrt( momsDiagnolSum )
     radius[UnphysicalSum] = np.nan
     
-    galaxies, stars = \
-      sgs.star_galaxy_separation( moms, \
-                                      restore=True,\
-                                      savefile=dirs.data_dir+'/galStar.locus')
-    sigma =  cp.copy(moms.radius[galaxies])
+ 
+    sigma =  cp.copy(moms.radius[moms['galStarFlag']==1])
    
     sigma[ sigma < min_rad ] = min_rad
     
@@ -128,7 +124,6 @@ def psf_cor(    mom_file,
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
-    py.writeto('galaxies.fits', moms[galaxies], clobber=True,output_verify='ignore')
     print("Getting position of galaxies in each exposure")
     galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
                                             py.open('galaxies.fits')[1].data, \
@@ -142,6 +137,18 @@ def psf_cor(    mom_file,
       dp.drizzle_position( drizzle_file, images,  \
                                py.open('stars.fits')[1].data, \
                                dataDir=dirs.data_dir)
+=======
+
+    print("Getting position of stars & galaxies in each exposure")
+
+    momsWithDrizzlePosition =  \
+      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir)
+    galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
+    star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
+
+    uncorrected_xx = galaxy_moms.xx
+    uncorrected_yy = galaxy_moms.yy
+    
     
     #Also get the Orientations in terms of the drizzled image, not
     #WCS
@@ -364,8 +371,15 @@ def psf_cor(    mom_file,
             
     
 
-      
+    
     galaxy_moms['gal_size'] = np.sqrt( (corrected_moments.xx +corrected_moments.yy)/2.)
+
+    #SOMETHIGN STUPID TO SEE WHAT HAPPENS
+    #SOme weird shit going on, i have to write this out, and then
+    #read it back in
+    py.writeto('galaxies.fits',galaxy_moms,clobber=True)
+    galaxy_moms = py.open('galaxies.fits')[1].data
+    
     newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
                py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
                          array=psf_moms.nExposures),
@@ -377,6 +391,7 @@ def psf_cor(    mom_file,
     
     hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
     hdu.writeto( outfile, clobber=True,output_verify='ignore')
+
 
 class moments( dict ):
 

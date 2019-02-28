@@ -18,6 +18,7 @@ import masking_star as mask
 import double_detection_removal as remove_doubles
 import sys
 
+
 def main(  infile, hst_filter=None,
             data_dir=None,
             code_dir=None,
@@ -143,11 +144,7 @@ def main(  infile, hst_filter=None,
  
 
     
-    galaxies, stars = sgs.star_galaxy_separation( uncorrected_moments,
-                                                  savefile='galStar.locus' )
-
-    
-    n_stars=len(stars)
+    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat)
   
     corrected_moments_cat = field[:-5]+"_cor.cat"
 
@@ -178,9 +175,10 @@ def main(  infile, hst_filter=None,
     
 
 
-    #beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
-    #mask.main( sheared_cat, corrected_moments_cat,
-    #               outFile=beforeDoubles_cat)
+    beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
+    mask.main( sheared_cat, corrected_moments_cat,
+                   outFile=beforeDoubles_cat)
+
 
     clean_cat = field[:-5]+"_clean.shears"
 
