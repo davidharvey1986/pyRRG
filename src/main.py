@@ -25,9 +25,6 @@ def main(  infile,
             sex_files=None,
             psf_model_dir=None,
             expThresh = 3, 
-            noisy=False, 
-            nonstop=True, 
-            fits_cat=None, 
             mag_cut=[0.,40.], 
             signal_noise_cut=4.4,
             size_cut=[3., 30.],
@@ -49,18 +46,11 @@ def main(  infile,
     
     
     ;INPUTS : CLUSTER_NAME : THE NAME OF THE CLUSTER
-    ;         FILTER : THE HST FILTER USED
     
     ;KEYWORDS : EXPTHRESH : THE MINIMUM NUMBER OF EXPOSURES ONE
     ;                       GALAXY MUST HAVE BEFORE ALLOWED TO
     ;                       BE IN SAMPLE; DEFAULT = 2 TO PREVENT
     ;                       EDGE GALAXIES IN THE DITHER TO BE INCL.
-    ;           FILTER2 : THE SECOND FILTER USED TO GET THE RED_SEQUENCE
-    ;                     IF NOT SET THEN RED_SEQUENCE IS NOT FOUND
-    ;           NOISY : RUN THE SOURCE EXTRACTION USING THE OLD AND
-    ;                   NOT THE MATHILDE NEW ONE THAT IS MROE SENSITIVE
-    ;           NONSTOP : DO NOT PAUSE FOR CONFIRATION I WANT TO CONTINUE
-    ;           FITS_CAT :  MAKE A CATALOGUE THAT IS IN FITS FORMAT
     ;           MAG_CUT : MAGNITUDE CUTS
     
 
