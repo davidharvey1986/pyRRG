@@ -1,4 +1,4 @@
-src/starGalaxyModelRF.pkl
+scripts/pyRRG
 docs/HowToStarGalaxyClassify.pdf
 docs/Manual.pdf
 galStar.sav
@@ -35,6 +35,7 @@ src/psf_cor.py
 src/rotate_moments.py
 src/rrg_to_lenstool.py
 src/star_galaxy_separation.py
+src/starGalaxyModelRF.pkl
 src/psf_lib/160/TinyTim160.scat
 src/psf_lib/160/TinyTim_f-1.cat
 src/psf_lib/160/TinyTim_f-1.moms

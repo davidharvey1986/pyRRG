@@ -17,9 +17,9 @@ import check_external_packages as cep
 import masking_star as mask
 import double_detection_removal as remove_doubles
 import sys
+from getHSTfilter import getHSTfilter 
 
-
-def main(  infile, hst_filter=None,
+def main(  infile,
             data_dir=None,
             code_dir=None,
             sex_files=None,
@@ -32,7 +32,8 @@ def main(  infile, hst_filter=None,
             signal_noise_cut=4.4,
             size_cut=[3., 30.],
             min_rad=6.,
-            mult=2.):
+            mult=2.,\
+            weight_file=None):
     '''
     ;PURPOSE : RUN RRG OVER THE GIVEN CLUSTER AND FILTER, CAN TAKE
     ;          IN MULTIPLE EXPOSURES
@@ -68,8 +69,8 @@ def main(  infile, hst_filter=None,
     ;           FITS IMAGES AND SLOW THIGNS DOWN
     
     '''
-    if hst_filter is None:
-        hst_filter='F814W'
+    
+    hst_filter=getHSTfilter(infile)
     wavelength=''.join([  s for s in hst_filter if s.isdigit()])
                    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
@@ -122,7 +123,8 @@ def main(  infile, hst_filter=None,
     
     #Find objects and measure their raw shapes
     if not os.path.isfile( sex_catalogue):
-        weight_file = infile[:-8]+'wht.fits'
+        if weight_file is None:
+            weight_file = infile[:-8]+'wht.fits'
         sources = at.source_extract( infile, weight_file,
                                          outfile=sex_catalogue,
                                          conf_path=dirs.sex_files,

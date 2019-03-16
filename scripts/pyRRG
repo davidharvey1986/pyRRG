@@ -5,7 +5,23 @@ import argparse
 
 parser = argparse.ArgumentParser("pyRRG")
 parser.add_argument("filename", help="Input Filename", type=str)
-parser.add_argument('--version', action='version', version=pyRRG.__version__)
-args = parser.parse_args()
+parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
+parser.add_argument('-w','--weight', help="Image weight file", default=None)
 
-pyRRG.main(args.filename)
+args = parser.parse_args()
+print("Running pyRRG version %s" % pyRRG.__version__)
+pyRRG.main(args.filename,
+            data_dir=None,
+            code_dir=None,
+            sex_files=None,
+            psf_model_dir=None,
+            expThresh = 3, 
+            noisy=False, 
+            nonstop=True, 
+            fits_cat=None, 
+            mag_cut=[0.,40.], 
+            signal_noise_cut=4.4,
+            size_cut=[3., 30.],
+            min_rad=6.,
+            mult=2.,\
+            weight_file=args.weight)
