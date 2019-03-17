@@ -16,7 +16,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                      object_catalogue=None,
                      bad_val=-99, regfile=None,
                      skymed=None, skysd=None,
-                     return_moms=True, **kwargs):
+                     return_moms=True, quiet=False,**kwargs):
                      
     '''
     ;
@@ -75,8 +75,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
     if (skymed is None )| \
         (skysd is None):
         skymed, skysd, skysw = mmm.mmm(img)
-    
-    print(' % f skymed and %f skysd' % (skymed,skysd))
+    if verbose:
+        print(' % f skymed and %f skysd' % (skymed,skysd))
     
     if object_catalogue is None:
         cat_file=py.open(sex_catalog)
@@ -148,7 +148,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
 
     for i in xrange( nGalaxies ):
-        if not verbose:
+        if (not verbose) & (not quiet):
             sys.stdout.write("Measuring moment of object: %i/%i\r" % \
                                  (i,nGalaxies))
             sys.stdout.flush()
@@ -174,7 +174,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
             (yc+cut_rad[i]+1 > ysize ):
 
             if verbose:
-                print(' %i %f %f too close to edge at iteration 1\n' % (i,xGal[i],yGal[i]))
+                print(' %i %f %f too close to edge at iteration 1\n' % \
+                          (i,xGal[i],yGal[i]))
             offedge=offedge+1
             go_on=0
             galaxy_moments.prob[i] += 1

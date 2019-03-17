@@ -88,7 +88,7 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
 
-        iFilename = individual_files[iImage].split('/')[-1]
+        iFilename = individual_files[iImage].split('/')[-1][0:8]
         x_column = py.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )

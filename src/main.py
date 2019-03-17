@@ -59,7 +59,7 @@ def main(  infile,
     ;           FITS IMAGES AND SLOW THIGNS DOWN
     
     '''
-    
+
     hst_filter=getHSTfilter(infile)
     wavelength=''.join([  s for s in hst_filter if s.isdigit()])
                    

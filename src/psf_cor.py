@@ -9,7 +9,7 @@ import idlsave as idlsave
 import rotate_moments as rm
 import copy as cp
 import directories
-import ipdb as pdb
+import sys
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -138,11 +138,13 @@ def psf_cor(    mom_file,
 
     FocusArray = np.zeros(nImages)
 
-
+    sys.stdout.write("\n")
     for iImage in xrange(nImages):
-   
+        sys.stdout.write("Getting PSF for image: %i/%i\r" % \
+                                 (iImage+1,nImages))
+        sys.stdout.flush()
         #Which positions are in the cluster frame
-        iImage_name = images[iImage].split('/')[-1]
+        iImage_name = images[iImage].split('/')[-1][0:8]
         inFrame = galaxy_moms[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
@@ -350,9 +352,9 @@ def psf_cor(    mom_file,
     #SOMETHIGN STUPID TO SEE WHAT HAPPENS
     #SOme weird shit going on, i have to write this out, and then
     #read it back in
-    py.writeto('galaxies.fits',galaxy_moms,clobber=True)
-    galaxy_moms = py.open('galaxies.fits')[1].data
+    galaxy_moms = writeAndRemoveUnusedColums( galaxy_moms)
     
+
     newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
                py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
                          array=psf_moms.nExposures),
@@ -390,3 +392,24 @@ class moments( dict ):
 
     def __getitem__(self, key): 
         return self.__dict__[key]
+
+
+def   writeAndRemoveUnusedColums( moments):
+
+    momentNames = moments.columns.names
+    columns = []
+    for i in momentNames:
+        if (not 'INFRAME' in i) & \
+            (not 'fits_X_IMAGE' in i) & \
+            (not 'fits_Y_IMAGE' in i) & \
+             (not 'ORIENTAT' in i ):
+            iColumn = \
+              py.Column(i, format=moments[i].dtype, \
+                            array=moments[i])
+            columns.append(iColumn)
+                
+    new_cols = py.ColDefs(columns)
+    
+    hdu = py.BinTableHDU.from_columns(new_cols)            
+    hdu.writeto('galaxies.fits',clobber=True)
+    return py.open('galaxies.fits')[1].data
