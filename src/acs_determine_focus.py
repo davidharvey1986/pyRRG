@@ -83,7 +83,7 @@ def acs_determine_focus( unknown_focus_image,
                     object_catalogue=inframe_stars,
                     xGal=inframe_stars[image_name+'_X_IMAGE'],
                     yGal=inframe_stars[image_name+'_Y_IMAGE'],
-                    mult=2, min_rad=6, skmed=-0.000899, skysd=0.007435, quiet=True)
+                    mult=2, min_rad=6,  quiet=True)
         
     star_moments = py.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
     

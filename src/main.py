@@ -24,7 +24,7 @@ def main(  infile,
             code_dir=None,
             sex_files=None,
             psf_model_dir=None,
-            expThresh = 3, 
+            expThresh = 2, 
             mag_cut=[0.,40.], 
             signal_noise_cut=4.4,
             size_cut=[3., 30.],
@@ -95,14 +95,6 @@ def main(  infile,
     if not os.path.isfile( field):
         raise ValueError("%s not found" % field)
   
-    Exposures = glob.glob( dirs.data_dir+'/j*.fits ')
-    nExposures = len(Exposures)
-  
-    if nExposures  < expThresh:
-        expThresh = nExposures
-        print 'WARNING: Low number of exposures'
-    
-  
 
     # Define survey parameters
     #------------------------------------------
@@ -147,7 +139,7 @@ def main(  infile,
                     infile, wavelength,
                     mult=1, min_rad=min_rad, chip=1,
                     constantpsf=0, mscale=0, 
-                    num_exposures=1, order=3,
+                    order=3,
                     n_chip=2)
     
 
@@ -163,7 +155,8 @@ def main(  infile,
                     signal_noise_cut=signal_noise_cut,
                     size_cut=size_cut,
                     mag_cut=mag_cut,
-                    dataDir=data_dir)
+                    dataDir=data_dir,\
+                       expThresh=expThresh)
     
 
 

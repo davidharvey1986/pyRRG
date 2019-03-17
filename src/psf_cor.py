@@ -16,7 +16,7 @@ def psf_cor(    mom_file,
                 wavelength,
                 mult=1, min_rad=1.5, chip=1,
                 constantpsf=0, mscale=0, 
-                num_exposures=1, order=3,
+                order=3,
                 n_chip=2):
     '''
     ;
@@ -38,8 +38,7 @@ def psf_cor(    mom_file,
     ;OUTPUTS:
     ; stores moments and other info in the output file as an idl structure  
     ;
-    ; OUTPUT KEYWORD PARAMETERS:
-    ; NUM_EXPOSURES : THE NUMBER OF EXPOSURES FOR EACH GALAXY
+
     
     ; MODIFICATION HISTORY:
     ;   
