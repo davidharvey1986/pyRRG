@@ -2,6 +2,7 @@ import numpy as np
 import acs_limits as al
 import RRGtools as at
 import pyfits as py
+import sys
 
 def drizzle_position(      drizzle_file,
                            individual_files,
@@ -61,7 +62,11 @@ def drizzle_position(      drizzle_file,
     
     newcol = []
     for iImage in xrange(nImages):
-        print( "%i/%i" %(iImage+1, nImages))
+       
+        sys.stdout.write("Getting object position in image: %i/%i\r" % \
+                                 (iImage+1,nImages))
+        sys.stdout.flush()
+
         #now see where each of our positions lie on each of the individual images
         
         SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec)    

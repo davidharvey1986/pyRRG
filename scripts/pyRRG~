@@ -16,7 +16,6 @@ parser.add_argument('--mag_cut', help="Upper and lower magnitude cuts", default=
 parser.add_argument('--size_cut', help="Upper and lower galaxy size cuts", default=[3., 30.])
 parser.add_argument('--min_rad', help="The minumum radius for a galaxy to be included", default=6.)
 parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2.)
-parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4)
 
 
 args = parser.parse_args()
