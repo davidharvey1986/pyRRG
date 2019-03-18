@@ -13,7 +13,7 @@ in Hubble Space Telescope data
 #python setup.py register -r pypi
 #sudo python setup.py sdist upload -r pypi
 
-version='0.0.27'
+version='0.0.29'
          
     
 INCDIRS=['.']
@@ -42,7 +42,7 @@ setup   (       name            = "pyRRG",
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['scikit-learn',\
                                       'idlsave', \
-                                   'pyfits==3.3', \
+                                   'pyfits', \
                                    'numpy', \
                                    'ipdb', 'pyraf',\
                                     'PyObjC','scipy'],                          
