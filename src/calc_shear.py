@@ -64,7 +64,7 @@ def calc_shear( corrected_moments, outfile,
     good[( corrected_moments.MAG_AUTO > mag_cut[1] )]  = 0
     good[ (signal_noise < signal_noise_cut)]  = 0 
     
-    #good[ corrected_moments.nExposures < expThresh ] = 0
+    good[ corrected_moments.nExposures < expThresh ] = 0
     good[  (~np.isfinite(corrected_moments.xx)) ] = 0
     good[  corrected_moments.prob != 0 ] = 0
 

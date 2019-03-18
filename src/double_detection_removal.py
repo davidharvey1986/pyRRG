@@ -1,4 +1,4 @@
-from astropy.io import fits
+import pyfits as fits
 import numpy as np
 from scipy import spatial
 import matplotlib.pyplot as plt
@@ -42,3 +42,4 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     fits.writeto(output_catalogue, data=data_org, \
                      header=hdulist[1].header, \
                      clobber=True,output_verify='ignore')
+

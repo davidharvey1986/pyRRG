@@ -52,7 +52,8 @@ def source_extract( image_name, weight_file, zero_point=None,
         
     cold_sources = sex.run( image_name, \
                                 conf_file=cold_conf, \
-                                conf_args=conf_args )
+                                conf_args=conf_args, \
+                               param_file=conf_path+'/rrg.param')
 
     cold_sources = append_fits_field( cold_sources, 'RA', cold_sources['X_WORLD'])
     cold_sources = append_fits_field( cold_sources, 'DEC', cold_sources['Y_WORLD'])
@@ -64,7 +65,8 @@ def source_extract( image_name, weight_file, zero_point=None,
         
     hot_sources = sex.run( image_name, \
                                conf_file=hot_conf, \
-                               conf_args=conf_args )
+                               conf_args=conf_args, \
+                               param_file=conf_path+'/rrg.param')
 
 
     hot_sources = append_fits_field( hot_sources, 'RA', hot_sources['X_WORLD'])

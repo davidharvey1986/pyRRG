@@ -1,3 +1,4 @@
+scripts/pyRRG
 docs/HowToStarGalaxyClassify.pdf
 docs/Manual.pdf
 galStar.sav
@@ -14,6 +15,7 @@ lib/RRGtools/pysex.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
+src/getHSTfilter.py
 src/check_external_packages.py
 src/acs_3dpsf.py
 src/acs_determine_focus.py
@@ -34,6 +36,7 @@ src/psf_cor.py
 src/rotate_moments.py
 src/rrg_to_lenstool.py
 src/star_galaxy_separation.py
+src/starGalaxyModelRF.pkl
 src/psf_lib/160/TinyTim160.scat
 src/psf_lib/160/TinyTim_f-1.cat
 src/psf_lib/160/TinyTim_f-1.moms

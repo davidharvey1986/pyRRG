@@ -4,6 +4,7 @@ import numpy as np
 import sys
 from matplotlib import pyplot as plt
 import RRGtools as at
+import ipdb as pdb
 def measure_moms(fits_image, sex_catalog, outfile,
                      width=None,
                      saturation=800000000, badval=-99,
@@ -15,7 +16,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                      object_catalogue=None,
                      bad_val=-99, regfile=None,
                      skymed=None, skysd=None,
-                     return_moms=True, **kwargs):
+                     return_moms=True, quiet=False,**kwargs):
                      
     '''
     ;
@@ -74,8 +75,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
     if (skymed is None )| \
         (skysd is None):
         skymed, skysd, skysw = mmm.mmm(img)
-    
-    print(' % f skymed and %f skysd' % (skymed,skysd))
+    if verbose:
+        print(' % f skymed and %f skysd' % (skymed,skysd))
     
     if object_catalogue is None:
         cat_file=py.open(sex_catalog)
@@ -144,9 +145,10 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
     
     galaxy_moments = moms( nGalaxies, radius=radius )
-    
+
+
     for i in xrange( nGalaxies ):
-        if not verbose:
+        if (not verbose) & (not quiet):
             sys.stdout.write("Measuring moment of object: %i/%i\r" % \
                                  (i,nGalaxies))
             sys.stdout.flush()
@@ -172,7 +174,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
             (yc+cut_rad[i]+1 > ysize ):
 
             if verbose:
-                print(' %i %f %f too close to edge at iteration 1\n' % (i,xGal[i],yGal[i]))
+                print(' %i %f %f too close to edge at iteration 1\n' % \
+                          (i,xGal[i],yGal[i]))
             offedge=offedge+1
             go_on=0
             galaxy_moments.prob[i] += 1
@@ -323,11 +326,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
             int_moms.xyyy=  np.sum(weight_gal*(rel_ygrid**3)*rel_xgrid)/ sum_int
             int_moms.yyyy = np.sum(weight_gal*(rel_ygrid**4)) / sum_int
 
-         
-           
-
-            
-            
+      
             #find moment errors and covariances
 
             #Error in internsity
@@ -383,6 +382,11 @@ def measure_moms(fits_image, sex_catalog, outfile,
     galaxy_moments.dec = recentred_dec
    
     galaxy_moments.calc_e1e2( mult_rad=mult)     
+    #log this stuff as i want this for the star galaxy separation
+    galaxy_moments['skymed'][:] = skymed
+    galaxy_moments['skysd'][:] = skysd
+    galaxy_moments['skysw'][:] = skysw
+    galaxy_moments['exp_time'][:] = exp_time
 
     galaxy_moments.write_to_fits( object_catalogue, outfile )
 
@@ -406,6 +410,14 @@ class moms( dict ):
         self.__dict__['xyyy'] = np.zeros( ngalaxies)
         self.__dict__['xxxy'] = np.zeros( ngalaxies)
         self.__dict__['prob'] = np.zeros( ngalaxies)
+
+        
+        #more information for the SVM star galaxy divider
+        self.__dict__['skymed'] = np.zeros( ngalaxies)
+        self.__dict__['skysd'] =  np.zeros( ngalaxies)
+        self.__dict__['skysw'] =  np.zeros( ngalaxies)
+        self.__dict__['exp_time'] =  np.zeros( ngalaxies)
+
         if radius is not None:
             self.__dict__['radius'] = radius
 

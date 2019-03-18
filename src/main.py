@@ -17,21 +17,20 @@ import check_external_packages as cep
 import masking_star as mask
 import double_detection_removal as remove_doubles
 import sys
+from getHSTfilter import getHSTfilter 
 
-def main(  infile, hst_filter=None,
+def main(  infile,
             data_dir=None,
             code_dir=None,
             sex_files=None,
             psf_model_dir=None,
-            expThresh = 3, 
-            noisy=False, 
-            nonstop=True, 
-            fits_cat=None, 
+            expThresh = 2, 
             mag_cut=[0.,40.], 
             signal_noise_cut=4.4,
             size_cut=[3., 30.],
             min_rad=6.,
-            mult=2.):
+            mult=2.,\
+            weight_file=None):
     '''
     ;PURPOSE : RUN RRG OVER THE GIVEN CLUSTER AND FILTER, CAN TAKE
     ;          IN MULTIPLE EXPOSURES
@@ -47,18 +46,11 @@ def main(  infile, hst_filter=None,
     
     
     ;INPUTS : CLUSTER_NAME : THE NAME OF THE CLUSTER
-    ;         FILTER : THE HST FILTER USED
     
     ;KEYWORDS : EXPTHRESH : THE MINIMUM NUMBER OF EXPOSURES ONE
     ;                       GALAXY MUST HAVE BEFORE ALLOWED TO
     ;                       BE IN SAMPLE; DEFAULT = 2 TO PREVENT
     ;                       EDGE GALAXIES IN THE DITHER TO BE INCL.
-    ;           FILTER2 : THE SECOND FILTER USED TO GET THE RED_SEQUENCE
-    ;                     IF NOT SET THEN RED_SEQUENCE IS NOT FOUND
-    ;           NOISY : RUN THE SOURCE EXTRACTION USING THE OLD AND
-    ;                   NOT THE MATHILDE NEW ONE THAT IS MROE SENSITIVE
-    ;           NONSTOP : DO NOT PAUSE FOR CONFIRATION I WANT TO CONTINUE
-    ;           FITS_CAT :  MAKE A CATALOGUE THAT IS IN FITS FORMAT
     ;           MAG_CUT : MAGNITUDE CUTS
     
 
@@ -67,8 +59,8 @@ def main(  infile, hst_filter=None,
     ;           FITS IMAGES AND SLOW THIGNS DOWN
     
     '''
-    if hst_filter is None:
-        hst_filter='F814W'
+
+    hst_filter=getHSTfilter(infile)
     wavelength=''.join([  s for s in hst_filter if s.isdigit()])
                    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
@@ -103,14 +95,6 @@ def main(  infile, hst_filter=None,
     if not os.path.isfile( field):
         raise ValueError("%s not found" % field)
   
-    Exposures = glob.glob( dirs.data_dir+'/j*.fits ')
-    nExposures = len(Exposures)
-  
-    if nExposures  < expThresh:
-        expThresh = nExposures
-        print 'WARNING: Low number of exposures'
-    
-  
 
     # Define survey parameters
     #------------------------------------------
@@ -121,7 +105,8 @@ def main(  infile, hst_filter=None,
     
     #Find objects and measure their raw shapes
     if not os.path.isfile( sex_catalogue):
-        weight_file = infile[:-8]+'wht.fits'
+        if weight_file is None:
+            weight_file = infile[:-8]+'wht.fits'
         sources = at.source_extract( infile, weight_file,
                                          outfile=sex_catalogue,
                                          conf_path=dirs.sex_files,
@@ -143,11 +128,7 @@ def main(  infile, hst_filter=None,
  
 
     
-    galaxies, stars = sgs.star_galaxy_separation( uncorrected_moments,
-                                                  savefile='galStar.locus' )
-
-    
-    n_stars=len(stars)
+    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat)
   
     corrected_moments_cat = field[:-5]+"_cor.cat"
 
@@ -158,7 +139,7 @@ def main(  infile, hst_filter=None,
                     infile, wavelength,
                     mult=1, min_rad=min_rad, chip=1,
                     constantpsf=0, mscale=0, 
-                    num_exposures=1, order=3,
+                    order=3,
                     n_chip=2)
     
 
@@ -174,7 +155,8 @@ def main(  infile, hst_filter=None,
                     signal_noise_cut=signal_noise_cut,
                     size_cut=size_cut,
                     mag_cut=mag_cut,
-                    dataDir=data_dir)
+                    dataDir=data_dir,\
+                       expThresh=expThresh)
     
 
 
@@ -182,9 +164,10 @@ def main(  infile, hst_filter=None,
     mask.main( sheared_cat, corrected_moments_cat,
                    outFile=beforeDoubles_cat)
 
+
     clean_cat = field[:-5]+"_clean.shears"
 
-    remove_doubles.remove_object(beforeDoubles_cat, clean_cat, FWHM_to_radius=1)
+    remove_doubles.remove_object(sheared_cat, clean_cat, FWHM_to_radius=1)
     
     plot.plot_shears( clean_cat )
 

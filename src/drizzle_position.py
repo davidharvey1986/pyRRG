@@ -2,6 +2,7 @@ import numpy as np
 import acs_limits as al
 import RRGtools as at
 import pyfits as py
+import sys
 
 def drizzle_position(      drizzle_file,
                            individual_files,
@@ -61,14 +62,18 @@ def drizzle_position(      drizzle_file,
     
     newcol = []
     for iImage in xrange(nImages):
-        print( "%i/%i" %(iImage+1, nImages))
+       
+        sys.stdout.write("Getting object position in image: %i/%i\r" % \
+                                 (iImage+1,nImages))
+        sys.stdout.flush()
+
         #now see where each of our positions lie on each of the individual images
         
         SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec)    
         #Get the limits of the field and find which one are
         #in the FOV and on the chip
         isin, image_orientation = al.acs_limits( SingleImageX, SingleImageY, \
-                                                 individual_files[iImage])
+                                                     individual_files[iImage])
 
         
         Orientation = np.zeros( len(SingleImageX)) +  image_orientation - drizzle_orientation
@@ -83,7 +88,7 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
 
-        iFilename = individual_files[iImage].split('/')[-1]
+        iFilename = individual_files[iImage].split('/')[-1][0:8]
         x_column = py.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )

@@ -89,6 +89,8 @@ def source_extract( image_name, weight_file, zero_point=None,
         hot_sources[iField][ matched_sources[1].data['NUMBER_2'] -1 ] = \
           cold_sources[iField][ matched_sources[1].data['NUMBER_1'] - 1]
 
+    #Need to retain numbering for bookeepin purposes
+    hot_sources['NUMBER'] = np.arange(len(hot_sources))
   
     if outfile is not None:
         fits.writeto( outfile, hot_sources)

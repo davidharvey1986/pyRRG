@@ -76,7 +76,7 @@ def plot_shears( moments_catalogue, nbins=None,
                     **quiveropts )
 
     
-    plt.show()
+    plt.show(block=True)
 
     #bin the x and y
     

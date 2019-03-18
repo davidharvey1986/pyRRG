@@ -2,7 +2,6 @@ import pyfits as fits
 import numpy as np
 import matplotlib.pyplot as plt
 import os as os
-import star_galaxy_separation as sgs
 import ipdb as pdb
 import RRGtools as tools
 
@@ -51,7 +50,9 @@ def instar(xl,yl,xs,ys,m):
     if m>mcut1:
         l=spike1
         R=r1
+
     if m>mcut2 and m<=mcut1:
+
         l=spike2
         R=r2
     if m>mcut3 and m<=mcut2:
@@ -162,12 +163,10 @@ def main(  shear_catalog, object_catalog_fits, \
     
     object_catalog = fits.open(object_catalog_fits)[1].data
     
-    galaxies, stars = sgs.star_galaxy_separation(object_catalog,savefile='galStar.locus',restore=True,include_sat=True)
 
-    Star_catalogue = object_catalog[stars]
-    
-     
-     ##---------------------add a new column 'clean' to shear catalogue---------------------------------
+    Star_catalogue = object_catalog[ object_catalog['galStarFlag']==0]
+
+
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
     clean=np.zeros(len(data['ra']))
     cols = []
@@ -178,8 +177,9 @@ def main(  shear_catalog, object_catalog_fits, \
     new_cols = fits.ColDefs(cols)
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
-         shear_catalog.split('.')[1]
+
     hdu.writeto(clean_catalog, clobber=True,output_verify='ignore')
+
 
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]

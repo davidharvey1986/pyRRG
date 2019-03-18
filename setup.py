@@ -13,7 +13,7 @@ in Hubble Space Telescope data
 #python setup.py register -r pypi
 #sudo python setup.py sdist upload -r pypi
 
-version='0.0.24'
+version='0.0.27'
          
     
 INCDIRS=['.']
@@ -22,7 +22,7 @@ packages = ['pyRRG', 'RRGtools', 'asciidata']
 package_dir = {'RRGtools':'./lib/RRGtools',
                    'pyRRG':'./src',
                'asciidata':'./lib/asciidata'}
-package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*']}
+package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*','*.pkl']}
 
 
 
@@ -37,10 +37,12 @@ setup   (       name            = "pyRRG",
                 packages        = packages,
                 package_dir     = package_dir,
                 package_data    = package_data,
+                scripts         = ['scripts/pyRRG'],
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
-                install_requires=['idlsave', \
-                                   'pyfits==3.3', \
+                install_requires=['scikit-learn',\
+                                      'idlsave', \
+                                   'pyfits', \
                                    'numpy', \
                                    'ipdb', 'pyraf',\
                                     'PyObjC','scipy'],                          

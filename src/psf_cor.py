@@ -5,19 +5,18 @@ import glob as glob
 import drizzle_position as dp
 import acs_determine_focus as adf
 import acs_3dpsf as acs_3dpsf
-from scipy.io import readsav as readSave
+import idlsave as idlsave
 import rotate_moments as rm
-import star_galaxy_separation as sgs
 import copy as cp
 import directories
-
+import sys
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
                 wavelength,
                 mult=1, min_rad=1.5, chip=1,
                 constantpsf=0, mscale=0, 
-                num_exposures=1, order=3,
+                order=3,
                 n_chip=2):
     '''
     ;
@@ -39,8 +38,7 @@ def psf_cor(    mom_file,
     ;OUTPUTS:
     ; stores moments and other info in the output file as an idl structure  
     ;
-    ; OUTPUT KEYWORD PARAMETERS:
-    ; NUM_EXPOSURES : THE NUMBER OF EXPOSURES FOR EACH GALAXY
+
     
     ; MODIFICATION HISTORY:
     ;   
@@ -62,18 +60,11 @@ def psf_cor(    mom_file,
 
     moms = py.open(mom_file)[1].data
 
-    momsDiagnolSum = (moms.xx + moms.yy)/2.
-    UnphysicalSum = momsDiagnolSum < 0
-    momsDiagnolSum[ UnphysicalSum ] = 0.
+    radius = np.sqrt( ( moms.xx + moms.yy)/2.)
     
-    radius = np.sqrt( momsDiagnolSum )
-    radius[UnphysicalSum] = np.nan
     
-    galaxies, stars = \
-      sgs.star_galaxy_separation( moms, \
-                                      restore=True,\
-                                      savefile=dirs.data_dir+'/galStar.locus')
-    sigma =  cp.copy(moms.radius[galaxies])
+ 
+    sigma =  cp.copy(moms.radius[moms['galStarFlag']==1])
    
     sigma[ sigma < min_rad ] = min_rad
     
@@ -92,7 +83,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    scat = readSave( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat',verbose=False )['scat']
+    scat = idlsave.read( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -109,39 +100,26 @@ def psf_cor(    mom_file,
 
     images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
     if len(images) == 0:
-        useStacked = \
-          raw_input('Cant find single exposures of field, infer PSF from stacked image? (y,n)')
-        while ( useStacked != 'y') & (useStacked!='n'):
-            useStacked = \
-              raw_input('Dont recognise input, please type "y" or "n"')
-        if useStacked == 'n':
-            raise ValueError('Cant find single exposures of field')
-        else:
-            #Create a new version of the fits file
-            #for the purpose of PSF
-            #This needs to be updated to use the wht file
-            os.system('cp '+dirs.data_dir+'/'+drizzle_file+' '+dirs.data_dir+'/PSFmeasure.fits')
-            images = [ dirs.data_dir+'/PSFmeasure.fits' ]
-            
+        raise ValueError('Cant find single exposures of field')
+
     nImages = len(images)
 
 
     #Now get the positions in the drizzle frame of ref in the individual
     #frame of ref
-    py.writeto('galaxies.fits', moms[galaxies], clobber=True,output_verify='ignore')
-    print("Getting position of galaxies in each exposure")
-    galaxy_moms =  dp.drizzle_position( drizzle_file, images, \
-                                            py.open('galaxies.fits')[1].data, \
-                                            dataDir=dirs.data_dir)
+
+    print("Getting position of stars & galaxies in each exposure")
+
+    momsWithDrizzlePosition =  \
+      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir)
+    galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
+    star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
+
     uncorrected_xx = galaxy_moms.xx
     uncorrected_yy = galaxy_moms.yy
     
-    py.writeto('stars.fits', moms[stars], clobber=True,output_verify='ignore')
-    print("Getting position of stars in each exposure")
-    star_moms = \
-      dp.drizzle_position( drizzle_file, images,  \
-                               py.open('stars.fits')[1].data, \
-                               dataDir=dirs.data_dir)
+   
+   
     
     #Also get the Orientations in terms of the drizzled image, not
     #WCS
@@ -159,11 +137,13 @@ def psf_cor(    mom_file,
 
     FocusArray = np.zeros(nImages)
 
-
+    sys.stdout.write("\n")
     for iImage in xrange(nImages):
-   
+        sys.stdout.write("Getting PSF for image: %i/%i\r" % \
+                                 (iImage+1,nImages))
+        sys.stdout.flush()
         #Which positions are in the cluster frame
-        iImage_name = images[iImage].split('/')[-1]
+        iImage_name = images[iImage].split('/')[-1][0:8]
         inFrame = galaxy_moms[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
@@ -171,6 +151,7 @@ def psf_cor(    mom_file,
 
         #So get the focus position by fitting the true image stars to the
         #model
+        
         focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, wavelength)
 
@@ -364,8 +345,15 @@ def psf_cor(    mom_file,
             
     
 
-      
+    
     galaxy_moms['gal_size'] = np.sqrt( (corrected_moments.xx +corrected_moments.yy)/2.)
+
+    #SOMETHIGN STUPID TO SEE WHAT HAPPENS
+    #SOme weird shit going on, i have to write this out, and then
+    #read it back in
+    galaxy_moms = writeAndRemoveUnusedColums( galaxy_moms)
+    
+
     newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
                py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
                          array=psf_moms.nExposures),
@@ -375,8 +363,8 @@ def psf_cor(    mom_file,
     orig_cols = galaxy_moms.columns
     new_cols = py.ColDefs(newcol)
     
-    hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
-    hdu.writeto( outfile, clobber=True,output_verify='ignore')
+    hdu = py.BinTableHDU.from_columns(orig_cols+new_cols)
+    hdu.writeto( outfile, clobber=True)
 
 class moments( dict ):
 
@@ -403,3 +391,24 @@ class moments( dict ):
 
     def __getitem__(self, key): 
         return self.__dict__[key]
+
+
+def   writeAndRemoveUnusedColums( moments):
+
+    momentNames = moments.columns.names
+    columns = []
+    for i in momentNames:
+        if (not 'INFRAME' in i) & \
+            (not 'fits_X_IMAGE' in i) & \
+            (not 'fits_Y_IMAGE' in i) & \
+             (not 'ORIENTAT' in i ):
+            iColumn = \
+              py.Column(i, format=moments[i].dtype, \
+                            array=moments[i])
+            columns.append(iColumn)
+                
+    new_cols = py.ColDefs(columns)
+    
+    hdu = py.BinTableHDU.from_columns(new_cols)            
+    hdu.writeto('galaxies.fits',clobber=True)
+    return py.open('galaxies.fits')[1].data

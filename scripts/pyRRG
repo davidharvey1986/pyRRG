@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+import sys
+import pyRRG
+import argparse
+description = "pyRRG weak lensing shape measurement code. Measuring the 2nd and 4th order moments it uses a TinyTim model to correct for PSF distortions. It is invariant to number exposures, ortientation of the drizzle images. Using a machine learning algorithm it automatically star and galaxy classifies, howeve the user is able to do this manually if not accurate enough. For more see https://arxiv.org/abs/astro-ph/9905090. For bugs please report them to https://github.com/davidharvey1986/pyRRG or contact harvey@lorentz.leidenuniv.nl"
+parser = argparse.ArgumentParser("pyRRG",description=description)
+parser.add_argument("FILENAME", help="Absolute path of the input filename to be run through pyRRG", type=str)
+parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
+parser.add_argument('-w','--weight', help="Image weight file", default=None)
+parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
+parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
+parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
+parser.add_argument('--sex_files', help="Directory in which the sex_files are", default=None, type=str)
+parser.add_argument('--expThresh', help="The minimum number of exposure that a galaxy has to have covering it to be included in the catalogue.", default=2, type=int)
+parser.add_argument('--mag_cut_upper', help="Upper (bright end) magnitude cut", default=40., type=float)
+parser.add_argument('--mag_cut_lower', help="Lower (faint end) magnitude cut", default=0., type=float)
+parser.add_argument('--size_cut_upper', help="Upper galaxy size cuts", default=30., type=float)
+parser.add_argument('--size_cut_lower', help="Lower galaxy size cuts", default=3., type=float)
+parser.add_argument('--min_rad', help="The minumum radius for a galaxy to be included", default=6., type=float)
+parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
+parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
+
+
+args = parser.parse_args()
+
+print("Running pyRRG version %s" % pyRRG.__version__)
+pyRRG.main(args.FILENAME,
+            data_dir=args.data_dir,
+            code_dir=args.code_dir,
+            sex_files=args.sex_files,
+            psf_model_dir=args.psf_model_dir,
+            expThresh = args.expThresh, 
+            mag_cut=[args.mag_cut_lower,args.mag_cut_upper], 
+            signal_noise_cut=args.signal_noise_cut,
+            size_cut=[args.size_cut_lower,args.size_cut_upper],
+            min_rad=args.min_rad,
+            mult=args.mult,\
+            weight_file=args.weight)

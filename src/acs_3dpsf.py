@@ -37,7 +37,7 @@ def acs_3dpsf_basisfunctions( degree, x, y, focus ):
 
 def acs_3dpsf_fit( scat, degree=np.array([3,2,2]), 
                    mag_cut=np.array([20.5,22]),
-                   e_cut=1, size_cut=np.array([-np.inf,3])
+                   e_cut=1, size_cut=np.array([-np.inf,3]), verbose=False
                    ):
 
     # Fit the PSF from data in a SCAT catalogue
@@ -86,7 +86,8 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
         np.isfinite(scat.yyyy_uncor[0])
 
     n_good = len(np.arange( len( good ))[good])
-    print "Found a total of "+str(len(scat.x[0]))+" real stars, of which "+str(n_good)+" look well-behaved"
+    if verbose:
+        print "Found a total of "+str(len(scat.x[0]))+" real stars, of which "+str(n_good)+" look well-behaved"
     
 
     # Store quantities to be fitted in local variables
@@ -119,8 +120,8 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
   
         if n_in_CCD > 0:
             #Compute matrix necessary for matrix inversion
-            
-            print "Fitting moments of "+str(n_in_CCD)+" real stars in CCD#"+str(ccd+1)
+            if verbose:
+                print "Fitting moments of "+str(n_in_CCD)+" real stars in CCD#"+str(ccd+1)
             basis_function_value=acs_3dpsf_basisfunctions(degree, 
                                                   x[in_ccd]-ccd_centre.x[ccd], 
                                                   y[in_ccd]-ccd_centre.y[ccd], 
@@ -135,8 +136,8 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
             acs_3dpsf_coeffs=basis_coeffs( ccd_centre,
                                     ccd_boundary_m, ccd_boundary_c,
                                     n_basis_functions, degree )
-            init_coeffs_flag = False 
-        print "Using "+str(n_basis_functions)+" basis functions"
+            init_coeffs_flag = False
+
         
         
         # Fit data to basis functions using least-squares inversion
@@ -152,8 +153,6 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
         acs_3dpsf_coeffs.e1_fit[ccd, :]    = np.dot(ls_matrix , e1[in_ccd])
         acs_3dpsf_coeffs.e2_fit[ccd, :]    = np.dot(ls_matrix , e2[in_ccd])
         
-    else:
-        print "No real stars found in CCD#"+str(ccd +1)
         
 
 
@@ -165,7 +164,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
 # **********************************************************************
 # **********************************************************************
 
-def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None):
+def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=False):
 
 
     # Create arrays to contain the final answer
@@ -175,8 +174,8 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None):
         focus_local = np.zeros(len(n_galaxies)) + focus
     else:
         focus_local=focus
-        
-    print "Found a total of "+str(n_galaxies)+" galaxies"
+    if verbose:
+        print "Found a total of "+str(n_galaxies)+" galaxies"
     if radius is None:
         radius=np.zeros(len(n_galaxies))+6
         
@@ -195,7 +194,8 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None):
             n_in_CCD = len(in_ccd)
         
         if n_in_CCD > 0:
-            print "Interpolating model PSF moments to the position of "+str(n_in_CCD)+" galaxies in CCD#"+str(ccd+1)
+            if verbose:
+                print "Interpolating model PSF moments to the position of "+str(n_in_CCD)+" galaxies in CCD#"+str(ccd+1)
 
             #Fit the PSF
             basis_function_value=acs_3dpsf_basisfunctions(acs_3dpsf_coeffs.degree[0], \
