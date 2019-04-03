@@ -174,9 +174,9 @@ class galStar():
             self.ax3.set_ylim([10,30])
 
 
-            self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'k,')
-            self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'k,')
-            self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'k,')
+            self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'g,')
+            self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'g,')
+            self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'g,')
             plt.show(block=False)
             
         def plot_boundaries( self, sources ):
@@ -221,7 +221,7 @@ class galStar():
                 sources : fits record of the sources from source exractor 
             '''
             #first get the default params
-            self.defaultsInteractiveParams(  sources)
+            self.defaultsInteractiveParams(  sources )
             #Write on the plot some useful directions for the user
             self.ax3.annotate( 'Use double left click to select point',\
                                        xy=( 0.01, 0.9), \
@@ -372,7 +372,7 @@ class galStar():
                     #Reset galaxies or stars
                     #Replot the galaxies or stars
                     if len(self.xcoords) == 2:
-                        self.galaxies = []
+                        self.galStarFlag[:]=-1
                         self.plot_stars_galaxies( sources)
                     elif len(self.xcoords) == 4:
                         self.GalLowCut = 0.
@@ -407,7 +407,7 @@ class galStar():
             Plot the stars in yellow stars
             Plot the galaxies in red points
             '''
-            
+
             if len(self.star_points) > 0:
                 iStar_points = self.star_points[ -1 ]
                 iGal_points = self.gal_points[ -1]
@@ -441,11 +441,11 @@ class galStar():
 
 
             self.noise_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
-                                                        sources['MU_MAX'][self.galStarFlag==-1], 'g.'  ),
+                                                        sources['MU_MAX'][self.galStarFlag==-1], 'g,'  ),
                                           self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
-                                                            sources['gal_size'][self.galStarFlag==-1], 'g.', label='Noise' ),
+                                                            sources['gal_size'][self.galStarFlag==-1], 'g,', label='Noise' ),
                                           self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
-                                                            sources['RADIUS'][self.galStarFlag==-1], 'g.' )])
+                                                            sources['RADIUS'][self.galStarFlag==-1], 'g,' )])
 
             self.axes[1].legend()
 
