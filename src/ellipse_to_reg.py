@@ -12,7 +12,7 @@ def ellipse_to_reg( catalogue_name, regName='ellipse.reg' ):
     catalogue = py.open( catalogue_name )[1].data
 
 
-    regionFile = open( regName, 'wb')
+    regionFile = open( regName, 'w')
 
     ellipticity = np.sqrt( catalogue.e1**2 +
                            catalogue.e2**2 )

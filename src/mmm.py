@@ -141,9 +141,12 @@ def mmm( sky_vector,
     minimm = minimm -1               #Highest value reject at lower end of vector
 
     # Compute mean and sigma (from the first pass).
+    medianIndex = np.int(np.floor((minimm+maximm+1)/2))
 
-    skymed = 0.5*sky[(minimm+maximm+1)/2] + 0.5*sky[(minimm+maximm)/2 + 1] #median 
+    skymed = 0.5*sky[medianIndex] + \
+      0.5*sky[medianIndex + 1] #median 
     skymn = sum/(maximm-minimm)                            #mean       
+
     sigma = np.sqrt(sumsq/(maximm-minimm)-skymn**2)             #sigma          
     skymn = skymn + skymid         #Add median which was subtracted off earlier 
 

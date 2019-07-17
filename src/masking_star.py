@@ -216,7 +216,7 @@ def main(  shear_catalog, object_catalog_fits, \
 
     ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):
-        mask_obj = open(mask_file, 'rb')
+        mask_obj = open(mask_file, 'r')
         for mask in mask_obj:
             if mask[0:3] != 'box' and mask[0:7] !='polygon':
                 continue

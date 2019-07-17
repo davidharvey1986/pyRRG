@@ -43,7 +43,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
     # Fit the PSF from data in a SCAT catalogue
     # F814 I magnitude catalogue cut 
     
-
+    degree = np.array(degree)
     if len(degree) < 3 :
         print("DEGREE must be 3D")
     degree[ degree > 0 ] = np.min(degree[ degree > 0 ])

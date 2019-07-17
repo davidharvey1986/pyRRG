@@ -66,9 +66,10 @@ def pix2deg( fits, x_image, y_image, coordfile=None, ):
     os.system("rm -fr xy2sky.results")
     if coordfile is None:
         coordfile = "xy2sky.par"
-        skypar = open(coordfile,"wb") 
+        skypar = open(coordfile,"w") 
         for i in range(len(x_image)):
-            skypar.write(str(x_image[i])+"   "+str(y_image[i])+"\n")
+            skypar.write('%0.5f %0.5f\n' % \
+                             (x_image[i],y_image[i]))
         skypar.close()
 
     iraf.wcsctran.unlearn()

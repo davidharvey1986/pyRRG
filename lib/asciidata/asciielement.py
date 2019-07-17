@@ -225,7 +225,7 @@ class ForElement(ValElement):
         if type == int:
 
             # get the length of the stripped string version
-            svalue = string.strip(self._item)
+            svalue = self._item.strip()
             flength = len(svalue)
 
             # correct for a sign in the stripped string
@@ -242,12 +242,12 @@ class ForElement(ValElement):
 
         elif type == float:
             # store the stripped string
-            svalue = string.strip(self._item)
+            svalue = self._item.strip()
 
             # check for an exponent
-            epos = string.find(svalue, 'E')
+            epos = svalue.find( 'E')
             if epos < 0:
-                epos = string.find(svalue, 'e')
+                epos = svalue.find( 'e')
 
             # get the floating point format
             if epos > -1:
@@ -261,7 +261,7 @@ class ForElement(ValElement):
                     accuracy = epos-2
 
                 # check whether there is a '.'
-                if string.find(svalue, '.') < 0:
+                if svalue.find( '.') < 0:
                     # correct for missing dot
                     accuracy += 1
                 
@@ -280,7 +280,7 @@ class ForElement(ValElement):
             else:
 
                 # find the position of the '.' and the total length
-                dpos = string.find(svalue, '.')
+                dpos = svalue.find( '.')
                 tlength = len(svalue)
                 
                 # compute the accuracy, to say the number

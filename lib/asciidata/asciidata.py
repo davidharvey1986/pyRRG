@@ -46,7 +46,7 @@ class NullData(object):
         """
         # set the default null string
         if null:
-            self._null = [string.strip(null)]
+            self._null = [null.strip()]
         else:
             self._null  = ['Null']
 
@@ -113,7 +113,7 @@ class AsciiData(NullData):
 
         # set the default null string
         if null:
-            self._null = [string.strip(null)]
+            self._null = [null.strip()]
         else:
             self._null  = ['Null', 'NULL', 'None', '*']
 
@@ -407,7 +407,7 @@ class AsciiData(NullData):
            headComment = self.headerComment
 
         # open the file
-        fstream = file(filename,'w+')
+        fstream = open(filename,'w+')
 
         # open a printstream
         nprinter = NicePrinter(fstream, delimiter=self._delimiter)
@@ -499,7 +499,7 @@ class AsciiData(NullData):
         l_start, l_delim, l_end = self._get_lineparams(tr_attr, td_attr)
 
         # open the file
-        fstream = file(html_name,'w+')
+        fstream = open(html_name,'w+')
 
         # open a printstream
         nprinter = NicePrinter(fstream, delimiter=l_delim,
@@ -542,7 +542,7 @@ class AsciiData(NullData):
                 latex_name = self._get_latexname(self.filename)
 
         # open the file
-        fstream = file(latex_name,'w+')
+        fstream = open(latex_name,'w+')
 
         # open a printstream with the correct parameters
         # please note that each '\' must be protected by
@@ -1032,10 +1032,10 @@ class AsciiData(NullData):
         collist    = []
 
         # open the file, and parse through all rows
-        for line in file(filename, 'r'):
+        for line in open(filename, 'r'):
 
             # throw away trailing and leading whitespaces
-            str_line = string.strip(line)
+            str_line = line.strip()
             if len(str_line) < 1 or str_line[0] == comment_char:
                 continue
 
@@ -1118,7 +1118,7 @@ class AsciiData(NullData):
             # check whether the item is NULL.
             # add the item to the column,
             # using 'None' for NULL items
-            if null.count(string.strip(item)) > 0:
+            if null.count(item.strip) > 0:
                 collist[index].add_element(None)
             else:
                 collist[index].add_element(item)
@@ -1169,7 +1169,7 @@ class AsciiData(NullData):
                 colname = self._def_colname(index)
 
             # check whether the element is a NULL-value
-            if null.count(string.strip(item)) > 0:
+            if null.count(item.strip()) > 0:
                 # append an undefined column
                 collist.append(AsciiColumn(element=[None], colname=colname,
                                            null=null))

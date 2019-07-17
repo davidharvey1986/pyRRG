@@ -83,7 +83,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    scat = readsave( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
+    scat = readsav( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -191,7 +191,7 @@ def psf_cor(    mom_file,
         #then give the position the value of the averaged psf_moms.
 
     #Save the focus array
-    focuslist = open(dirs.data_dir+'/FocusArray.txt', "wb")
+    focuslist = open(dirs.data_dir+'/FocusArray.txt', "w")
     
     for i in range(nImages):
         ExpName = images[i].split('/')[-1].split('_')[0]

@@ -3,7 +3,7 @@ import pyfits as fits
 
 import numpy as np
 import os as os
-from . import match_cat as mc
+import RRGtools as tools 
 from numpy.lib.recfunctions import append_fields as append_rec
 
 
@@ -82,7 +82,7 @@ def source_extract( image_name, weight_file, zero_point=None,
 
 
     
-    matched_sources= mc.run_match( 'cold_sources.fits',
+    matched_sources= tools.run_match( 'cold_sources.fits',
                                 'hot_sources.fits')
 
     for iField in hot_sources.columns.names:

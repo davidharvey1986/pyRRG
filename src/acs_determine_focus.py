@@ -1,5 +1,5 @@
 import numpy as np
-from . import measure_moms as mm
+from . import measure_moms 
 from . import acs_model_e as acs_model
 from . import drizzle_position as dp
 import os as os
@@ -78,7 +78,7 @@ def acs_determine_focus( unknown_focus_image,
     inframe_stars = observed_moments_stars[observed_moments_stars[image_name+'_INFRAME'] == 1]
 
     if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
-        mm.measure_moms( unknown_focus_image,  'NOCAT_NEED',
+        measure_moms( unknown_focus_image,  'NOCAT_NEED',
                     unknown_focus_image[:-5]+'_uncor.cat',
                     object_catalogue=inframe_stars,
                     xGal=inframe_stars[image_name+'_X_IMAGE'],

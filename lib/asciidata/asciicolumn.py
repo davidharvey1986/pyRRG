@@ -77,7 +77,7 @@ class AsciiColumn(NullColumn):
 
         # set the default null string
         if null:
-            self._null = [string.strip(null[0])]
+            self._null = [null[0].strip()]
         else:
             self._null  = ['*']
 

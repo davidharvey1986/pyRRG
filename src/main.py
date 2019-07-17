@@ -118,7 +118,7 @@ def main(  infile,
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
     
     if not os.path.isfile(uncorrected_moments_cat):
-        measure_moms.measure_moms( infile,
+        measure_moms( infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,
                                     min_rad=min_rad, mult=mult,

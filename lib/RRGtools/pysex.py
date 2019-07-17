@@ -110,6 +110,7 @@ def _setup(conf_file, params):
     except:
         pass #already created in _check_files
     f=open('.pysex.param', 'w')
+    params = [ i.decode() for i in params ]
     print('\n'.join(params), file=f)
     f.close()
     

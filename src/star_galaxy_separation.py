@@ -130,9 +130,9 @@ class galStar():
             
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
-
+            print(codeDir+'/'+rfModel)
             galStarFlagClassifier =  \
-              pkl.load(open(codeDir+'/'+rfModel,'rb'))
+              pkl.load(open(codeDir+'/'+rfModel,'rb'), encoding='latin1')
 
 
             self.galStarFlag = np.zeros(len(sources))-2
