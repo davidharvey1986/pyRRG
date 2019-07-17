@@ -77,8 +77,8 @@ def main(  infile,
     if data_dir is None:
         data_dir = os.getcwd()+'/'    
    
-
-    stilts_dir = '/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])
+    
+    stilts_dir = '/'+'/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])
     dirs = directories.directories(data_dir,  sex_files,
                            psf_model_dir+'/'+str(wavelength)+'/',
                                        code_dir, stilts_dir)

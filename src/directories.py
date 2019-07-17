@@ -14,7 +14,7 @@ class directories( dict ):
         self.__dict__['stilts_dir'] = stilts_dir
 
     def write_dirs( self ):
-        file_obj = open('directories.cat',"wb")
+        file_obj = open('directories.cat',"w")
         file_obj.write("DATA_DIR: %s \n" %self.data_dir)
         file_obj.write("SEX_FILES: %s \n" %self.sex_files)
         file_obj.write("PSF_MODEL_DIR: %s \n" %self.psf_model_dir)

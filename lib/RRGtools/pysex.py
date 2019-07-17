@@ -110,7 +110,11 @@ def _setup(conf_file, params):
     except:
         pass #already created in _check_files
     f=open('.pysex.param', 'w')
-    print('\n'.join(params), file=f)
+    params = [ i.decode() for i in params ]
+    string='\n'.join(params)
+    
+    print(string)
+    print('%s' % string, file=f)
     f.close()
     
 def _setup_img(image, name):
@@ -129,6 +133,7 @@ def _get_cmd(img, img_ref, conf_args):
 
 def _read_cat( catName ):
     cat = ascii.read(catName)
+    print(cat)
     return cat
 
 def _cleanup(conf,dirname):
