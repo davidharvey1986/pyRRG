@@ -19,10 +19,9 @@ version='0.0.31'
     
 INCDIRS=['.']
 
-packages = ['pyRRG', 'RRGtools', 'asciidata']
+packages = ['pyRRG', 'RRGtools']
 package_dir = {'RRGtools':'./lib/RRGtools',
-                   'pyRRG':'./src',
-               'asciidata':'./lib/asciidata'}
+                   'pyRRG':'./src'}
 package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*','*.pkl']}
 
 
