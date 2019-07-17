@@ -34,7 +34,9 @@ def source_extract( image_name, weight_file, zero_point=None,
         
     if zero_point is None:
         header =  fits.open( image_name )[0].header
-        if np.all( np.array(['PHOTFLAM' in i for i in header.keys()])):
+        findPhot =  np.array(['PHOTFLAM' in i for i in header.keys()])
+        
+        if np.all(findPhot == False):
             header = fits.open( image_name )[1].header
             
         zero_point = acs_zero_point(header)
