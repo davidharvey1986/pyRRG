@@ -13,7 +13,7 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciifunctio
 """
 __version__ = "Version 1.1 $LastChangedRevision: 234 $"
 
-from asciidata import *
+from .asciidata import *
 
 def open(filename, null=None, delimiter=None, comment_char=None):
     """

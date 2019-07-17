@@ -212,7 +212,7 @@ class AsciiLenGetIter(object):
         """
         return self
 
-    def next(self):
+    def __next__(self):
         """
         Mandatory method for an iterator class
         
@@ -256,7 +256,7 @@ class AsciiColumnIter(object):
         """
         return self
 
-    def next(self):
+    def __next__(self):
         """
         Mandatory method for an iterator class
         

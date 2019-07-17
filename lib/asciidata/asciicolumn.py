@@ -12,9 +12,9 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciicolumn.
 __version__ = "Version 1.0 $LastChangedRevision: 503 $"
 
 import string
-from asciielement import *
-from asciierror   import *
-from asciiutils   import *
+from .asciielement import *
+from .asciierror   import *
+from .asciiutils   import *
 
 class NullColumn(object):
     """
@@ -40,7 +40,7 @@ class NullColumn(object):
 
         # append the reuqested number of None
         # perhaps a bit faster than the above lines
-        self._data = map(dummy_list.append, range(nrows))
+        self._data = list(map(dummy_list.append, list(range(nrows))))
 
         # set the row number
         self._nrows   = nrows
@@ -71,7 +71,7 @@ class AsciiColumn(NullColumn):
         self.colcomment =''
         self._data    = []
         self._defined = 0
-        self._type    = types.StringType
+        self._type    = bytes
         self._format  = ['%10s','%10s']
         self._nrows   = 0
 
@@ -244,10 +244,10 @@ class AsciiColumn(NullColumn):
         @return: the format for the null elements
         @rtype: string
         """
-        if self._type == types.IntType:
+        if self._type == int:
             length = len(str(newformat % 1))
             return '%'+str(length)+'s'
-        elif self._type == types.FloatType:
+        elif self._type == float:
             length = len(str(newformat % 1.0))
             return '%'+str(length)+'s'
         else:
@@ -480,17 +480,17 @@ class AsciiColumn(NullColumn):
             raise Exception('There are "None" elements in the column. They can not be\ntransformed to numarrays!')
 
         # check for string column
-        if self._type == types.StringType:
+        if self._type == bytes:
             # import CharArrays
             import numarray.strings
             # transform the array to CharArrays
             narray = numarray.strings.array(self._data)
 
-        elif self._type == types.IntType:
+        elif self._type == int:
             # transform the data to integer numarray
             narray = numarray.array(self._data, type='Int32')
 
-        elif self._type == types.FloatType:
+        elif self._type == float:
             # transform the data to float numarray
             narray = numarray.array(self._data, type='Float64')
 
@@ -525,7 +525,7 @@ class AsciiColumn(NullColumn):
 
             # create the numpy array,
             # making on the fly the mask
-            narray = numpy.ma.array(self._data, mask=map(make_mask, self._data))
+            narray = numpy.ma.array(self._data, mask=list(map(make_mask, self._data)))
 
         else:
             # convert the list to a numpy object

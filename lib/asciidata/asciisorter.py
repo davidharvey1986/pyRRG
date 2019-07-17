@@ -34,7 +34,7 @@ class ColumnIndex(object):
         
         if nrows:
              # create the initial index
-            self.index_col = range(nrows)
+            self.index_col = list(range(nrows))
         else:
             # define the index to none
             self.index_col = None
@@ -85,7 +85,7 @@ class ColumnIndex(object):
         @type nrows: int
         """
         #create the initial index
-        self.index_col = range(nrows)
+        self.index_col = list(range(nrows))
 
 
     def sort(self, sort_col=None, descending=0, ordered=1):
@@ -106,7 +106,7 @@ class ColumnIndex(object):
         # check whether the index is defined
         if not self.index_col:
             # create the initial index
-            self.index_col = range(len(sort_col))
+            self.index_col = list(range(len(sort_col)))
 
         # check whether ordered sort is requested
         if ordered:

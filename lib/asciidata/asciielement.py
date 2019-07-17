@@ -14,7 +14,7 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciielement
 __version__ = "Version 1.0 $LastChangedRevision: 503 $"
 
 import string, sys, os, types
-from asciierror import *
+from .asciierror import *
 
 class Element(object):
     """
@@ -64,13 +64,13 @@ class Element(object):
         """
         # check for int
         if self._isint(item):
-            return types.IntType
+            return int
         # check for float
         elif self._isfloat(item):
-            return types.FloatType
+            return float
         # the default is string
         else:
-            return types.StringType        
+            return bytes        
 
     def _isint(self, item):
         """
@@ -166,9 +166,9 @@ class ValElement(Element):
         @return: the typed element value
         @rtype: string/integer/float
         """
-        if type == types.IntType:
+        if type == int:
             return int(item)
-        elif type == types.FloatType:
+        elif type == float:
             return float(item)
         else:
             return self._item
@@ -222,7 +222,7 @@ class ForElement(ValElement):
         @rtype: [string]
         """
         # check for te data type
-        if type == types.IntType:
+        if type == int:
 
             # get the length of the stripped string version
             svalue = string.strip(self._item)
@@ -240,7 +240,7 @@ class ForElement(ValElement):
                 # return the format
                 return ['% '+str(flength)+'i','%'+str(flength+1)+'s']
 
-        elif type == types.FloatType:
+        elif type == float:
             # store the stripped string
             svalue = string.strip(self._item)
 
@@ -310,10 +310,10 @@ class ForElement(ValElement):
         @return: the list of format strings
         @rtype: [string]
         """
-        if type == types.IntType:
+        if type == int:
             # default format for integers
             return ['%5i','%5s']
-        elif type == types.FloatType:
+        elif type == float:
             # default format for floats
             return ['% 12.6e', '%13s']
         else:
@@ -366,18 +366,18 @@ class TypeTransformator(object):
         istransf = 0
 
         # check whether the original type is string
-        if orig_type == types.StringType:
+        if orig_type == bytes:
             # everything can be transformed to a string
             istransf = 1
 
         # check whether the original type is float
-        elif orig_type == types.FloatType:
+        elif orig_type == float:
             # integers can be transformed to float
-            if new_type == types.IntType:
+            if new_type == int:
                 istransf = 1
 
         # check whether the original type is integer
-        elif orig_type == types.IntType:
+        elif orig_type == int:
             # NOTHING can be transformed to an integer 
             istransf = 0
 
@@ -399,9 +399,9 @@ class TypeTransformator(object):
         """
 
         # check whether the type is not of any valid type
-        if in_type != types.StringType \
-           and in_type != types.FloatType \
-           and in_type != types.IntType:
+        if in_type != bytes \
+           and in_type != float \
+           and in_type != int:
 
             # raise an exception for invalid types
             raise ColTypeError('Column type: "'+str(in_type)+'" is not a valid column type!')
@@ -417,28 +417,28 @@ class TypeTransformator(object):
         @rtype: value of any accepted type
         """
         # check if higher type is string
-        if self.higher_type == types.StringType:
+        if self.higher_type == bytes:
             # transform to string
             try:
                 rvalue = str(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.StringType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(bytes) + '!')
             
         # check if higher type is float
-        elif self.higher_type == types.FloatType:
+        elif self.higher_type == float:
             # transform to float
             try:
                 rvalue = float(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.FloatType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(float) + '!')
 
         # check if higher type is integer
-        elif self.higher_type == types.IntType:
+        elif self.higher_type == int:
             # transform to integer
             try:
                 rvalue = int(tvalue)
             except:
-                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(types.IntType) + '!')
+                raise TypeTransError('Element: "' + str(tvalue) + '" can not be transformed to ' + str(int) + '!')
 
         # it should never come to this
         else:

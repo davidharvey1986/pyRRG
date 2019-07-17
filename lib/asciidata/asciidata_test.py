@@ -14,7 +14,7 @@ $HeadURL: http://astropy.scipy.org/svn/astrolib/trunk/asciidata/Lib/asciidata_te
 __version__ = "Version 1.1 $LastChangedRevision: 389 $"
 
 import unittest
-import asciidata, asciifunction
+from . import asciidata, asciifunction
 import os, string
 
 class Test_AsciiData(unittest.TestCase):
@@ -800,7 +800,7 @@ Column null value : ['Null']
         Write the instance as table to an HTML-file
         """
         # check whether you can write to html
-        self.assert_(self.tdata.writetohtml())
+        self.assertTrue(self.tdata.writetohtml())
 
         # do it again, just to get the filename
         html_file = self.tdata.writetohtml()
@@ -813,14 +813,14 @@ Column null value : ['Null']
         html_file = 'my_html.html'
 
         # check whether you can write to a dedicated file
-        self.assert_(self.tdata.writetohtml(html_file))
+        self.assertTrue(self.tdata.writetohtml(html_file))
 
         # remove the file
         if os.path.isfile(html_file):
             os.unlink(html_file)
 
         # check whether you can give attributes
-        self.assert_(self.tdata.writetohtml(html_file,
+        self.assertTrue(self.tdata.writetohtml(html_file,
                                             tr_attr='id="my_tr"',
                                             td_attr='id="my_td"'))
 
@@ -833,7 +833,7 @@ Column null value : ['Null']
         Write the instance to as table a latex-file
         """
         # check whether you can write to a latex file
-        self.assert_(self.tdata.writetolatex())
+        self.assertTrue(self.tdata.writetolatex())
 
         # do it again, just to get the filename
         latex_file = self.tdata.writetolatex()
@@ -846,7 +846,7 @@ Column null value : ['Null']
         html_file = 'my_latex.tex'
 
         # check whether you can write to a dedicated file
-        self.assert_(self.tdata.writetohtml(latex_file))
+        self.assertTrue(self.tdata.writetohtml(latex_file))
 
         # remove the file
         if os.path.isfile(latex_file):
@@ -949,19 +949,19 @@ class Test_AsciiDataII(unittest.TestCase):
         first = out_string.find('!!')
 
         # check that it is found
-        self.assert_(first > -1)
+        self.assertTrue(first > -1)
 
         # find the second null string
         second = out_string.find('!!', first+1)
 
         # check that it is found
-        self.assert_(second > -1)
+        self.assertTrue(second > -1)
 
         # find the second null string
         third = out_string.find('!!',second+1)
 
         # now it should not be in any more
-        self.failIf(third > -1)
+        self.assertFalse(third > -1)
 
 
     def testCommentDefault(self):
@@ -1029,7 +1029,7 @@ class Test_AsciiDataII(unittest.TestCase):
         second = out_string.find('#', 26)
 
         # now it should not be in any more
-        self.failIf(second > -1)
+        self.assertFalse(second > -1)
 
 
     def testNewComment(self):
@@ -1089,7 +1089,7 @@ class Test_AsciiDataII(unittest.TestCase):
         second = out_string.find('?', 26)
 
         # now it should not be in any more
-        self.failIf(second > -1)
+        self.assertFalse(second > -1)
 
 
     def testCommentInput(self):
@@ -1157,7 +1157,7 @@ class Test_AsciiDataII(unittest.TestCase):
         second = out_string.find('@', 26)
 
         # now it should not be in any more
-        self.failIf(second > -1)
+        self.assertFalse(second > -1)
 
 
     def testDelimiterInput(self):
@@ -1211,7 +1211,7 @@ class Test_AsciiDataII(unittest.TestCase):
 
         # check the new, modified header in the string
         first = out_string.find('|')
-        self.assert_(first > -1)
+        self.assertTrue(first > -1)
 
 
     def testNewDelimiter(self):
@@ -1362,7 +1362,7 @@ class Test_AsciiDataII(unittest.TestCase):
         # iterate over the header
         for aline in tdata.header:
             # check for non-zero entry
-            self.assert_(len(aline) > 0)
+            self.assertTrue(len(aline) > 0)
 
 class Test_NullData(unittest.TestCase):
     """
@@ -1652,7 +1652,7 @@ class Test_AsciiFits(unittest.TestCase):
         fits_name = self.tdata.writetofits()
 
         # check whether the fits file exists
-        self.assert_(os.path.isfile(fits_name))
+        self.assertTrue(os.path.isfile(fits_name))
 
         # open the fits file
         fits = pyfits.open(fits_name)
@@ -1733,7 +1733,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata[0][index] >= self.tdata[0][index-1])
+            self.assertTrue(self.tdata[0][index] >= self.tdata[0][index-1])
 
 
     def testThroughoutDescending(self):
@@ -1754,7 +1754,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata[0][index] <= self.tdata[0][index-1])
+            self.assertTrue(self.tdata[0][index] <= self.tdata[0][index-1])
 
     def testAscendingSort(self):
         """
@@ -1765,7 +1765,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata[0][index] >= self.tdata[0][index-1])
+            self.assertTrue(self.tdata[0][index] >= self.tdata[0][index-1])
 
     def testDescendingSort(self):
         """
@@ -1776,7 +1776,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata[0][index] <= self.tdata[0][index-1])
+            self.assertTrue(self.tdata[0][index] <= self.tdata[0][index-1])
 
     def testColnameSort(self):
         """
@@ -1787,7 +1787,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata['column2'][index] >= self.tdata['column2'][index-1])
+            self.assertTrue(self.tdata['column2'][index] >= self.tdata['column2'][index-1])
 
     def testCharAscSort(self):
         """
@@ -1798,7 +1798,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata['column3'][index] >= self.tdata['column3'][index-1])
+            self.assertTrue(self.tdata['column3'][index] >= self.tdata['column3'][index-1])
 
     def testCharDesSort(self):
         """
@@ -1809,7 +1809,7 @@ class Test_AsciiSort(unittest.TestCase):
 
         # go along the column, check the sorting
         for index in range(1,self.tdata.nrows):
-            self.assert_(self.tdata['column3'][index] <= self.tdata['column3'][index-1])
+            self.assertTrue(self.tdata['column3'][index] <= self.tdata['column3'][index-1])
 
     def testCorrAscSort(self):
         """
@@ -1826,14 +1826,14 @@ class Test_AsciiSort(unittest.TestCase):
             value1 = self.tdata[0][index]
             value2 = self.tdata[0][index-1]
             # check the sorting on the primary column
-            self.assert_(value1 >= value2)
+            self.assertTrue(value1 >= value2)
 
             # in case of equal values in the primary column
             if self.tdata[0][index] == self.tdata[0][index-1]:
                 value1 = self.tdata[1][index]
                 value2 = self.tdata[1][index-1]
                 # check the sorting on the primary column
-                self.assert_(value1 >= value2)
+                self.assertTrue(value1 >= value2)
 
 
     def testThroughCorrAscSort(self):
@@ -1868,14 +1868,14 @@ class Test_AsciiSort(unittest.TestCase):
             value1 = self.tdata[0][index]
             value2 = self.tdata[0][index-1]
             # check the sorting on the primary column
-            self.assert_(value1 >= value2)
+            self.assertTrue(value1 >= value2)
 
             # in case of equal values in the primary column
             if self.tdata[0][index] == self.tdata[0][index-1]:
                 value1 = self.tdata[1][index]
                 value2 = self.tdata[1][index-1]
                 # check the sorting on the primary column
-                self.assert_(value1 >= value2)
+                self.assertTrue(value1 >= value2)
 
     def testCorrDesSort(self):
         """
@@ -1892,14 +1892,14 @@ class Test_AsciiSort(unittest.TestCase):
             value1 = self.tdata[1][index]
             value2 = self.tdata[1][index-1]
             # check the sorting on the primary column
-            self.assert_(value1 <= value2)
+            self.assertTrue(value1 <= value2)
 
             # in case of equal values in the primary column
             if self.tdata[1][index] == self.tdata[1][index-1]:
                 value1 = self.tdata[2][index]
                 value2 = self.tdata[2][index-1]
                 # check the sorting on the primary column
-                self.assert_(value1 <= value2)
+                self.assertTrue(value1 <= value2)
 
     def testThroughCorrDesSort(self):
         """
@@ -1933,14 +1933,14 @@ class Test_AsciiSort(unittest.TestCase):
             value1 = self.tdata[0][index]
             value2 = self.tdata[0][index-1]
             # check the sorting on the primary column
-            self.assert_(value1 <= value2)
+            self.assertTrue(value1 <= value2)
 
             # in case of equal values in the primary column
             if self.tdata[0][index] == self.tdata[0][index-1]:
                 value1 = self.tdata[1][index]
                 value2 = self.tdata[1][index-1]
                 # check the sorting on the primary column
-                self.assert_(value1 <= value2)
+                self.assertTrue(value1 <= value2)
 
 class Test_AsciiStrip(unittest.TestCase):
     """

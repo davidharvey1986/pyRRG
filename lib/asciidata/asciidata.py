@@ -15,11 +15,11 @@ $HeadURL: $
 __version__ = "Version 1.1 $LastChangedRevision: 330 $"
 
 import string, sys, os, types,copy
-from asciiheader import *
-from asciicolumn import *
-from asciisorter import *
-from asciierror  import *
-from asciiutils  import *
+from .asciiheader import *
+from .asciicolumn import *
+from .asciisorter import *
+from .asciierror  import *
+from .asciiutils  import *
 
 class NullData(object):
     """
@@ -187,11 +187,11 @@ class AsciiData(NullData):
         @rtype: AsciiColumn(s)
         """
         # this part deals with slices
-        if type(element) == types.SliceType:
+        if type(element) == slice:
             # FIXME this must be possible to do more elegantly
             start,stop,step = element.indices(self.ncols)
             newAD = copy.deepcopy(self)
-            all = range(self.ncols)
+            all = list(range(self.ncols))
             inclusive = [x for x in all[start:stop:step]]
             while all:
                 idx = all.pop()
@@ -431,7 +431,7 @@ class AsciiData(NullData):
         @return: pointer to the fits object
         @rtype: binary table HDU
         """
-        import asciifits
+        from . import asciifits
 
         # create an AsciiFits object
         asciiFits = asciifits.AsciiFits(self)
@@ -450,7 +450,7 @@ class AsciiData(NullData):
         @return: the name of the fits file
         @rtype: string
         """
-        import asciifits
+        from . import asciifits
 
         # check whether a file name is given
         if fits_name == None:
@@ -986,7 +986,7 @@ class AsciiData(NullData):
         elem = Element(element)
 
         # check the types and derive the column index
-        if elem.get_type() == types.IntType:
+        if elem.get_type() == int:
             # check for -1, which indicates the last column
             if element == -1:
                 # set the index of the last column
@@ -994,7 +994,7 @@ class AsciiData(NullData):
             else:
                 # set the index to the input index
                 index = element
-        elif elem.get_type() == types.StringType:
+        elif elem.get_type() == bytes:
             index = self.find(element)
 
         # check whether the column index exists
