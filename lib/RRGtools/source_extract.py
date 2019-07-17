@@ -33,7 +33,11 @@ def source_extract( image_name, weight_file, zero_point=None,
         dataDir = os.getcwd()
         
     if zero_point is None:
-        zero_point = acs_zero_point ( fits.open( image_name )[0].header )
+        header =  fits.open( image_name )[0].header
+        if np.all( np.array(['PHOTFLAM' in i for i in header.keys()])):
+            header = fits.open( image_name )[1].header
+            
+        zero_point = acs_zero_point(header)
         
     conf_args = {'WEIGHT_IMAGE': dataDir+'/'+weight_file,
                  'MAG_ZEROPOINT': zero_point,
