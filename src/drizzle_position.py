@@ -1,5 +1,5 @@
 import numpy as np
-import acs_limits as al
+from . import acs_limits as al
 import RRGtools as at
 import pyfits as py
 import sys
@@ -61,7 +61,7 @@ def drizzle_position(      drizzle_file,
     ra, dec = at.pix2deg( drizzle_file, moments.X_IMAGE, moments.Y_IMAGE)
     
     newcol = []
-    for iImage in xrange(nImages):
+    for iImage in range(nImages):
        
         sys.stdout.write("Getting object position in image: %i/%i\r" % \
                                  (iImage+1,nImages))

@@ -19,7 +19,7 @@ Usage:
 """
 
 import os, shutil, sys
-import asciidata
+from astropy.io import ascii
 import numpy as np
 import glob
 
@@ -58,20 +58,20 @@ def _check_files(conf_file, conf_args, verbose=True):
     
     
         if verbose:
-            print 'No filter file found, using default filter'
+            print('No filter file found, using default filter')
         f = open('.pysex.conv', 'w')
-        print>>f, """CONV NORM
+        print("""CONV NORM
 # 3x3 ``all-ground'' convolution mask with FWHM = 2 pixels.
 1 2 1
 2 4 2
-1 2 1"""
+1 2 1""", file=f)
         f.close()
         conf_args['FILTER_NAME'] = '.pysex.conv'
-    if not conf_args.has_key('STARNNW_NAME') or not os.path.isfile(conf_args['STARNNW_NAME']):
+    if 'STARNNW_NAME' not in conf_args or not os.path.isfile(conf_args['STARNNW_NAME']):
         if verbose:
-            print 'No NNW file found, using default NNW config'
+            print('No NNW file found, using default NNW config')
         f = open('.pysex.nnw', 'w')
-        print>>f, """NNW
+        print("""NNW
 # Neural Network Weights for the SExtractor star/galaxy classifier (V1.3)
 # inputs:    9 for profile parameters + 1 for seeing.
 # outputs:    ``Stellarity index'' (0.0 to 1.0)
@@ -98,7 +98,7 @@ def _check_files(conf_file, conf_args, verbose=True):
 
 
  0.00000e+00 
- 1.00000e+00"""
+ 1.00000e+00""", file=f)
         f.close()
         conf_args['STARNNW_NAME'] = '.pysex.nnw'
     
@@ -110,7 +110,7 @@ def _setup(conf_file, params):
     except:
         pass #already created in _check_files
     f=open('.pysex.param', 'w')
-    print>>f, '\n'.join(params)
+    print('\n'.join(params), file=f)
     f.close()
     
 def _setup_img(image, name):
@@ -128,7 +128,7 @@ def _get_cmd(img, img_ref, conf_args):
     return cmd
 
 def _read_cat( catName ):
-    cat = asciidata.open(catName)
+    cat = ascii.read(catName)
     return cat
 
 def _cleanup(conf,dirname):
@@ -167,23 +167,23 @@ def run(image='', imageref='', params=[], param_file=None, conf_file=None, conf_
         if os.path.isfile(default_conf_file):
             conf_file=default_conf_file
         else:
-            print 'No default conf_file found'
+            print('No default conf_file found')
             
     if param_file is not None:
         try:
             params = np.loadtxt(param_file,dtype='S')
         except:
-            print 'Could not read parameter file, exiting using default'
+            print('Could not read parameter file, exiting using default')
             try:
                 params = np.loadtxt(default_param,dtype='S')
             except:
-                print 'Cannot find default py.sex'
+                print('Cannot find default py.sex')
                 sys.exit(0)
     if param_file is None:
         try:
             params = np.loadtxt(default_param,dtype='S')
         except:
-            print 'Cannot find default py.sex'
+            print('Cannot find default py.sex')
 
     im = _reg_path(image) if isinstance(image, str) else image
     imref = _reg_path(imageref) if isinstance(imageref, str) else imageref
@@ -198,7 +198,7 @@ def run(image='', imageref='', params=[], param_file=None, conf_file=None, conf_
 
 @isolate
 def run_wrap(image='', imageref='', params=[], conf_file=None, conf_args={}):
-    if not conf_args.has_key('CATALOG_NAME'):
+    if 'CATALOG_NAME' not in conf_args:
         conf_args['CATALOG_NAME'] = '.pysex.cat'
     conf_args['PARAMETERS_NAME'] = '.pysex.param'
     if 'VERBOSE_TYPE' in conf_args and conf_args['VERBOSE_TYPE']!='QUIET':
@@ -223,7 +223,7 @@ def run_wrap(image='', imageref='', params=[], conf_file=None, conf_args={}):
     try:
         workdir=os.path.dirname(image)
     except:
-        print 'Image is an array'
+        print('Image is an array')
         workdir='.'
 
     cmd = _get_cmd(im_name, imref_name, conf_args)
@@ -231,7 +231,7 @@ def run_wrap(image='', imageref='', params=[], conf_file=None, conf_args={}):
     res = os.system(cmd)
     
     if res:
-        print "Error during sextractor execution!"
+        print("Error during sextractor execution!")
         _cleanup(conf_args, workdir)
         return
     cat = _read_cat(conf_args['CATALOG_NAME'])
@@ -244,7 +244,7 @@ def run_wrap(image='', imageref='', params=[], conf_file=None, conf_args={}):
 def get_obj_cat(cat, params, pos, tol=10.):
     import scipy.spatial
     try:
-        tree = scipy.spatial.cKDTree(zip(cat['X_IMAGE'], cat['Y_IMAGE']))
+        tree = scipy.spatial.cKDTree(list(zip(cat['X_IMAGE'], cat['Y_IMAGE'])))
         distance, index = tree.query(pos)
         if distance < tol:
             ret = []
@@ -258,9 +258,9 @@ def get_obj_cat(cat, params, pos, tol=10.):
                     ret += [cat[p][index]]
             return ret
         else:
-            print 'Unsuccessful sextraction:', distance, '> tol'
+            print('Unsuccessful sextraction:', distance, '> tol')
     except: 
-        print 'Asciidata error'
+        print('Asciidata error')
     return [None for p in params]
     
     

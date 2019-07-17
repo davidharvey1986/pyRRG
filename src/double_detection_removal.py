@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     hdulist=fits.open(rrg_catalogue)
     data_org=hdulist[1].data
-    print "num of objects in the rrg catalogue:",len(data_org)
+    print("num of objects in the rrg catalogue:",len(data_org))
 
     x=np.array(data_org['X_IMAGE'])
     y=np.array(data_org['Y_IMAGE'])
@@ -17,7 +17,7 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     temp=np.vstack((x,y,FWHM,ori_order))            ##temp: x, y, FWHM, ori_order
     temp=temp.T
     temp_sort=temp[temp[:,2].argsort()[::-1]]       ##sorting by FWHM, from big objects to small one
-    pos=zip(temp_sort[:,0],temp_sort[:,1])          ##x, y
+    pos=list(zip(temp_sort[:,0],temp_sort[:,1]))          ##x, y
     tree=spatial.KDTree(pos)
 
     for i in range(len(x)):
@@ -37,7 +37,7 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     sort_data=temp_sort[temp_sort[:, 3].argsort()]  ##sorting by the original index
     data_org=data_org[sort_data[:, 3].astype(int)]
 
-    print("Num of objects after removing double-detection: %i" % len(data_org))
+    print(("Num of objects after removing double-detection: %i" % len(data_org)))
         
     fits.writeto(output_catalogue, data=data_org, \
                      header=hdulist[1].header, \

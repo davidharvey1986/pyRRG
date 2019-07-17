@@ -89,7 +89,7 @@ def acs_map_xy( x, y,
         offset=np.array([247,224])
     else:
       offset=np.array([0.,0.])
-      print "Default offset not known for this pixel scale! Assuming zero."
+      print("Default offset not known for this pixel scale! Assuming zero.")
       
     
 
@@ -224,8 +224,8 @@ def acs_map_xy( x, y,
     # THIS IS BLOODY SLOW IF THERE ARE A LOT OF POSITIONS!
     if n_chip1 > 0 :
         k=0
-        for i in xrange(order+1):
-            for j in xrange(i+1):
+        for i in range(order+1):
+            for j in range(i+1):
                 xprime[chip1] += chip1xcoeffs[k]*(x[chip1]-origin1[0])**(i-j)*(y[chip1]-origin1[1])**(j)
                 yprime[chip1] += chip1ycoeffs[k]*(x[chip1]-origin1[0])**(i-j)*(y[chip1]-origin1[1])**(j)
          
@@ -233,8 +233,8 @@ def acs_map_xy( x, y,
 
     if n_chip2 > 0:
         k=0
-        for i in xrange(order+1):
-            for j in xrange(i+1):
+        for i in range(order+1):
+            for j in range(i+1):
                 xprime[chip2] += chip2xcoeffs[k]*(x[chip2]-origin2[0])**(i-j)*(y[chip2]-origin2[1])**(j)
                 yprime[chip2] += chip2ycoeffs[k]*(x[chip2]-origin2[0])**(i-j)*(y[chip2]-origin2[1])**(j)
                 k+=1

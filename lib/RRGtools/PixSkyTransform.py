@@ -67,7 +67,7 @@ def pix2deg( fits, x_image, y_image, coordfile=None, ):
     if coordfile is None:
         coordfile = "xy2sky.par"
         skypar = open(coordfile,"wb") 
-        for i in xrange(len(x_image)):
+        for i in range(len(x_image)):
             skypar.write(str(x_image[i])+"   "+str(y_image[i])+"\n")
         skypar.close()
 
@@ -102,7 +102,7 @@ def deg2pix_flt( fits, ra, dec, postage_stamp=0, cut=False):
             
     x = np.append( x_chip1[ inchip1 ], x_chip2[ inchip2 ])
     y = np.append( y_chip1[ inchip1 ], y_chip2[ inchip2 ]+2048)
-    print x, y
+    print(x, y)
     return x, y
 
  

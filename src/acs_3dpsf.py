@@ -1,5 +1,5 @@
 import numpy as np
-import acs_map_xy as acs_map
+from . import acs_map_xy as acs_map
 def acs_3dpsf_basisfunctions( degree, x, y, focus ):
 
 
@@ -9,9 +9,9 @@ def acs_3dpsf_basisfunctions( degree, x, y, focus ):
     n_stars=np.max( np.array([len(x),len(y),len(focus)]))
 
     basis_function_order=np.zeros((1,3)) # All zeros
-    for k in xrange(degree[2]+1):
-        for j in xrange(degree[1]+1):
-            for i in xrange(degree[0]+1):
+    for k in range(degree[2]+1):
+        for j in range(degree[1]+1):
+            for i in range(degree[0]+1):
                 if (i+j+k > 0) & ((i+j) <= np.max(degree[0:2])):
                     
                     basis_function_order=np.vstack((basis_function_order, [i,j,k]))
@@ -19,7 +19,7 @@ def acs_3dpsf_basisfunctions( degree, x, y, focus ):
     n_basis_functions= basis_function_order.shape[0]
     basis_function_value = np.zeros( (n_basis_functions, n_stars))
     
-    for i in xrange(n_basis_functions):
+    for i in range(n_basis_functions):
         basis_function_value[i,:] = x**basis_function_order[i,0]*\
             y**basis_function_order[i,1] * \
             focus**basis_function_order[i,2]
@@ -45,7 +45,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
     
 
     if len(degree) < 3 :
-        print "DEGREE must be 3D"
+        print("DEGREE must be 3D")
     degree[ degree > 0 ] = np.min(degree[ degree > 0 ])
 
     # Find the line dividing CCDs 1 and 2
@@ -87,7 +87,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
 
     n_good = len(np.arange( len( good ))[good])
     if verbose:
-        print "Found a total of "+str(len(scat.x[0]))+" real stars, of which "+str(n_good)+" look well-behaved"
+        print("Found a total of "+str(len(scat.x[0]))+" real stars, of which "+str(n_good)+" look well-behaved")
     
 
     # Store quantities to be fitted in local variables
@@ -107,7 +107,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
     
     # Work on each CCD separately
     init_coeffs_flag = True
-    for ccd in xrange(2):
+    for ccd in range(2):
     
         # Report which CCD is being considered
         if ccd +1  == 1: 
@@ -121,7 +121,7 @@ def acs_3dpsf_fit( scat, degree=np.array([3,2,2]),
         if n_in_CCD > 0:
             #Compute matrix necessary for matrix inversion
             if verbose:
-                print "Fitting moments of "+str(n_in_CCD)+" real stars in CCD#"+str(ccd+1)
+                print("Fitting moments of "+str(n_in_CCD)+" real stars in CCD#"+str(ccd+1))
             basis_function_value=acs_3dpsf_basisfunctions(degree, 
                                                   x[in_ccd]-ccd_centre.x[ccd], 
                                                   y[in_ccd]-ccd_centre.y[ccd], 
@@ -175,7 +175,7 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=F
     else:
         focus_local=focus
     if verbose:
-        print "Found a total of "+str(n_galaxies)+" galaxies"
+        print("Found a total of "+str(n_galaxies)+" galaxies")
     if radius is None:
         radius=np.zeros(len(n_galaxies))+6
         
@@ -183,7 +183,7 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=F
                      acs_3dpsf_coeffs.degree )
 
         
-    for ccd in xrange(2):
+    for ccd in range(2):
         #Report which CCD is being considered
 
         if ccd +1  == 1: 
@@ -195,7 +195,7 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=F
         
         if n_in_CCD > 0:
             if verbose:
-                print "Interpolating model PSF moments to the position of "+str(n_in_CCD)+" galaxies in CCD#"+str(ccd+1)
+                print("Interpolating model PSF moments to the position of "+str(n_in_CCD)+" galaxies in CCD#"+str(ccd+1))
 
             #Fit the PSF
             basis_function_value=acs_3dpsf_basisfunctions(acs_3dpsf_coeffs.degree[0], \
@@ -216,7 +216,7 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=F
             
            
         else:
-            print "No galaxies in CCD#"+str(ccd)
+            print("No galaxies in CCD#"+str(ccd))
 
     # Work out PSF ellipticities at positions of galaxies properly. Tsk!
     moms.e1 = (moms.xx-moms.yy)/(moms.xx+moms.yy)
@@ -283,7 +283,7 @@ class moments( dict ):
 
 
     def keys(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def __getitem__(self, key): 
         return self.__dict__[key]

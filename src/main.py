@@ -3,21 +3,21 @@ import numpy as np
 import glob as glob
 import RRGtools as at
 import pickle as pkl
-import measure_moms as measure_moms
-import star_galaxy_separation as sgs
+from . import measure_moms as measure_moms
+from . import star_galaxy_separation as sgs
 import pyfits as py
-import calc_shear as cs
-import psf_cor as psf
-import plot_shears as plot
-import ellipse_to_reg as etr
-import directories as directories
-import rrg_to_lenstool as rtl
+from . import calc_shear as cs
+from . import psf_cor as psf
+from . import plot_shears as plot
+from . import ellipse_to_reg as etr
+from . import directories as directories
+from . import rrg_to_lenstool as rtl
 import subprocess
-import check_external_packages as cep
-import masking_star as mask
-import double_detection_removal as remove_doubles
+from . import check_external_packages as cep
+from . import masking_star as mask
+from . import double_detection_removal as remove_doubles
 import sys
-from getHSTfilter import getHSTfilter 
+from .getHSTfilter import getHSTfilter 
 
 def main(  infile,
             data_dir=None,
@@ -77,8 +77,8 @@ def main(  infile,
     if data_dir is None:
         data_dir = os.getcwd()+'/'    
    
-    stilts_dir = '/'.join(subprocess.check_output(['which','stilts.sh']).split('/')[:-1])
-        
+
+    stilts_dir = '/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])
     dirs = directories.directories(data_dir,  sex_files,
                            psf_model_dir+'/'+str(wavelength)+'/',
                                        code_dir, stilts_dir)
@@ -178,7 +178,7 @@ def main(  infile,
   
 
 if __name__ == "__main__":
-    print len(sys.argv)
+    print(len(sys.argv))
     if len(sys.argv) == 1:
         print("Please to add image name")
         print("python main.py <image_name>")

@@ -1,5 +1,5 @@
 import numpy as np
-import combination as com
+from . import combination as com
 import copy as cp
 
 
@@ -49,10 +49,10 @@ def rotate_moments( moms, angle):
   
   
     mu_jk_rot=np.zeros((3, 3, n_galaxies))
-    for j in xrange(3):
-        for k in xrange(3):
-            for r in xrange(j+1):
-                for s in xrange(k+1):
+    for j in range(3):
+        for k in range(3):
+            for r in range(j+1):
+                for s in range(k+1):
                     #Only do those moments we care about
                     if j+k != 2:
                         continue
@@ -86,10 +86,10 @@ def rotate_moments( moms, angle):
     
     #then rotate them and put them in a new matrix
     mu_jklm_rot=np.zeros((5, 5, n_galaxies))
-    for j in xrange(5):
-        for k in xrange(5):
-            for r in xrange(j+1):
-                for s in xrange(k+1):
+    for j in range(5):
+        for k in range(5):
+            for r in range(j+1):
+                for s in range(k+1):
                     
  
                     if j+k != 4:

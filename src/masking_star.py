@@ -12,7 +12,7 @@ def plot_region_maskstar( filename, star):
     regionFile.write("global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\n")
     regionFile.write("image\n")
     
-    for j in xrange(len(star)):
+    for j in range(len(star)):
         polygonStr = 'polygon('
         for i in star[j]:
             polygonStr += '%0.4f,'  % i
@@ -100,9 +100,9 @@ def inpoly(Px,Py,xl,yl):
     
     #test input
     if N<3:
-        print "A polygon must have at least three vertices"
+        print("A polygon must have at least three vertices")
     if len(xv)!=len(yv):
-        print 'Must have same number of X and Y coordinates'
+        print('Must have same number of X and Y coordinates')
     
     #---------------------- Change coordinate system -----------------
     #Place P at the center of the coordinate system.
@@ -221,7 +221,7 @@ def main(  shear_catalog, object_catalog_fits, \
             if mask[0:3] != 'box' and mask[0:7] !='polygon':
                 continue
             elif mask[0:3] == 'box':
-                print "masking a box"
+                print("masking a box")
                 mask_x = np.float(mask.split('(')[1].split(',')[0])
                 mask_y = np.float(mask.split('(')[1].split(',')[1])
                 mask_sizex = np.float(mask.split('(')[1].split(',')[2][:-1])
@@ -243,7 +243,7 @@ def main(  shear_catalog, object_catalog_fits, \
                 Shears_remove = Shears_remove[ inBox == False ]
     
             elif mask[0:7] =='polygon':
-                print "masking a ploygon"
+                print("masking a ploygon")
                 mask_x = mask.split('(')[1].split(',')[::2]
                 px1 = [float(i) for i in mask_x]
                 mask_y = mask.split('(')[1].split(',')[1::2]

@@ -56,9 +56,9 @@ def clusterMemberRemove( red_band, blue_band, outname='cluster_mem_rem.fits'):
 
 
     while True:
-        UpperThreshold = np.float(raw_input('Please input the upper threshold of the red-sequence: '))
-        LowerThreshold = np.float(raw_input('Please input the lower threshold of the red-sequence: '))
-        MagThreshold = np.float(raw_input('Please input the magnitude threshold of the red-sequence: '))
+        UpperThreshold = np.float(input('Please input the upper threshold of the red-sequence: '))
+        LowerThreshold = np.float(input('Please input the lower threshold of the red-sequence: '))
+        MagThreshold = np.float(input('Please input the magnitude threshold of the red-sequence: '))
 
         clusterMembers =  (color < UpperThreshold) & \
           (color > LowerThreshold) & \
@@ -70,7 +70,7 @@ def clusterMemberRemove( red_band, blue_band, outname='cluster_mem_rem.fits'):
         plt.ylim(np.min([-2,LowerThreshold*2.]), np.max([2,UpperThreshold*2.]))
         plt.xlim(10, np.max([MagThreshold*1.5,28]))
         plt.draw()
-        done = raw_input('Are you happy with this? (Yes or No): ')
+        done = input('Are you happy with this? (Yes or No): ')
         if done == 'Yes':
             break
     plt.close()
@@ -79,7 +79,7 @@ def clusterMemberRemove( red_band, blue_band, outname='cluster_mem_rem.fits'):
     final_cat_names = np.array(joint_catalogue[1].data.columns.names)
     joint_columns = []
     
-    for i in xrange(len(final_cat_names)):
+    for i in range(len(final_cat_names)):
         if '_1' in final_cat_names[i]:
             final_cat_name = '_'.join(final_cat_names[i].split('_')[:-1])
         else:

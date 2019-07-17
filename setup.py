@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3                                                        
 import sys,os,string,glob,subprocess
 
 from setuptools import setup,Extension
@@ -18,10 +19,9 @@ version='0.0.31'
     
 INCDIRS=['.']
 
-packages = ['pyRRG', 'RRGtools', 'asciidata']
+packages = ['pyRRG', 'RRGtools']
 package_dir = {'RRGtools':'./lib/RRGtools',
-                   'pyRRG':'./src',
-               'asciidata':'./lib/asciidata'}
+                   'pyRRG':'./src'}
 package_data = {'pyRRG': ['psf_lib/*/*','sex_files/*','*.pkl']}
 
 
@@ -41,11 +41,10 @@ setup   (       name            = "pyRRG",
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['scikit-learn',\
-                                      'idlsave', \
                                    'pyfits', \
                                    'numpy', \
                                    'ipdb', 'pyraf',\
-                                    'PyObjC','scipy'],                          
+                                    'scipy','PyObjC'],                          
         )
 
 

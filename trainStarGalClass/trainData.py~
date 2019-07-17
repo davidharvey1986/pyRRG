@@ -18,17 +18,7 @@ def trainDataSVM(nSamples=60000):
     
     trainingFeatures, trainingAnswers = \
       gt.generateTrainingData()
-    nStart = 17040
-    #12941 - 19041 seems to be an important sample
-    iStart =  0 #nStart+nSamples
-    
-    #print trainingFeatures[nStart+nSamples+1,5:]
-    #print trainingFeatures[nStart+nSamples,5:]
-    #nFeat = 6
-    
-    #trainingFeatures = trainingFeatures[iStart:nSamples+iStart,:]
-    #trainingAnswers = trainingAnswers[iStart:nSamples+iStart]
-    standardGamma = 1./(trainingFeatures.shape[1] * trainingFeatures.std())
+ 
     print("Size of training data is %i with %i features" %\
               (trainingFeatures.shape[0], trainingFeatures.shape[1]))
               
@@ -38,6 +28,7 @@ def trainDataSVM(nSamples=60000):
         max_iter=-1, probability=False, \
         random_state=None, shrinking=True,
         tol=0.001, verbose=False)
+    
     print("Training started at %s" % time.ctime())
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
@@ -48,7 +39,7 @@ def trainDataSVM(nSamples=60000):
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
     
-def trainDataRF(nTrees=1000, retrain=True):
+def trainDataRF(nTrees=100, retrain=True):
     '''
     This uses a random forest to classify the data
     '''
@@ -65,14 +56,15 @@ def trainDataRF(nTrees=1000, retrain=True):
               
 
     
-    clf = RF( n_estimators=nTrees, criterion="gini")
+    clf = RF( n_estimators=nTrees, criterion="gini", n_jobs=4)
+
     print("Training started at %s with %i Trees" % (time.ctime(),nTrees))
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
     endTime = time.time()
     fitTime= endTime - startTime
     print("Time to fit classifier is %0.2f seconds" % fitTime)
-    pkl.dump(fitClassifier, open(pickleFileName,'wb'))
+    pkl.dump(fitClassifier, open(pickleFileName,'wb'), 3)
     
     
     return pickleFileName

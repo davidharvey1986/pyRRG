@@ -40,8 +40,8 @@ def plot_shears( moments_catalogue, nbins=None,
                                     ybins[:-1] - np.mean( ybins) )
 
         
-    for i in xrange( nbins ):
-        for j in xrange( nbins ):
+    for i in range( nbins ):
+        for j in range( nbins ):
             in_bin = (catalogue.x > xbins[i] ) & \
               (catalogue.x < xbins[i+1] ) &\
               (catalogue.y > ybins[j] ) & \

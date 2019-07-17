@@ -33,7 +33,7 @@ class directories( dict ):
         self.__dict__['stilts_dir'] = directories['PATH'][4]
 
     def check_dirs( self ):
-        keys = self.keys()
+        keys = list(self.keys())
         for iKey in keys:
             if not (os.path.isdir(self.__dict__[iKey])):
                 raise ValueError('Cant find directory, ensure the path is correct (%s)' % self.__dict__[iKey])
@@ -42,7 +42,7 @@ class directories( dict ):
             
 
     def keys(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def __getitem__(self, key): 
         return self.__dict__[key]

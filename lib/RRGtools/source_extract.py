@@ -1,9 +1,9 @@
-import pysex as sex
+from . import pysex as sex
 import pyfits as fits
 
 import numpy as np
 import os as os
-import match_cat as mc
+from . import match_cat as mc
 from numpy.lib.recfunctions import append_fields as append_rec
 
 

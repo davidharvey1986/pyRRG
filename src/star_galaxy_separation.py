@@ -48,7 +48,7 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
 
         
     overwrite = \
-      raw_input('Accept automated selection?\n'+\
+      input('Accept automated selection?\n'+\
             'Yes (y) : And remove all files and remeasure stars and galaxies\n'+\
             'Continue (c) : Use current selection, do not remeasure galaxies and stars\n'+\
                 'No (n)       : Reject star-gal separation and re-do interactively \n'+\
@@ -57,14 +57,14 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
                   
     plt.close()
     if overwrite == 'y':
-        print 'Writing over gal file and removing j*uncor.cat'
+        print('Writing over gal file and removing j*uncor.cat')
         os.system('rm -fr j*uncor.cat *_cor.cat')
     elif overwrite == 'm':
-        print 'Reseparating Automatically'
+        print('Reseparating Automatically')
         star_galaxy_separation( sources, outfile, include_sat=False, redoML=True)
     elif overwrite == 'n':
         #If i reseparate i will want to remeasure all stars and galaxies
-        print 'Reseparating Interactively'
+        print('Reseparating Interactively')
         os.system('rm -fr stars.fits')
         os.system('rm -fr galaxies.fits')
         os.system('rm -fr j*uncor.cat *_cor.cat')
@@ -413,7 +413,7 @@ class galStar():
                 iGal_points = self.gal_points[ -1]
                 iNoise_points =self.noise_points[-1]
                 
-                for i in xrange(len(iStar_points)):
+                for i in range(len(iStar_points)):
                     #First remove any overlaid galaxy or star points alrady
                     #on the plot
                     iStar_points[i].pop(0).remove()

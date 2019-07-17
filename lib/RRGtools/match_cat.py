@@ -2,7 +2,7 @@ import os as os
 import pyfits as py
 import numpy as np
 
-import color_color as color
+from . import color_color as color
 from numpy.lib.recfunctions import append_fields as append_rec
 
 def run_match( cat_A, cat_B, \

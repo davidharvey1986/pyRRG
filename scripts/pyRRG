@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import pyRRG
 import argparse
@@ -23,7 +23,7 @@ parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxie
 
 args = parser.parse_args()
 
-print("Running pyRRG version %s" % pyRRG.__version__)
+print(("Running pyRRG version %s" % pyRRG.__version__))
 pyRRG.main(args.FILENAME,
             data_dir=args.data_dir,
             code_dir=args.code_dir,

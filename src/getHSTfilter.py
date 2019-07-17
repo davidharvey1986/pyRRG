@@ -15,5 +15,5 @@ def getHSTfilter( infile ):
     else:
         hst_filter = header['FILTER1']
         
-    print("Using filter %s for image %s" % (hst_filter, infile))
+    print(("Using filter %s for image %s" % (hst_filter, infile)))
     return hst_filter

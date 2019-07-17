@@ -1,7 +1,7 @@
 from scipy.io import readsav as readSave
 import numpy as np
 import pyfits as py
-import directories
+from . import directories
 
 
 
@@ -85,12 +85,12 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     answer = return_moms( n_focus, n_coords, x, y)
     
     # Loop over each focus value in turn
-    for f in xrange(n_focus):
+    for f in range(n_focus):
         moms = readSave( filenames1+str(catalogues_focus[f])+filenames2).moms
         
         
         # Loop over each position in which we're interested
-        for i in xrange(n_coords):
+        for i in range(n_coords):
             # Find closest model star (i.e. don't inerpolate)
             rmin = np.sqrt( (moms.x[0]-x[i])**2 + (moms.y[0]-y[i])**2)
             match = rmin == np.min(rmin)
@@ -138,7 +138,7 @@ class return_moms( dict ):
         self.__dict__['offset_model']=np.zeros((n_focus,n_coords))
 
     def keys(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def __getitem__(self, key): 
         return self.__dict__[key]

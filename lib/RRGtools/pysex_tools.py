@@ -37,7 +37,7 @@ check_ellipse( x_point, y_point,
 import sys
 import csv as c
 import numpy as np
-import astro_tools as at
+from . import astro_tools as at
 import pyfits as py
 
 
@@ -65,7 +65,7 @@ def sex_to_reg( sex_cat, outfile,
 
     '''
     if (cat_type == 'ASCII' ) & (param_file== None):
-        print 'IF FILE TYPE IS ASCII I MUST PROVIDE PARAMFILE'
+        print('IF FILE TYPE IS ASCII I MUST PROVIDE PARAMFILE')
         return 0
 
     if SexStructure is None:
@@ -73,7 +73,7 @@ def sex_to_reg( sex_cat, outfile,
             try:
                 cat_list = py.open( sex_cat )
             except:
-                print 'Error raised, could not be a fits file, try ascii'
+                print('Error raised, could not be a fits file, try ascii')
                 return 0
             SexStructure = cat_list[-1].data
         else:
@@ -92,7 +92,7 @@ def sex_to_reg( sex_cat, outfile,
     regionFile.writerow(["global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1"])
     regionFile.writerow([coordinate_sys])
     
-    for iGal in xrange(len(x)):
+    for iGal in range(len(x)):
         galInfo = ['ellipse('+str(x[iGal]), \
                    str(y[iGal]), \
                    str(a[iGal]), \
@@ -149,7 +149,7 @@ def check_fields( structure, coordinate_sys='IMAGE' ):
             theta = structure['THETA_WORLD']
             coordinate='WCS'
         except:
-            print 'No coordinates of the right sort found'
+            print('No coordinates of the right sort found')
             sys.exit(0)
 
 
@@ -208,7 +208,7 @@ def mask_sexcat( sex_cat, mask_file, param_file=None,
 
     if catalogue is None:
         if cat_type == 'ASCII' and param_file is None:
-            print 'IF CATALOGUE IS ASCII PLEASE GIVE PARAM FILE'
+            print('IF CATALOGUE IS ASCII PLEASE GIVE PARAM FILE')
             return
     
 
@@ -225,7 +225,7 @@ def mask_sexcat( sex_cat, mask_file, param_file=None,
                                  dtype=mask_dtype )
     
     masked = np.ones( len( catalogue['X_IMAGE']))
-    for iMask in xrange(len(masked_regions['shape'])):
+    for iMask in range(len(masked_regions['shape'])):
         
         
         
@@ -280,7 +280,7 @@ def write_catalogue( catalogue, outfile, cat_type='FITS'):
         if cat_type == 'ASCII':
             np.savetxt( outfile, catalogue, fmt='%.5f' )
         else:
-            print 'UKNOWN FILE FORMAT'
+            print('UKNOWN FILE FORMAT')
             
 
         
@@ -346,5 +346,5 @@ def fits_to_reg( fitsfile, outfile, circle_rad=3.):
     data = py.open(fitsfile)[-1].data
     ra = data['RA']
     dec = data['DEC']
-    for iGal in xrange(len(ra)):
+    for iGal in range(len(ra)):
         regionFile.write('circle(%0.4f,%0.4f,%0.1f")\n' % (ra[iGal],dec[iGal],circle_rad))    

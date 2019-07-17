@@ -64,7 +64,7 @@ def trainDataRF(nTrees=100, retrain=True):
     endTime = time.time()
     fitTime= endTime - startTime
     print("Time to fit classifier is %0.2f seconds" % fitTime)
-    pkl.dump(fitClassifier, open(pickleFileName,'wb'))
+    pkl.dump(fitClassifier, open(pickleFileName,'wb'), 2)
     
     
     return pickleFileName

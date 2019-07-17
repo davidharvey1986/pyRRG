@@ -85,7 +85,7 @@ def bin_etang( radial, etang, nbins=20, \
 
     e_binned = np.zeros((2, nbins), float)
     
-    for i in xrange(nbins):
+    for i in range(nbins):
 
         ind = (radial > bins[i]) & (radial < bins[i+1]) 
         e_binned[0, i] = np.sum( etang[ ind ]*weight[ ind ] )/np.sum( weight[ ind ])

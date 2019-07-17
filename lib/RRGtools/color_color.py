@@ -1,10 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import pyfits as py
-import nearest_neighbour as nearest
+from . import nearest_neighbour as nearest
 
 from scipy.stats import gaussian_kde
-import match_cat as mc
+from . import match_cat as mc
 
 def magnitude( flux, zpt, exptime, apcor ):
     
