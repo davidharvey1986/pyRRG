@@ -1,3 +1,5 @@
+lib/asciidata/__pycache__/*
+lib/RRGtools/__pycache__/*
 src/starGalaxyModelRF.pkl
 src/*.pkl
 src/*~

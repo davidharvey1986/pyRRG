@@ -1,5 +1,7 @@
+lib/asciidata/__pycache__/*
 src/starGalaxyModelRF.pkl
 src/*.pkl
+src/*~
 log
 virtualenv
 trainStarGalClass
