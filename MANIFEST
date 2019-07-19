@@ -15,6 +15,7 @@ lib/RRGtools/pysex.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
+src/getIndividualExposures.py
 src/getHSTfilter.py
 src/check_external_packages.py
 src/acs_3dpsf.py
