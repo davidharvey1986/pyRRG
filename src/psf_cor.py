@@ -1,7 +1,6 @@
 import pyfits as py
 import numpy as np
 import os as os
-import glob as glob
 from . import drizzle_position as dp
 from . import acs_determine_focus as adf
 from . import acs_3dpsf as acs_3dpsf
@@ -10,6 +9,7 @@ from . import rotate_moments as rm
 import copy as cp
 from . import directories
 import sys
+from . import getIndividualExposures as gie
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
@@ -98,7 +98,8 @@ def psf_cor(    mom_file,
     ;4. Then take the average of the moments for each 
     '''
 
-    images = glob.glob( dirs.data_dir+'/j*_drz_sci.fits')
+    images = gie.getIndividualExposures( drizzle_file )
+    
     if len(images) == 0:
         raise ValueError('Cant find single exposures of field')
 

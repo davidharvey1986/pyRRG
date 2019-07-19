@@ -44,7 +44,7 @@ setup   (       name            = "pyRRG",
                                    'pyfits', \
                                    'numpy', \
                                    'ipdb', 'pyraf',\
-                                    'scipy','PyObjC'],                          
+                                    'scipy'],                          
         )
 
 
