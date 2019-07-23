@@ -85,7 +85,7 @@ def acs_determine_focus( unknown_focus_image,
                     yGal=inframe_stars[image_name+'_Y_IMAGE'],
                     mult=2, min_rad=6,  quiet=True)
         
-    star_moments = py.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
+    star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
     
     #Now get an array of moments for all the possible focus positions
     model_e, focus = acs_model.acs_model_e(star_moments[image_name+'_X_IMAGE'],

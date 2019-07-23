@@ -109,12 +109,12 @@ def calc_shear( corrected_moments, outfile,
 
     fits_cols = []
     for iName in momc.columns.names:
-        fits_cols.append( py.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
+        fits_cols.append( fits.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
         
-    newcol = [ py.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
-               py.Column(name='gamma2', format=gamma2.dtype, array=gamma2) ]
+    newcol = [ fits.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
+               fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2) ]
 
  
-    hdu = py.BinTableHDU.from_columns(fits_cols + newcol)
-    hdu.writeto(outfile, clobber=True,output_verify='ignore')
+    hdu = fits.BinTableHDU.from_columns(fits_cols + newcol)
+    hdu.writeto(outfile, overwrite=True,output_verify='ignore')
 

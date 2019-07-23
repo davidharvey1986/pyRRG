@@ -41,5 +41,5 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
         
     fits.writeto(output_catalogue, data=data_org, \
                      header=hdulist[1].header, \
-                     clobber=True,output_verify='ignore')
+                     overwrite=True,output_verify='ignore')
 

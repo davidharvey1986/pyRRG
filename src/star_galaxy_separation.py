@@ -80,10 +80,10 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
         new_cols = fits.ColDefs(cols)
         hduWithGalStarFlag = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     
-        hduWithGalStarFlag.writeto(outfile, clobber=True)
+        hduWithGalStarFlag.writeto(outfile, overwrite=True)
     else:
         sources['galStarFlag'] = galStarObject.galStarFlag
-        fits.writeto(  outfile, sources, clobber=True )
+        fits.writeto(  outfile, sources, overwrite=True )
 
         
 #This class is where all the meat of the code is run including the interactive plotting

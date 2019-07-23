@@ -112,7 +112,7 @@ def main(  infile,
                                          conf_path=dirs.sex_files,
                                          dataDir=dirs.data_dir)
     else:
-        sources = py.open( sex_catalogue )[1].data
+        sources = fits.open( sex_catalogue )[1].data
 
   
     uncorrected_moments_cat = field[:-5]+"_uncor.cat"
@@ -124,7 +124,7 @@ def main(  infile,
                                     min_rad=min_rad, mult=mult,
                                        silent=True)
 
-    uncorrected_moments = py.open( uncorrected_moments_cat )[1].data
+    uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
 
     
@@ -143,7 +143,7 @@ def main(  infile,
                     n_chip=2)
     
 
-    corrected_moments = py.open( corrected_moments_cat )[1].data
+    corrected_moments = fits.open( corrected_moments_cat )[1].data
 
     #Correct zerpoint for the stacked num exposures
   

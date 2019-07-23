@@ -20,7 +20,7 @@ def plot_shears( moments_catalogue, nbins=None,
     ax1 = plt.subplot( gs[0,0])
 
     if catalogue is None:
-        catalogue = py.open( moments_catalogue )[1].data
+        catalogue = fits.open( moments_catalogue )[1].data
     nGalaxies = len( catalogue.x)
 
     

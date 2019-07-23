@@ -16,7 +16,7 @@ def acs_limits( x, y, filename):
     ;OUTPUTS : A BOOLEAN OF THE INDEXES OF THE X AND Y POSITIONS THAT ARE IN THE FIELD
     '''
     
-    image_obj=py.open(filename)
+    image_obj=fits.open(filename)
     imagedata = image_obj[0].data
     header = image_obj[0].header
     

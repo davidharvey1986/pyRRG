@@ -9,7 +9,7 @@ def ellipse_to_reg( catalogue_name, regName='ellipse.reg' ):
     '''
 
 
-    catalogue = py.open( catalogue_name )[1].data
+    catalogue = fits.open( catalogue_name )[1].data
 
 
     regionFile = open( regName, 'w')

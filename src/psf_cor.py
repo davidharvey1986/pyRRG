@@ -58,7 +58,7 @@ def psf_cor(    mom_file,
     '''
     dirs = directories.return_dirs( )
 
-    moms = py.open(mom_file)[1].data
+    moms = fits.open(mom_file)[1].data
 
     radius = np.sqrt( ( moms.xx + moms.yy)/2.)
     
@@ -355,17 +355,17 @@ def psf_cor(    mom_file,
     galaxy_moms = writeAndRemoveUnusedColums( galaxy_moms)
     
 
-    newcol = [ py.Column(name='shear', format=shear.dtype, array=shear),
-               py.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
+    newcol = [ fits.Column(name='shear', format=shear.dtype, array=shear),
+               fits.Column(name='nExposures', format=psf_moms.nExposures.dtype, \
                          array=psf_moms.nExposures),
-                py.Column('xx_uncorrected', format=galaxy_moms.xx.dtype, array=uncorrected_xx),
-                py.Column('yy_uncorrected', format=galaxy_moms.yy.dtype, array=uncorrected_yy)]
+                fits.Column('xx_uncorrected', format=galaxy_moms.xx.dtype, array=uncorrected_xx),
+                fits.Column('yy_uncorrected', format=galaxy_moms.yy.dtype, array=uncorrected_yy)]
     
     orig_cols = galaxy_moms.columns
-    new_cols = py.ColDefs(newcol)
+    new_cols = fits.ColDefs(newcol)
     
-    hdu = py.BinTableHDU.from_columns(orig_cols+new_cols)
-    hdu.writeto( outfile, clobber=True)
+    hdu = fits.BinTableHDU.from_columns(orig_cols+new_cols)
+    hdu.writeto( outfile, overwrite=True)
 
 class moments( dict ):
 
@@ -404,12 +404,12 @@ def   writeAndRemoveUnusedColums( moments):
             (not 'fits_Y_IMAGE' in i) & \
              (not 'ORIENTAT' in i ):
             iColumn = \
-              py.Column(i, format=moments[i].dtype, \
+              fits.Column(i, format=moments[i].dtype, \
                             array=moments[i])
             columns.append(iColumn)
                 
-    new_cols = py.ColDefs(columns)
+    new_cols = fits.ColDefs(columns)
     
-    hdu = py.BinTableHDU.from_columns(new_cols)            
-    hdu.writeto('galaxies.fits',clobber=True)
-    return py.open('galaxies.fits')[1].data
+    hdu = fits.BinTableHDU.from_columns(new_cols)            
+    hdu.writeto('galaxies.fits',overwrite=True)
+    return fits.open('galaxies.fits')[1].data

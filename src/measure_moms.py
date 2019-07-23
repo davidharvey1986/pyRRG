@@ -65,7 +65,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ;
     '''
                      
-    img_file = py.open( fits_image )
+    img_file = fits.open( fits_image )
     img = img_file[0].data
     imhead = img_file[0].header
     exp_time = imhead['EXPTIME']
@@ -79,7 +79,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
         print((' % f skymed and %f skysd' % (skymed,skysd)))
     
     if object_catalogue is None:
-        cat_file=py.open(sex_catalog)
+        cat_file=fits.open(sex_catalog)
         object_catalogue = cat_file[1].data
         header=cat_file[1].header
      
@@ -105,7 +105,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     if weight_image is None:
         wt_image = np.ones( img.shape)
     else:
-        wt_image = py.open( weight_image )[0].data
+        wt_image = fits.open( weight_image )[0].data
 
 
 
@@ -118,7 +118,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
 
     if (sgm_im != 'null') & (fieldback == 1):
-        seg_file = py.open(sgm_im)
+        seg_file = fits.open(sgm_im)
         seg = seg_file[0].data
         shdr = seg_file[0].header
         '''
@@ -394,7 +394,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
         galaxy_moments.fits_to_ellipse( regfile)
     
     if return_moms:
-        return py.open(outfile)[1].data
+        return fits.open(outfile)[1].data
 
 class moms( dict ):
 
@@ -475,11 +475,11 @@ class moms( dict ):
             if iColumn == 'error':
                 error_names = list(self.error.keys())
                 for iColumn_err in error_names:
-                    fits_columns.append(py.Column( name=iColumn_err+'_err',
+                    fits_columns.append(fits.Column( name=iColumn_err+'_err',
                                                    format=self.error[iColumn_err].dtype,
                                                    array=self.error[iColumn_err] ))
             else:
-                fits_columns.append(py.Column( name=iColumn, \
+                fits_columns.append(fits.Column( name=iColumn, \
                                                format=self[iColumn].dtype, \
                                                array=self[iColumn] ))
         
@@ -487,13 +487,13 @@ class moms( dict ):
             if (iCatalog in mom_names) | ('err' in iCatalog):
                 continue
             else:
-                fits_columns.append(py.Column( name=iCatalog,
+                fits_columns.append(fits.Column( name=iCatalog,
                                                    format=sex_catalog[iCatalog].dtype,
                                                    array=sex_catalog[iCatalog] ))
 
             
-        fits_table = py.BinTableHDU.from_columns( fits_columns )
-        fits_table.writeto( filename, clobber=True,output_verify='ignore' )
+        fits_table = fits.BinTableHDU.from_columns( fits_columns )
+        fits_table.writeto( filename, overwrite=True,output_verify='ignore' )
 
 
 

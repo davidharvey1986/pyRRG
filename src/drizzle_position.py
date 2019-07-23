@@ -42,7 +42,7 @@ def drizzle_position(      drizzle_file,
 
     InDrizzleFrame= np.zeros( (nImages, 3, nGalaxies**2))
     
-    drizzle_obj = py.open(dataDir+'/'+drizzle_file)
+    drizzle_obj = fits.open(dataDir+'/'+drizzle_file)
     ImageData = drizzle_obj[0].data
     header =  drizzle_obj[0].header
     orig_cols = moments.columns
@@ -89,19 +89,19 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 2, :] = isinArr
 
         iFilename = individual_files[iImage].split('/')[-1][0:8]
-        x_column = py.Column( name=iFilename+'_X_IMAGE', \
+        x_column = fits.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )
 
-        y_column = py.Column( name=iFilename+'_Y_IMAGE', \
+        y_column = fits.Column( name=iFilename+'_Y_IMAGE', \
                                 format=SingleImageY.dtype, \
                                 array=SingleImageY )
         
-        inFrame = py.Column( name=iFilename+'_INFRAME', \
+        inFrame = fits.Column( name=iFilename+'_INFRAME', \
                                 format=isinArr.dtype, \
                                 array=isinArr )
                                 
-        orientat = py.Column( name=iFilename+'_ORIENTAT', \
+        orientat = fits.Column( name=iFilename+'_ORIENTAT', \
                                 format=Orientation.dtype, \
                                 array=Orientation )
 
@@ -110,8 +110,8 @@ def drizzle_position(      drizzle_file,
         newcol.append( inFrame )
         newcol.append( orientat )
 
-    new_cols = py.ColDefs(newcol)
-    hdu = py.BinTableHDU.from_columns(orig_cols + new_cols)
+    new_cols = fits.ColDefs(newcol)
+    hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     num_exposures = np.sum(InDrizzleFrame[:, 2, :], axis=0).shape
     return hdu.data
 

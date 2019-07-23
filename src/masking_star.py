@@ -216,7 +216,7 @@ def main(  shear_catalog, object_catalog_fits, \
 
     Shears_remove=Shears[Shears['clean']==0]
 
-    fits.writeto(outFile, Shears_remove, clobber=True,output_verify='ignore' )
+    fits.writeto(outFile, Shears_remove, overwrite=True,output_verify='ignore' )
 
     ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):
@@ -261,7 +261,7 @@ def main(  shear_catalog, object_catalog_fits, \
                         Shears_remove['clean'][k]=1
                 Shears_remove=Shears_remove[Shears_remove['clean']==0]
 
-        fits.writeto(outFile,Shears_remove, clobber=True,output_verify='ignore' )
+        fits.writeto(outFile,Shears_remove, overwrite=True,output_verify='ignore' )
 
 
 

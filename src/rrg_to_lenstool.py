@@ -34,8 +34,8 @@ def rrg_to_lenstool( rrg_catalogue,
     to be used in lenstool
     default_src_redshift : a scalar  of redshifts that the sources galaxies are at
     '''
-    image = py.open(image_file)
-    MaskedRRGCat = py.open( rrg_catalogue )[1].data
+    image = fits.open(image_file)
+    MaskedRRGCat = fits.open( rrg_catalogue )[1].data
 
 
     nGalaxies = len( MaskedRRGCat )
