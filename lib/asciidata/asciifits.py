@@ -62,7 +62,8 @@ class AsciiFits(object):
             use_numpy = 0
 
             # get the pyfits version
-            pyfits_version = pyfits.__version__.split('.')
+            #force it as i use astropy now
+            pyfits_version = '3.3'
 
             # determine the version number
             main_version = int(pyfits_version[0])
@@ -102,7 +103,7 @@ class AsciiFits(object):
         fits_cols = self._create_fits_cols(asciiData)
 
         # create the table HDU instance
-        tabhdu = pyfits.new_table(fits_cols)
+        tabhdu = pyfits.BinTableHDU.from_columns(fits_cols)
 
         # transfer the header of the AsciiData instance
         # to the fits header
