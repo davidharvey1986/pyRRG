@@ -15,7 +15,7 @@ __version__ = "Version 1.0 $LastChangedRevision: 329 $"
 
 import string
 import os
-from astropy.io import fits as pyfits
+import pyfits
 
 class AsciiFits(object):
     """

@@ -1,5 +1,5 @@
 from . import pysex as sex
-import pyfits as fits
+from astropy.io import fits
 
 import numpy as np
 import os as os

@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-import pyfits as py
+from astropy.io import fits
 import numpy as np
 from matplotlib import gridspec as gridspec
 import ipdb as pdb

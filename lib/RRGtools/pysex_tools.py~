@@ -38,8 +38,7 @@ import sys
 import csv as c
 import numpy as np
 from . import astro_tools as at
-from astropy.io import fits
-
+import pyfits as py
 
 
 def sex_to_reg( sex_cat, outfile,

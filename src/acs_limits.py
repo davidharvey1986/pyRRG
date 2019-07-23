@@ -1,5 +1,5 @@
 import numpy as np
-import pyfits as py
+from astropy.io import fits
 
 
 def acs_limits( x, y, filename):

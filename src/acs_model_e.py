@@ -1,7 +1,7 @@
 from scipy.io import readsav as readSave
 import numpy as np
-import pyfits as py
 from . import directories
+from astropy.io import fits
 
 
 

@@ -1,6 +1,7 @@
 import numpy as np
+from astropy.io import fits
 
-import pyfits as py
+
 
 def calc_shear( corrected_moments, outfile,
                 min_rad=6, mult=2,

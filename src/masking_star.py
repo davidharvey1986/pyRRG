@@ -1,4 +1,4 @@
-import pyfits as fits
+from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import os as os
@@ -6,7 +6,7 @@ import ipdb as pdb
 import RRGtools as tools
 
 def plot_region_maskstar( filename, star):
-    regionFile = open( filename, "wb")
+    regionFile = open( filename, "w")
     regionFile.write('# Region file format: DS9 version 4.1\n')
     #regionFile.write('# Filename: dummy.fits\n')
     regionFile.write("global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\n")
@@ -150,7 +150,7 @@ def inpoly(Px,Py,xl,yl):
     return nc
 
 def main(  shear_catalog, object_catalog_fits, \
-         mask_file='mask.reg', outFile='Shear_remove.fits' ,plot_reg=False):
+         mask_file='mask.reg', outFile='Shear_remove.fits' ,plot_reg=True):
     '''
         This algoritm will do two things.
         a) Draw masks(polygon) around detected stars automatically and remove objects within the polygon.
@@ -163,8 +163,12 @@ def main(  shear_catalog, object_catalog_fits, \
     
     object_catalog = fits.open(object_catalog_fits)[1].data
     
-
-    Star_catalogue = object_catalog[ object_catalog['galStarFlag']==0]
+    
+    Star_catalogue = \
+      object_catalog[ (object_catalog['galStarFlag']==0) | \
+                      (object_catalog['galStarFlag']==-1) &
+                      (object_catalog['MAG_AUTO'] < \
+        np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0]))]
 
 
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
@@ -178,7 +182,7 @@ def main(  shear_catalog, object_catalog_fits, \
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
     clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
         shear_catalog.split('.')[1]
-    hdu.writeto(clean_catalog, clobber=True,output_verify='ignore')
+    hdu.writeto(clean_catalog, overwrite=True)
 
 
     ##########plot remove_star.reg---------------------------------------------------------
@@ -212,7 +216,7 @@ def main(  shear_catalog, object_catalog_fits, \
 
     Shears_remove=Shears[Shears['clean']==0]
 
-    fits.writeto(outFile,Shears_remove, clobber=True,output_verify='ignore' )
+    fits.writeto(outFile, Shears_remove, clobber=True,output_verify='ignore' )
 
     ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):

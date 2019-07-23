@@ -1,4 +1,4 @@
-import pyfits as py
+from astropy.io import fits
 import numpy as np
 import os as os
 from . import drizzle_position as dp

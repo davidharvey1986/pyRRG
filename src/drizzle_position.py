@@ -1,8 +1,8 @@
 import numpy as np
 from . import acs_limits as al
 import RRGtools as at
-import pyfits as py
 import sys
+from astropy.io import fits
 
 def drizzle_position(      drizzle_file,
                            individual_files,

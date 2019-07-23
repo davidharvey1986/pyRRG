@@ -9,7 +9,7 @@ From this it wil remove galaxies that appear to be in the cluster from the catal
 It requires that the pyRRG code has been run on two different bands of the same cluster
 '''
 
-from astropy.io import fits
+import pyfits as fits
 import RRGtools as tools
 from matplotlib import pyplot as plt
 import numpy as np

@@ -3,7 +3,7 @@ from . import measure_moms
 from . import acs_model_e as acs_model
 from . import drizzle_position as dp
 import os as os
-import pyfits as py
+from astropy.io import fits
 from . import directories
 def acs_determine_focus_metric( true, model ):
     '''

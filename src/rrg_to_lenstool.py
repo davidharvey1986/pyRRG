@@ -4,8 +4,7 @@ the shears in the format required to be used in lenstool
 (using option 7, and the format a, b, theta)
 
 '''
-
-import pyfits as py
+from astropy.io import fits
 import os as os
 #import mask_catalogue as mask_catalogue
 import numpy as np

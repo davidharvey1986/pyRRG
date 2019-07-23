@@ -1,5 +1,5 @@
 import numpy as np
-import pyfits as py
+from astropy.io import fits
 import os as os
 
 def deg2pix( fits, ra, dec, coordfile=None, postage_stamp=0,

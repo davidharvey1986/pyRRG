@@ -1,7 +1,8 @@
 '''
 return the HST filter of the input image
 '''
-import pyfits as fits
+
+from astropy.io import fits
 
 def getHSTfilter( infile ):
     '''

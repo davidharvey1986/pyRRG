@@ -1,5 +1,5 @@
 import os as os
-from astropy.io import fits
+import pyfits as py
 import numpy as np
 
 from . import color_color as color

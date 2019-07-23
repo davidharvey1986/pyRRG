@@ -1,5 +1,5 @@
 from . import mmm as mmm
-import pyfits as py
+from astropy.io import fits
 import numpy as np
 import sys
 from matplotlib import pyplot as plt

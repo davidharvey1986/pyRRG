@@ -5,7 +5,7 @@ import RRGtools as at
 import pickle as pkl
 from . import measure_moms as measure_moms
 from . import star_galaxy_separation as sgs
-import pyfits as py
+from astropy.io import fits
 from . import calc_shear as cs
 from . import psf_cor as psf
 from . import plot_shears as plot
@@ -161,13 +161,14 @@ def main(  infile,
 
 
     beforeDoubles_cat = field[:-5]+"_clean_withDoubles.shears"
-    mask.main( sheared_cat, corrected_moments_cat,
+    mask.main( sheared_cat, uncorrected_moments_cat,
                    outFile=beforeDoubles_cat)
 
 
     clean_cat = field[:-5]+"_clean.shears"
 
-    remove_doubles.remove_object(sheared_cat, clean_cat, FWHM_to_radius=1)
+    remove_doubles.remove_object(beforeDoubles_cat, \
+                    clean_cat, FWHM_to_radius=1)
     
     plot.plot_shears( clean_cat )
 

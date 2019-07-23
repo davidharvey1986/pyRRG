@@ -116,8 +116,8 @@ def _setup(conf_file, params):
     
 def _setup_img(image, name):
     if not type(image) == type(''):
-        import pyfits
-        pyfits.writeto(name, image)
+        from astropy.io import fits
+        fits.writeto(name, image)
         
 
 def _get_cmd(img, img_ref, conf_args):
@@ -209,14 +209,14 @@ def run_wrap(image='', imageref='', params=[], conf_file=None, conf_args={}):
         conf_args['VERBOSE_TYPE'] = 'NORMAL'  
     
     if not type(image) == type(''):
-        import pyfits
+        from astropy.io import fits
         im_name = _reg_path('.pysex.fits')
-        pyfits.writeto(im_name, image.transpose())
+        fits.writeto(im_name, image.transpose())
     else: im_name = image
     if not type(imageref) == type(''):
-        import pyfits
+        from astropy.io import fits
         imref_name =  _reg_path('.pysex.ref.fits')
-        pyfits.writeto(imref_name, imageref.transpose())
+        fits.writeto(imref_name, imageref.transpose())
     else: imref_name = imageref
     conf_file = conf_file
     conf_file, conf_args = _check_files(conf_file, conf_args, verbose)

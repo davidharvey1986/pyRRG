@@ -5,7 +5,7 @@ from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
 import ipdb as pdb
-import pyfits as fits
+from astropy.io import fits
 import sklearn
 
 def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
