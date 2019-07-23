@@ -165,8 +165,7 @@ def main(  shear_catalog, object_catalog_fits, \
     
     
     Star_catalogue = \
-      object_catalog[ (object_catalog['galStarFlag']==0) | \
-                      (object_catalog['galStarFlag']==-1) &
+      object_catalog[ (object_catalog['galStarFlag']==-1) &
                       (object_catalog['MAG_AUTO'] < \
         np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0]))]
 
@@ -207,21 +206,24 @@ def main(  shear_catalog, object_catalog_fits, \
             star_x=Star_catalogue['X_IMAGE'][j]
             star_y=Star_catalogue['Y_IMAGE'][j]
             m=Star_catalogue["MAG_AUTO"][j]
-            inside,star_corr_one=instar(xl,yl,star_x,star_y,m)
+            inside, star_corr_one = instar(xl,yl,star_x,star_y,m)
+            
             #star_corr[j]=star_corr_one
             if inside==1:
                 Shears['clean'][i]=1
-            break
+            
 
 
     Shears_remove=Shears[Shears['clean']==0]
 
-    fits.writeto(outFile, Shears_remove, overwrite=True,output_verify='ignore' )
+    fits.writeto(outFile, Shears_remove, overwrite=True, output_verify='ignore' )
 
     ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):
         mask_obj = open(mask_file, 'r')
+        
         for mask in mask_obj:
+            
             if mask[0:3] != 'box' and mask[0:7] !='polygon':
                 continue
             elif mask[0:3] == 'box':
@@ -245,7 +247,7 @@ def main(  shear_catalog, object_catalog_fits, \
                             (shears_y_mask_rot > -mask_sizey/2.)
     
                 Shears_remove = Shears_remove[ inBox == False ]
-    
+          
             elif mask[0:7] =='polygon':
                 print("masking a ploygon")
                 mask_x = mask.split('(')[1].split(',')[::2]
