@@ -18,10 +18,10 @@ def main():
       pkl.load(open('DataTrained.pkl','rb'))
 
     counter = np.ones(allTrainingData.shape[0])
-    print("TOTAL COUNTER IS %i" % np.sum(counter))
+    print(("TOTAL COUNTER IS %i" % np.sum(counter)))
     nanVector = [ np.sum(counter[(allTrainingData[:,i] == -99) |\
                              (allTrainingData[:,i] == 0)]) \
-                      for i in xrange(allTrainingData.shape[1] )]
+                      for i in range(allTrainingData.shape[1] )]
     plt.plot(np.arange(len(includeNames)), nanVector,'*')
 
     plt.xticks(np.arange(len(includeNames)), includeNames,rotation=90)

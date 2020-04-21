@@ -19,8 +19,8 @@ def trainDataSVM(nSamples=60000):
     trainingFeatures, trainingAnswers = \
       gt.generateTrainingData()
  
-    print("Size of training data is %i with %i features" %\
-              (trainingFeatures.shape[0], trainingFeatures.shape[1]))
+    print(("Size of training data is %i with %i features" %\
+              (trainingFeatures.shape[0], trainingFeatures.shape[1])))
               
     clf = SVC(C=100, cache_size=200, class_weight='balanced', coef0=0.0,
         decision_function_shape='ovr', degree=3, \
@@ -29,12 +29,12 @@ def trainDataSVM(nSamples=60000):
         random_state=None, shrinking=True,
         tol=0.001, verbose=False)
     
-    print("Training started at %s" % time.ctime())
+    print(("Training started at %s" % time.ctime()))
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
     endTime = time.time()
     fitTime= endTime - startTime
-    print("Time to fit classifier is %0.2f seconds" % fitTime)
+    print(("Time to fit classifier is %0.2f seconds" % fitTime))
 
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
@@ -51,19 +51,19 @@ def trainDataRF(nTrees=100, retrain=True):
       gt.generateTrainingData()
   
 
-    print("Size of training data is %i with %i features" %\
-              (trainingFeatures.shape[0], trainingFeatures.shape[1]))
+    print(("Size of training data is %i with %i features" %\
+              (trainingFeatures.shape[0], trainingFeatures.shape[1])))
               
 
     
     clf = RF( n_estimators=nTrees, criterion="gini", n_jobs=4)
 
-    print("Training started at %s with %i Trees" % (time.ctime(),nTrees))
+    print(("Training started at %s with %i Trees" % (time.ctime(),nTrees)))
     startTime = time.time()
     fitClassifier = clf.fit( trainingFeatures, trainingAnswers)
     endTime = time.time()
     fitTime= endTime - startTime
-    print("Time to fit classifier is %0.2f seconds" % fitTime)
+    print(("Time to fit classifier is %0.2f seconds" % fitTime))
     pkl.dump(fitClassifier, open(pickleFileName,'wb'), 2)
     
     

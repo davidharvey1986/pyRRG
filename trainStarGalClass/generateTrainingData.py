@@ -35,7 +35,7 @@ def generateTrainingData(allGalaxyFiles=None, \
          
     if os.path.isfile( trainingDataPklFile ):
         allTrainingData, allTrainingAnswers = \
-          pkl.load(open(trainingDataPklFile,'rb'))
+          pkl.load(open(trainingDataPklFile,'rb'), encoding='latin1')
     else:
         allTrainingData, allTrainingAnswers = \
           filesToRecArray( allGalaxyFiles )
@@ -89,7 +89,7 @@ def generateTestData():
 
     testGalaxyFiles = glob.glob('TestData/*uncor.cat')
 
-    featureLabels = getFeatureLabels( testGalaxyFiles[0] )
+    featureLabels = getFeatureLabels( testGalaxyFiles[-1] )
     
     testFeatures, testAnswers = \
       generateTrainingData(allGalaxyFiles=testGalaxyFiles, \
@@ -133,7 +133,7 @@ def getFeatureLabels( fitsFile ):
     #includeNames.remove('skysw')
     #includeNames.remove('skysd')
 
-    print namesNoErr
+    print(namesNoErr)
     #namesNoErr = \
     #    ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS',\
     #        'xxxx','yyyy','xyyy','xxyy','ell']
@@ -144,7 +144,7 @@ def getFeatureLabels( fitsFile ):
       ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
            'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
       'ell','skymed','exp_time','skysd']
-    print namesNoErr
+    print(namesNoErr)
 
     return np.array(namesNoErr)
 
@@ -192,7 +192,7 @@ def removeNans( newArray, starGal ):
     newArrayNansRemoved = newArray[nanCheck, :]
     Nremoved = newArray.shape[0] - newArrayNansRemoved.shape[0]
     
-    print("%i/%i removed due to nans" % (Nremoved, newArray.shape[0]))
+    print(("%i/%i removed due to nans" % (Nremoved, newArray.shape[0])))
 
     nanCheckField = np.isfinite(np.sum(newArray, axis=0))
 
