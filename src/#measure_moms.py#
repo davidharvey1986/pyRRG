@@ -1,4 +1,4 @@
-rom . import mmm as mmm
+from . import mmm as mmm
 from astropy.io import fits
 import numpy as np
 import sys
@@ -350,7 +350,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                           
             int_moms.error.xxxy = np.sum(g_f*g_f*I_err_sq*\
                 (rel_xgrid*rel_xgrid-int_moms.xx)*\
-                (rel_ygrid*rel_xgrid-int_moms.yy))/sum_int**2
+                (rel_ygrid*rel_xgrid-int_moms.xy))/sum_int**2
                         
             int_moms.error.xyyy = np.sum(g_f*g_f*I_err_sq*\
                           (rel_xgrid*rel_xgrid-int_moms.xy)*\
