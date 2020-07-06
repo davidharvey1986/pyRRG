@@ -6,3 +6,6 @@ export PATH=$PATH:/Users/DavidHarvey/bugFixPyRRG/bin
 export PATH=$PATH:/Users/DavidHarvey/Library/Stilts/
 export PATH=$PATH:/usr/local/bin/sex
 export PATH=$PATH:/usr/local/bin/
+pip3.7 install numpy
+pip3.7 install matplotlib
+pip3.7 install pyRRG

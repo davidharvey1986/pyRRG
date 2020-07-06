@@ -274,7 +274,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                             (i,xGal[i],yGal[i],count)))
                 galaxy_moments.prob[i] += 2
                 
-            if np.sqrt( (xc-xGal[i])**2 + (yc-yGal[i])**2) > mult*radius[i]:
+            if np.sqrt( (xc-xGal[i])**2 + (yc-yGal[i])**2) > radius[i]:
                 go_on=0
                 centerprob += 1
                 if verbose:
