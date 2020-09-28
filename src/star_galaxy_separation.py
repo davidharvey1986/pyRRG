@@ -131,6 +131,8 @@ class galStar():
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
             print(codeDir+'/'+rfModel)
+            if not os.path.isfile( codeDir+'/'+rfModel ):
+                raise ValueError("RF Model not found. If you have downloaded this directly from GIT then you will need to contact davidharvey1986@googlemail.com to get the latest RF model.")
             galStarFlagClassifier =  \
               pkl.load(open(codeDir+'/'+rfModel,'rb'), encoding='latin1')
 
