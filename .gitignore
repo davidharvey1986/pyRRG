@@ -4,6 +4,7 @@ lib/RRGtools/__pycache__/*
 lib/RRGtools/*~
 lib/asciidata/*~
 src/*.pkl
+src/starGalaxyModelRF.pkl
 src/*~
 log
 virtualenv
