@@ -1,88 +1,30 @@
 import numpy as np
 from astropy.io import fits as py
+from astropy import wcs
 import os as os
 
-def deg2pix( fits, ra, dec, coordfile=None, postage_stamp=0,
-             cut=False, extension=None):
+def deg2pix( fits, ra, dec, extension=None):
     '''
     Given a fits file, convert from ra and dec in degrees to
     x and y pix
 
     '''
-    os.system('rm -fr pyraf')
-    from pyraf import iraf
-
-    os.system( 'mkdir .tmp')
-    rand_str = str(np.round(np.random.rand()*1000).astype(int))
-    random_name = ".tmp/sky2xy"+rand_str+".fits"
-    
-    if extension is not None:
-        data = py.open( fits )[extension]
-        py.writeto( random_name, data.data, \
-                    header=data.header, overwrite=True)
+    wcs_obj = wcs.WCS( py.open(fits)[extension].header )
+    if isinstance(ra, float):
+        radec = [ra, dec]
+        return wcs_obj.all_world2pix(np.array(radec)[np.newaxis,:], 1)[0]
     else:
-        os.system("cp "+fits+" "+random_name)
-        
-    
-    
+        return wcs_obj.all_world2pix(ra, dec, 1)
 
-    
-    if coordfile is None:
-        os.system("rm -fr sky2xy.par")
-        coordfile = "sky2xy.par"
-       
-        np.savetxt( coordfile, np.array((ra,dec)).T, fmt="%0.7f")
-    
-    iraf.wcsctran.unlearn()
-    
-    iraf.wcsctran( coordfile, ".tmp/sky2xy.results", random_name, "world", "physical",verbose=True)
-    x_chip, y_chip = np.loadtxt( ".tmp/sky2xy.results", unpack=True)
-    os.system("rm -fr .tmp")
-    if cut:
-        try:
-            image_size = py.open( fits.split('[')[0] )[1].data.shape
-        except:
-            image_size = py.open( fits.split('[')[0] )[0].data.shape
-            
-        
-        
-        inchip = (y_chip < image_size[1]-postage_stamp) & (y_chip > postage_stamp) & \
-        (x_chip > postage_stamp) & (x_chip < image_size[0]-postage_stamp)
-    
-        return x_chip[inchip], y_chip[inchip]
-    else:
-        return x_chip, y_chip
-
-def pix2deg( fits_image, x_image, y_image, coordfile=None, extension=None):
+def pix2deg( fits_image, x_image, y_image,  extension=0):
     '''
     Given a fits file, convert from ra and dec in degrees to
     x and y pix
 
     '''
-    os.system('rm -fr pyraf')
-    from pyraf import iraf
-    
-    if extension is None:
-        os.system("cp "+fits_image+" xy2sky.fits")
-    else:
-        data = py.open(fits_image)[extension]
-        py.writeto("xy2sky.fits", data.data, overwrite=True, header=data.header)
-        
-    os.system("rm -fr xy2sky.results")
-    if coordfile is None:
-        coordfile = "xy2sky.par"
-        skypar = open(coordfile,"w") 
-        for i in range(len(x_image)):
-            skypar.write('%0.5f %0.5f\n' % \
-                             (x_image[i],y_image[i]))
-        skypar.close()
-
-    iraf.wcsctran.unlearn()
-    iraf.wcsctran( coordfile, "xy2sky.results", "xy2sky.fits",  "physical", "world")
-    ra, dec = np.loadtxt( "xy2sky.results", unpack=True)
-    
+    wcs_obj = wcs.WCS( py.open(fits_image)[extension].header)
   
-    return ra, dec
+    return wcs_obj.all_pix2world( x_image, y_image, 1)
     
 def deg2pix_flt( fits, ra, dec, postage_stamp=0, cut=False):
     '''

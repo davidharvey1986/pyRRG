@@ -85,6 +85,7 @@ def drizzle_position(      drizzle_file,
         isin, image_orientation = al.acs_limits( SingleImageX, SingleImageY, \
                                                      individual_files[iImage], jwst=jwst)
 
+        print(individual_files[iImage], SingleImageX[6],SingleImageY[6], ra[6], dec[6], isin[6])
         
         Orientation = np.zeros( len(SingleImageX)) +  image_orientation - drizzle_orientation
      
@@ -97,6 +98,7 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 0, :] = SingleImageX
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
+        
         if jwst:
             iFilename = individual_files[iImage].split('/')[-1][0:34]
         else:
@@ -122,10 +124,12 @@ def drizzle_position(      drizzle_file,
         newcol.append( y_column )
         newcol.append( inFrame )
         newcol.append( orientat )
-
+    
+    
     new_cols = fits.ColDefs(newcol)
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
-    num_exposures = np.sum(InDrizzleFrame[:, 2, :], axis=0).shape
+    num_exposures = np.sum(InDrizzleFrame[:, 2, :], axis=0)
+
     return hdu.data
 
 
