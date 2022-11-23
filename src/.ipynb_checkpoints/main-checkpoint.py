@@ -126,6 +126,7 @@ def main(  infile,
             extension = 1
         else:
             extension = 0
+            
         sources = at.source_extract( infile, weight_file,
                                          outfile=sex_catalogue,
                                          conf_path=dirs.sex_files,
@@ -196,7 +197,7 @@ def main(  infile,
     etr.ellipse_to_reg( clean_cat )
     
     lenstool_file =  field[:-5]+".lenstool"
-    rtl.rrg_to_lenstool( clean_cat, field)
+    rtl.rrg_to_lenstool( clean_cat, field, jwst=jwst)
   
 
 if __name__ == "__main__":

@@ -197,7 +197,7 @@ def main(  infile,
     etr.ellipse_to_reg( clean_cat )
     
     lenstool_file =  field[:-5]+".lenstool"
-    rtl.rrg_to_lenstool( clean_cat, field)
+    rtl.rrg_to_lenstool( clean_cat, field, jwst=jwst)
   
 
 if __name__ == "__main__":

@@ -237,7 +237,7 @@ def acs_3dpsf( x, y, focus, radius, scat,
 
     # Fit the PSF
     if jwst:
-        interpolate_jwst_psf_moms( x, y, radius, scat )
+        acs_moms = interpolate_jwst_psf_moms( x, y, radius, scat )
     else:
         if acs_3dpsf_coeffs is None:
             acs_3dpsf_coeffs=acs_3dpsf_fit(scat, degree=degree)

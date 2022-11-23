@@ -17,7 +17,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                      bad_val=-99, regfile=None,
                      skymed=None, skysd=None,
                      return_moms=True, quiet=False,
-                     jwst=False, **kwargs):
+                     jwst=False, error=0.01, min_it=500, **kwargs):
                      
     '''
     ;
@@ -191,9 +191,9 @@ def measure_moms(fits_image, sex_catalog, outfile,
             
 
         if nocenter == 0:
-            while  ((np.abs(deltax) > 0.01) |  \
-              (np.abs(deltay) > 0.01)) & \
-               (count < 500) & (go_on == 1) :
+            while  ((np.abs(deltax) > error) |  \
+              (np.abs(deltay) > error)) & \
+               (count < min_it) & (go_on == 1) :
                 #These are needed for all moments
                 #Cut out a postage stamp of the image
                 begin_x = np.round(xc-cut_rad[i]-1).astype(int)

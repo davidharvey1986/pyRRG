@@ -18,21 +18,25 @@ def interpolate_jwst_psf_moms( x, y, radius, scat, degree=3):
     '''
     
     moms = moments( x, y, radius, degree)
-    
-    x_vector = np.unique(scat['Y'])
+
+    x_vector = np.unique(scat['X'])
     y_vector = np.unique(scat['Y'])
-    psf_grid_size = (len(x_vector),len(y_vector))
+    grid_size = np.int(len(x_vector))
+
+    
+    psf_grid_size = (grid_size, grid_size)
     
     for iMom in moms.keys():
         
         if iMom in ['x','y','radius','degree']:
             continue
-        
         z_vector = scat[iMom].reshape(psf_grid_size)
         
         interpolate_fct = RectBivariateSpline( x_vector, y_vector, z_vector, kx=degree, ky=degree)
         
         moms[iMom] = interpolate_fct.ev(x, y)
+
+
         
     return moms
     
@@ -60,7 +64,9 @@ class moments( dict ):
         self.__dict__['radius'] = radius
         self.__dict__['degree'] = degree
 
-
+    def __setitem__(self, key, item): 
+        self.__dict__[key] = item
+        
     def keys(self):
         return list(self.__dict__.keys())
 

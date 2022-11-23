@@ -177,13 +177,15 @@ def psf_cor(    mom_file,
         if jwst:
             image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:4]
             detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
-            scat = scat[detector_num]
+            scat_use = scat[detector_num]
+        else:
+            scat_use = scat
     
         iPsfMoms=\
           acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
                                    galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
                                     np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                                    radius, scat, degree=[3,2,2], jwst=jwst )
+                                    radius, scat_use, degree=[3,2,2], jwst=jwst )
         
         #now rotate the moments according to the angle in orient
         iPsfMomsRot = rm.rotate_moments( iPsfMoms, galaxy_moms[iImage_name+'_ORIENTAT'][inFrame])
@@ -202,7 +204,7 @@ def psf_cor(    mom_file,
                 psf_moms[iMom][inFrame] += iPsfMomsRot[iMom]
    
         #then keep count how many images per position
-        psf_moms['nExposures'][ inFrame] += 1
+        psf_moms['nExposures'][ inFrame ] += 1
 
         
         #then give the position the value of the averaged psf_moms.
