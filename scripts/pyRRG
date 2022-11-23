@@ -7,6 +7,8 @@ parser = argparse.ArgumentParser("pyRRG",description=description)
 parser.add_argument("FILENAME", help="Absolute path of the input filename to be run through pyRRG", type=str)
 parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
 parser.add_argument('-w','--weight', help="Image weight file", default=None)
+parser.add_argument('-j', '--jwst', action='store_true')
+
 parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
 parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
 parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
@@ -19,8 +21,6 @@ parser.add_argument('--size_cut_lower', help="Lower galaxy size cuts", default=3
 parser.add_argument('--min_rad', help="The minumum radius for a galaxy to be included", default=6., type=float)
 parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
 parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
-parser.add_argument('-j', '--jwst', help="Flag to signify jwst data", default=True, type=bool)
-
 
 args = parser.parse_args()
 

@@ -126,7 +126,6 @@ def main(  infile,
             extension = 1
         else:
             extension = 0
-            
         sources = at.source_extract( infile, weight_file,
                                          outfile=sex_catalogue,
                                          conf_path=dirs.sex_files,
