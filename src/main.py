@@ -110,9 +110,9 @@ def main(  infile,
     sex_catalogue = field[:-5]+"_sex.cat"
     
     if jwst:
-        zero_point = 25.
+        zero_point = 'jwst'
     else:
-        zero_point = None
+        zero_point = 'hst'
         
     #Find objects and measure their raw shapes
     if not os.path.isfile( sex_catalogue):

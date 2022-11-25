@@ -7,7 +7,7 @@ import RRGtools as tools
 from numpy.lib.recfunctions import append_fields as append_rec
 
 
-def source_extract( image_name, weight_file, zero_point=None,
+def source_extract( image_name, weight_file, zero_point='jwst',
                     dataDir='PWD', outfile=None, return_sources=True,
                     stilts_dir='.', conf_path='.', extension=None):
     '''
@@ -32,7 +32,12 @@ def source_extract( image_name, weight_file, zero_point=None,
     if dataDir == 'PWD':
         dataDir = os.getcwd()
         
-    if zero_point is None:
+    if zero_point == 'jwst':
+
+        header =  fits.open( image_name )[1].header
+        Jansky = header['PHOTMJSR']*header['PIXAR_SR']*1e6
+        zero_point = -2.5*np.log10(Jansky)+8.9
+    elif zero_point == 'hst':
         header =  fits.open( image_name )[0].header
         findPhot =  np.array(['PHOTFLAM' in i for i in header.keys()])
         

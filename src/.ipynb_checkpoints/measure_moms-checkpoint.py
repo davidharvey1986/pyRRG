@@ -233,7 +233,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
                 #This might be
                 g_f = np.exp(-(dist**2)/(2.*radius[i]**2))
-                weight_gal = g_f*( postage_stamp -  back[i])
+                weight_gal = g_f*( np.abs(postage_stamp -  back[i]))
                 sum_int = np.sum( weight_gal )
                 
 
