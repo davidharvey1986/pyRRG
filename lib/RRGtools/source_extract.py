@@ -34,15 +34,15 @@ def source_extract( image_name, weight_file, zero_point='jwst',
         
     if zero_point == 'jwst':
 
-        header =  fits.open( image_name )[1].header
+        header =  fits.open( image_name )[extension].header
         Jansky = header['PHOTMJSR']*header['PIXAR_SR']*1e6
         zero_point = -2.5*np.log10(Jansky)+8.9
     elif zero_point == 'hst':
-        header =  fits.open( image_name )[0].header
+        header =  fits.open( image_name )[extension].header
         findPhot =  np.array(['PHOTFLAM' in i for i in header.keys()])
         
         if np.all(findPhot == False):
-            header = fits.open( image_name )[1].header
+            header = fits.open( image_name )[extension].header
             
         zero_point = acs_zero_point(header)
         
@@ -55,7 +55,7 @@ def source_extract( image_name, weight_file, zero_point='jwst',
         
     
 
-    if extension is not None:
+    if extension == 1:
         image_name = '%s[%i]' % (image_name, extension)
         
     #First run cold run

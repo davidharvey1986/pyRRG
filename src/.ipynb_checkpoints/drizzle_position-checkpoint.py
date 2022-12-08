@@ -84,8 +84,6 @@ def drizzle_position(      drizzle_file,
         #in the FOV and on the chip
         isin, image_orientation = al.acs_limits( SingleImageX, SingleImageY, \
                                                      individual_files[iImage], jwst=jwst)
-
-        print(individual_files[iImage], SingleImageX[6],SingleImageY[6], ra[6], dec[6], isin[6])
         
         Orientation = np.zeros( len(SingleImageX)) +  image_orientation - drizzle_orientation
      

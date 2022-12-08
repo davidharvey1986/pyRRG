@@ -15,7 +15,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                      sgm_im='null',
                      object_catalogue=None,
                      bad_val=-99, regfile=None,
-                     skymed=None, skysd=None,
+                     skymed=None, skysd=None, skysw=None,
                      return_moms=True, quiet=False,
                      jwst=False, error=0.01, min_it=500, **kwargs):
                      
@@ -66,13 +66,18 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ;
     '''
     img_file = fits.open( fits_image )
-    print(fits_image)
                    
     if jwst:
-        extension = 1
+        if 'fits_extension' in kwargs.keys():
+            extension = kwargs['fits_extension']
+        else:
+            extension = 1
         expTimeName = 'XPOSURE'
     else:
-        extension = 0
+        if 'fits_extension' in kwargs.keys():
+            extension = kwargs['fits_extension']
+        else:
+            extension = 0
         expTimeName = 'EXPTIME'
 
     imhead = img_file[extension].header

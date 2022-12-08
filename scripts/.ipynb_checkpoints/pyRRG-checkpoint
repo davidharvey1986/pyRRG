@@ -2,6 +2,7 @@
 import sys
 import pyRRG
 import argparse
+
 description = "pyRRG weak lensing shape measurement code. Measuring the 2nd and 4th order moments it uses a TinyTim model to correct for PSF distortions. It is invariant to number exposures, ortientation of the drizzle images. Using a machine learning algorithm it automatically star and galaxy classifies, howeve the user is able to do this manually if not accurate enough. For more see https://arxiv.org/abs/astro-ph/9905090. For bugs please report them to https://github.com/davidharvey1986/pyRRG or contact harvey@lorentz.leidenuniv.nl"
 parser = argparse.ArgumentParser("pyRRG",description=description)
 parser.add_argument("FILENAME", help="Absolute path of the input filename to be run through pyRRG", type=str)
@@ -21,10 +22,15 @@ parser.add_argument('--size_cut_lower', help="Lower galaxy size cuts", default=3
 parser.add_argument('--min_rad', help="The minumum radius for a galaxy to be included", default=6., type=float)
 parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
 parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
+parser.add_argument('--fits_extension','-f', help="Fits extension to use", default=None, type=int)
 
 args = parser.parse_args()
 
 print(("Running pyRRG version %s" % pyRRG.__version__))
+
+args_dict = vars(args) 
+
+
 pyRRG.main(args.FILENAME,
             data_dir=args.data_dir,
             code_dir=args.code_dir,
@@ -37,4 +43,5 @@ pyRRG.main(args.FILENAME,
             min_rad=args.min_rad,
             mult=args.mult,\
             weight_file=args.weight,
-            jwst=args.jwst)
+            jwst=args.jwst, 
+            fits_extension=args.fits_extension)

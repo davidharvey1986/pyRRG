@@ -26,8 +26,8 @@ def match_cat( cat_A, cat_B, cleanup=True, \
     since this is hardcorded for VST it will have to combined
     all 32 chips into one chip and then match.
     '''
-    catalogue_A = py.open( cat_A )
-    catalogue_B = py.open( cat_B )
+    catalogue_A = fits.open( cat_A )
+    catalogue_B = fits.open( cat_B )
 
     exptime_A = catalogue_A[0].header['EXPTIME']
     exptime_B = catalogue_B[0].header['EXPTIME']
@@ -66,11 +66,11 @@ def match_cat( cat_A, cat_B, cleanup=True, \
 
 
         
-    HDU_cat_A = py.BinTableHDU( total_cat_A )
-    HDU_cat_B = py.BinTableHDU( total_cat_B )
+    HDU_cat_A = fits.BinTableHDU( total_cat_A )
+    HDU_cat_B = fits.BinTableHDU( total_cat_B )
 
-    HDU_list_A = py.HDUList( [ catalogue_A[0], HDU_cat_A ] )
-    HDU_list_B = py.HDUList( [ catalogue_B[0], HDU_cat_B ] )
+    HDU_list_A = fits.HDUList( [ catalogue_A[0], HDU_cat_A ] )
+    HDU_list_B = fits.HDUList( [ catalogue_B[0], HDU_cat_B ] )
 
     
     HDU_list_A.writeto('total_cat_A.fits', clobber=True)

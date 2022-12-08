@@ -12,6 +12,8 @@ import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
 
+np.seterr(divide='ignore', invalid='ignore')
+
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,

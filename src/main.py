@@ -31,7 +31,8 @@ def main(  infile,
             min_rad=6.,
             mult=2.,\
             weight_file=None,
-            jwst=False):
+            jwst=False, 
+            fits_extension=None):
     '''
     ;PURPOSE : RUN RRG OVER THE GIVEN CLUSTER AND FILTER, CAN TAKE
     ;          IN MULTIPLE EXPOSURES
@@ -59,8 +60,7 @@ def main(  infile,
     ;        2. CHANGE SUCH THAT FUNCTIONS DONT CONSISTENTLY READ
     ;           FITS IMAGES AND SLOW THIGNS DOWN
     
-    '''
-    
+    '''    
     
     hst_filter=getHSTfilter(infile, jwst=jwst)
     
@@ -122,17 +122,18 @@ def main(  infile,
             else:
                 weight_file = infile[:-8]+'wht.fits'
 
-        if jwst:
-            extension = 1
-        else:
-            extension = 0
-            
+        if fits_extension is None:
+            if jwst:
+                fits_extension = 1
+            else:
+                fits_extension = 0
+
         sources = at.source_extract( infile, weight_file,
                                          outfile=sex_catalogue,
                                          conf_path=dirs.sex_files,
                                          dataDir=dirs.data_dir,
                                            zero_point=zero_point,
-                                   extension=extension)
+                                   extension=fits_extension)
     else:
         sources = fits.open( sex_catalogue )[1].data
 
@@ -144,7 +145,8 @@ def main(  infile,
                                    sex_catalogue,
                                    uncorrected_moments_cat,
                                     min_rad=min_rad, mult=mult,
-                                       silent=True, jwst=jwst)
+                                    silent=True, jwst=jwst, 
+                                 fits_extension=fits_extension)
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
