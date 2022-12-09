@@ -3,15 +3,16 @@ return the HST filter of the input image
 '''
 
 from astropy.io import fits
+import json
 
-def getHSTfilter( infile, jwst=False ):
+def getHSTfilter( params ):
     '''
     Take the input infile and get the filter name
     '''
+    
+    header = fits.open( params['FILENAME'] )[0].header
 
-    header = fits.open( infile )[0].header
-
-    if jwst:
+    if params['jwst']:
         return header['FILTER']
 
     if 'CLEAR' in header['FILTER1']:

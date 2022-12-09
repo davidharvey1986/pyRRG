@@ -12,9 +12,9 @@ def deg2pix( fits, ra, dec, extension=None):
     wcs_obj = wcs.WCS( py.open(fits)[extension].header )
     if isinstance(ra, float):
         radec = [ra, dec]
-        return wcs_obj.all_world2pix(np.array(radec)[np.newaxis,:], 1)[0]
+        return wcs_obj.all_world2pix(np.array(radec)[np.newaxis,:], 1, quiet=True)[0]
     else:
-        return wcs_obj.all_world2pix(ra, dec, 1)
+        return wcs_obj.all_world2pix(ra, dec, 1, quiet=True)
 
 def pix2deg( fits_image, x_image, y_image,  extension=0):
     '''

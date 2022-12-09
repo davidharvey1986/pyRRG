@@ -2,7 +2,7 @@ import numpy as np
 from astropy.io import fits
 
 
-def acs_limits( x, y, filename, jwst=False):
+def acs_limits( x, y, filename, params ):
     '''
     ;PURPOSE : TO RETURN THE INDEX OF THOSE X AND Y POSITIONS THAT
     ;          ARE WITHIN THE FIELD OF VIEW AND NOT ZERO IN THE SINGLE
@@ -18,15 +18,9 @@ def acs_limits( x, y, filename, jwst=False):
     
     image_obj=fits.open(filename)
     
-    if jwst:
-        extension = 1
-        orientation_header = 'PA_V3'
-    else:
-        orientation_header = 'ORIENTAT'
-        extension = 0
         
-    imagedata = image_obj[extension].data
-    header = image_obj[extension].header
+    imagedata = image_obj[params['fits_extension']].data
+    header = image_obj[params['fits_extension']].header
     
     zeroarr = imagedata == 0
 
@@ -50,7 +44,7 @@ def acs_limits( x, y, filename, jwst=False):
     
     #then all the chip positions that are in the FOV AND CHIp are value 2
    
-    return SourceArr == 2, header[orientation_header]
+    return SourceArr == 2, header[params['orientation_header']]
 
 
      

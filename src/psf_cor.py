@@ -11,6 +11,7 @@ from . import directories
 import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
+from tqdm import tqdm
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -106,7 +107,7 @@ def psf_cor(    mom_file,
     ;4. Then take the average of the moments for each 
     '''
 
-    images = gie.getIndividualExposures( drizzle_file, jwst=jwst )
+    images = gie.getIndividualExposures( drizzle_file )
     
     if len(images) == 0:
         raise ValueError('Cant find single exposures of field')
@@ -120,7 +121,7 @@ def psf_cor(    mom_file,
     print("Getting position of stars & galaxies in each exposure")
 
     momsWithDrizzlePosition =  \
-      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir, jwst=jwst)
+      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir)
     galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
     star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
 
@@ -147,10 +148,7 @@ def psf_cor(    mom_file,
     FocusArray = np.zeros(nImages)
 
     sys.stdout.write("\n")
-    for iImage in range(nImages):
-        sys.stdout.write("Getting PSF for image: %i/%i\r" % \
-                                 (iImage+1,nImages))
-        sys.stdout.flush()
+    for iImage in tqdm(range(nImages)):
         #Which positions are in the cluster frame
         if jwst:
             iImage_name = images[iImage].split('/')[-1][0:34]
@@ -422,7 +420,10 @@ def   writeAndRemoveUnusedColums( moments):
         if (not 'INFRAME' in i) & \
             (not 'fits_X_IMAGE' in i) & \
             (not 'fits_Y_IMAGE' in i) & \
+            (not 'ra_X_IMAGE' in i) & \
+            (not 'ra_Y_IMAGE' in i) & \
              (not 'ORIENTAT' in i ):
+
             iColumn = \
               fits.Column(i, format=moments[i].dtype, \
                             array=moments[i])

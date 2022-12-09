@@ -42,7 +42,7 @@ setup   (       name            = "pyRRG",
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['scikit-learn',\
                                    'numpy', 'pyfits', \
-                                   'ipdb', \
+                                   'ipdb', 'tqdm', \
                                     'scipy'],                          
         )
 

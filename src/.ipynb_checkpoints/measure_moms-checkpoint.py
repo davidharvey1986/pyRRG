@@ -2,9 +2,10 @@ from . import mmm as mmm
 from astropy.io import fits
 import numpy as np
 import sys
-from matplotlib import pyplot as plt
 import RRGtools as at
-import ipdb as pdb
+import json
+from tqdm import tqdm
+
 def measure_moms(fits_image, sex_catalog, outfile,
                      width=None,
                      saturation=800000000, badval=-99,
@@ -17,7 +18,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
                      bad_val=-99, regfile=None,
                      skymed=None, skysd=None, skysw=None,
                      return_moms=True, quiet=False,
-                     jwst=False, error=0.01, min_it=500, **kwargs):
+                     error=0.01, min_it=500, **kwargs):
                      
     '''
     ;
@@ -66,24 +67,13 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ;
     '''
     img_file = fits.open( fits_image )
-                   
-    if jwst:
-        if 'fits_extension' in kwargs.keys():
-            extension = kwargs['fits_extension']
-        else:
-            extension = 1
-        expTimeName = 'XPOSURE'
-    else:
-        if 'fits_extension' in kwargs.keys():
-            extension = kwargs['fits_extension']
-        else:
-            extension = 0
-        expTimeName = 'EXPTIME'
 
-    imhead = img_file[extension].header
-    img = img_file[extension].data
+    global_params = json.load(open("pyRRG.params","r"))
     
-    exp_time = imhead[expTimeName]
+    imhead = img_file[global_params['fits_extension']].header
+    img = img_file[global_params['fits_extension']].data
+    
+    exp_time = imhead[global_params['expTimeName']]
  
     #What is mmm?
     if (skymed is None )| \
@@ -160,12 +150,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
     
     galaxy_moments = moms( nGalaxies, radius=radius )
 
-
-    for i in range( nGalaxies ):
-        if (not verbose) & (not quiet):
-            sys.stdout.write("Measuring moment of object: %i/%i\r" % \
-                                 (i,nGalaxies))
-            sys.stdout.flush()
+    print("Measuring Object Moments")
+    for i in tqdm(range( nGalaxies )):
         
         #following changed by jrhodes to account for different indexing in SExtractor and IDL
        
@@ -389,13 +375,10 @@ def measure_moms(fits_image, sex_catalog, outfile,
     #Append some needed things
     #Can just append the RA as this is not the same as the pixel position
     #Need to find the re-centred RA
-    if jwst:
-        recentred_ra, recentred_dec = \
-              at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y, extension=extension)
-    else:
-        recentred_ra, recentred_dec = \
-              at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y)
-     
+
+    recentred_ra, recentred_dec = \
+              at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y, extension=global_params['fits_extension'])
+
     galaxy_moments.ra = recentred_ra
     galaxy_moments.dec = recentred_dec
    

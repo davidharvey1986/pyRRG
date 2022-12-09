@@ -12,24 +12,28 @@ PSF
 from astropy.io import fits
 import numpy as np
 import os
+import json
 
-def getIndividualExposures( inputFileName, jwst=False ):
+def getIndividualExposures( inputFileName ):
     '''
     From an input file (named inputFIleName) return
     a list of names that are the input files that
     made up that image
     '''
+    
+    params = json.load(open("pyRRG.params",'r'))
 
-
-
-    if jwst:
-        exposureNameList = fits.open(inputFileName)[8].data['FILENAME']
-    else:
-        inputHeader = fits.open(inputFileName)[0].header
-        exposureNameList = \
-          np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
+    if params['exposureNameList'] is None:
+        if jwst:
+            exposureNameList = fits.open(inputFileName)[8].data['FILENAME']
+        else:
+            inputHeader = fits.open(inputFileName)[0].header
+            exposureNameList = \
+              np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
                       for i in inputHeader.keys() \
                       if 'DATA' in i ])
+    else:
+        exposureNameList = np.loadtxt(params['exposureNameList'], dtype=object)
 
     fileCheck = []
     for iFile in exposureNameList:

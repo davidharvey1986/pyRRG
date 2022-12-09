@@ -3,12 +3,13 @@ from . import acs_limits as al
 import RRGtools as at
 import sys
 from astropy.io import fits
+import json
+from tqdm import tqdm 
 
 def drizzle_position(      drizzle_file,
                            individual_files,
                            moments,
-                           dataDir='.',
-                            jwst=False):
+                           dataDir='.'):
     
     '''
     ;PURPOSE : RETURN THE POSITIONS OF EACH POINT IN THE DRIZZLED
@@ -42,22 +43,18 @@ def drizzle_position(      drizzle_file,
     nImages = len( individual_files )
 
     InDrizzleFrame= np.zeros( (nImages, 3, nGalaxies**2))
+    params = json.load(open("pyRRG.params",'r'))
     
-    if jwst:
-        extension = 1
-        orientation_header = 'PA_V3'
-    else:
-        extension = 0
-        orientation_header = 'ORIENTAT'
+
         
     drizzle_obj = fits.open(dataDir+'/'+drizzle_file)
-    ImageData = drizzle_obj[extension].data
-    header =  drizzle_obj[extension].header
+    ImageData = drizzle_obj[params['fits_extension']].data
+    header =  drizzle_obj[params['fits_extension']].header
     orig_cols = moments.columns
 
     #Get orientation of the drizzled image
     
-    drizzle_orientation=header[orientation_header]  
+    drizzle_orientation=header[params['orientation_header']]  
   
     Dimensions = ImageData.shape
     
@@ -67,23 +64,24 @@ def drizzle_position(      drizzle_file,
 
     #Now convert into wcs
     
-    ra, dec = at.pix2deg( drizzle_file, moments.X_IMAGE, moments.Y_IMAGE, extension=extension)
+    ra, dec = at.pix2deg( drizzle_file, moments.X_IMAGE, moments.Y_IMAGE, extension=params['fits_extension'])
 
     
     newcol = []
-    for iImage in range(nImages):
-       
-        sys.stdout.write("Getting object position in image: %i/%i\r" % \
-                                 (iImage+1,nImages))
-        sys.stdout.flush()
+    for iImage in tqdm(range(nImages)):
+    
 
         #now see where each of our positions lie on each of the individual images
-        
-        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=extension) 
+        try:
+            SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=params['fits_extension']) 
+        except:
+            SingleImageX = np.zeros( len(ra)) - 1000
+            SingleImageY = np.zeros( len(ra)) - 1000
+
         #Get the limits of the field and find which one are
         #in the FOV and on the chip
         isin, image_orientation = al.acs_limits( SingleImageX, SingleImageY, \
-                                                     individual_files[iImage], jwst=jwst)
+                                                     individual_files[iImage], params)
         
         Orientation = np.zeros( len(SingleImageX)) +  image_orientation - drizzle_orientation
      
@@ -97,7 +95,7 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
         
-        if jwst:
+        if params['jwst']:
             iFilename = individual_files[iImage].split('/')[-1][0:34]
         else:
             iFilename = individual_files[iImage].split('/')[-1][0:8]

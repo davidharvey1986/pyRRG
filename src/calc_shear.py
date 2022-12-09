@@ -1,8 +1,6 @@
 import numpy as np
 from astropy.io import fits
 
-import ipdb as pdb
-
 def calc_shear( corrected_moments, outfile,
                 min_rad=6, mult=2,
                 size_cut=[0., 100.],
