@@ -24,7 +24,7 @@ def getIndividualExposures( inputFileName ):
     params = json.load(open("pyRRG.params",'r'))
 
     if params['exposureNameList'] is None:
-        if jwst:
+        if params['jwst']:
             exposureNameList = fits.open(inputFileName)[8].data['FILENAME']
         else:
             inputHeader = fits.open(inputFileName)[0].header

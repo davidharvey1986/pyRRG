@@ -8,7 +8,7 @@ import ipdb as pdb
 from astropy.io import fits
 import sklearn
 
-def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
+def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, batch_run=False):
 
     '''
     PURPORSE : To separate out the stars and galaxies in the input
@@ -46,9 +46,11 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False):
     #this first attempt will get the stars and galaxies automatically
     galStarObject = galStar( sources, redoML=redoML )
 
-        
-    overwrite = \
-      input('Accept automated selection?\n'+\
+    if batch_run:
+        overwrite='y'
+    else:
+        overwrite = \
+          input('Accept automated selection?\n'+\
             'Yes (y) : And remove all files and remeasure stars and galaxies\n'+\
             'Continue (c) : Use current selection, do not remeasure galaxies and stars\n'+\
                 'No (n)       : Reject star-gal separation and re-do interactively \n'+\

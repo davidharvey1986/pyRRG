@@ -72,24 +72,24 @@ def drizzle_position(      drizzle_file,
     
 
         #now see where each of our positions lie on each of the individual images
-        try:
-            SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=params['fits_extension']) 
-        except:
-            SingleImageX = np.zeros( len(ra)) - 1000
-            SingleImageY = np.zeros( len(ra)) - 1000
 
+        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=params['fits_extension']) 
+        
+        
+        
         #Get the limits of the field and find which one are
         #in the FOV and on the chip
         isin, image_orientation = al.acs_limits( SingleImageX, SingleImageY, \
                                                      individual_files[iImage], params)
+        
+        
         
         Orientation = np.zeros( len(SingleImageX)) +  image_orientation - drizzle_orientation
      
         isinArr= np.zeros( len( moments.X_IMAGE) )
         
         isinArr[ isin ] = 1
-     
-     
+        
 
         InDrizzleFrame[iImage, 0, :] = SingleImageX
         InDrizzleFrame[iImage, 1, :] = SingleImageY

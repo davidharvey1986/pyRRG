@@ -88,7 +88,7 @@ def main(  ):
  
 
     
-    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat)
+    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat, batch_run=params['batch_run'])
   
     corrected_moments_cat = params['field'][:-5]+"_cor.cat"
 
@@ -130,12 +130,13 @@ def main(  ):
     remove_doubles.remove_object(beforeDoubles_cat, \
                     clean_cat, FWHM_to_radius=1)
     
-    plot.plot_shears( clean_cat )
+    if not params['batch_run']:
+        plot.plot_shears( clean_cat )
 
     etr.ellipse_to_reg( clean_cat )
     
-    lenstool_file =  field[:-5]+".lenstool"
-    rtl.rrg_to_lenstool( clean_cat, field, jwst=jwst)
+    lenstool_file =  params['field'][:-5]+".lenstool"
+    rtl.rrg_to_lenstool( clean_cat, params['field'], jwst=params['jwst'])
   
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import json
 import subprocess 
 from . import directories as directories
 from . import check_external_packages as cep
+from astropy.io import fits
 
 def setDefaultParams( params ):
     
@@ -57,7 +58,13 @@ def setDefaultParams( params ):
             params['fits_extension'] = 1
         else:
             params['fits_extension'] = 0
-                
+        try:
+            test = fits.open( params['FILENAME'] )[ params['fits_extension']]
+            asset( len(test.data.shape) != 2:, "Data does not seem to be an image, consider fits extension")
+        except:
+            raise ValueError("Failed to open fits file extension consider --fits_extension keyword")
+            
+            
                 
     if params['weight_file'] is None:
         if params['jwst']:
