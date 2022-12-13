@@ -47,7 +47,7 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, b
     galStarObject = galStar( sources, redoML=redoML )
 
     if batch_run:
-        overwrite='y'
+        overwrite='c'
     else:
         overwrite = \
           input('Accept automated selection?\n'+\

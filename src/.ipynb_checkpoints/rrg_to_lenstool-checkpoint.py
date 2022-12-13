@@ -11,10 +11,11 @@ import numpy as np
 
 def rrg_to_lenstool( rrg_catalogue,
                          image_file,
+                        rrgParams,
                          output_catalogue=None,
                          lenstool_catalogue=None,
                          reference=None,
-                         default_src_redshift=1.0, jwst=False):
+                         default_src_redshift=1.0):
     '''
     Take the input fits file that is the rrg_catalogue
     and calcualte the a, b and theta.
@@ -41,10 +42,8 @@ def rrg_to_lenstool( rrg_catalogue,
     nGalaxies = len( MaskedRRGCat )
 
     theta = np.arctan2( MaskedRRGCat.gamma2, MaskedRRGCat.gamma1 )*180./np.pi/2.
-    if jwst:
-        rotang = image[1].header['PA_V3']
-    else:
-        rotang = image[0].header['ORIENTAT']
+
+    rotang = image[rrgParams['fits_extension']].header[rrgParams['orientation_header']]
     theta += rotang
     #print image[0].header['ORIENTAT']
     gamma = np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)

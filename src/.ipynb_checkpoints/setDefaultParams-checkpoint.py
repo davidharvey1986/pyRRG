@@ -60,7 +60,7 @@ def setDefaultParams( params ):
             params['fits_extension'] = 0
         try:
             test = fits.open( params['FILENAME'] )[ params['fits_extension']]
-            asset( len(test.data.shape) != 2:, "Data does not seem to be an image, consider fits extension")
+            assert len(test.data.shape) != 2, "Data does not seem to be an image, consider fits extension"
         except:
             raise ValueError("Failed to open fits file extension consider --fits_extension keyword")
             

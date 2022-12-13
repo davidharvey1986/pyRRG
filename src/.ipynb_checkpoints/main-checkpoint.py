@@ -136,7 +136,7 @@ def main(  ):
     etr.ellipse_to_reg( clean_cat )
     
     lenstool_file =  params['field'][:-5]+".lenstool"
-    rtl.rrg_to_lenstool( clean_cat, params['field'], jwst=params['jwst'])
+    rtl.rrg_to_lenstool( clean_cat, params['field'], params)
   
 
 if __name__ == "__main__":
