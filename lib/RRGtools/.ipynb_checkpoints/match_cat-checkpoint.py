@@ -10,7 +10,7 @@ def run_match( cat_A, cat_B, \
     
     command_str ='stilts.sh tmatch2 in1="'+cat_A+'" in2="'+\
         cat_B+'" matcher=sky values1="RA DEC" values2="RA DEC" params="'\
-        +str(search_rad)+'" out=matched_A_B.fits'
+        +str(search_rad)+'" out=matched_A_B.fits progress=none'
 
 
     os.system(command_str)

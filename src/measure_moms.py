@@ -68,12 +68,16 @@ def measure_moms(fits_image, sex_catalog, outfile,
     '''
     img_file = fits.open( fits_image )
 
-    global_params = json.load(open("pyRRG.params","r"))
+
+    if 'fits_extension' not in kwargs.keys():
+        kwargs['fits_extension'] = 0
+    if 'expTimeName'  not in kwargs.keys():
+        kwargs['expTimeName'] = 'EXPTIME'
     
-    imhead = img_file[global_params['fits_extension']].header
-    img = img_file[global_params['fits_extension']].data
+    imhead = img_file[kwargs['fits_extension']].header
+    img = img_file[kwargs['fits_extension']].data
     
-    exp_time = imhead[global_params['expTimeName']]
+    exp_time = imhead[kwargs['expTimeName']]
  
     #What is mmm?
     if (skymed is None )| \
@@ -377,7 +381,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     #Need to find the re-centred RA
 
     recentred_ra, recentred_dec = \
-              at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y, extension=global_params['fits_extension'])
+              at.pix2deg( fits_image, galaxy_moments.x, galaxy_moments.y, extension=kwargs['fits_extension'])
 
     galaxy_moments.ra = recentred_ra
     galaxy_moments.dec = recentred_dec

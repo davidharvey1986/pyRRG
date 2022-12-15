@@ -418,10 +418,8 @@ def   writeAndRemoveUnusedColums( moments):
     columns = []
     for i in momentNames:
         if (not 'INFRAME' in i) & \
-            (not 'fits_X_IMAGE' in i) & \
-            (not 'fits_Y_IMAGE' in i) & \
-            (not 'ra_X_IMAGE' in i) & \
-            (not 'ra_Y_IMAGE' in i) & \
+            (not '_X_IMAGE' in i) & \
+            (not '_Y_IMAGE' in i) & \
              (not 'ORIENTAT' in i ):
 
             iColumn = \

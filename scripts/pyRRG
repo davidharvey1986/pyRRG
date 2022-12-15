@@ -28,6 +28,8 @@ parser.add_argument('--expTimeName', help="Header key for the exposure time", de
 parser.add_argument('--exposureNameList', help="A list of the exposure names that went in to the drizzle file", default=None, type=str)
 parser.add_argument('--orientation_header', help="The header keyword for the orientation of the image wrt to wcs", default=None, type=str)
 parser.add_argument('--batch_run', '-b', help="Run as a batch so ignore the star-gal separation prompt", action='store_true')
+parser.add_argument('--FWHM_to_radius', help="How many radii separation of each object", default=1, type=float)
+
 
 
 

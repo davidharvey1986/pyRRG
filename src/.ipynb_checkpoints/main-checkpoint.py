@@ -82,7 +82,8 @@ def main(  ):
     if not os.path.isfile(uncorrected_moments_cat):
         measure_moms( params['FILENAME'], sex_catalogue,
                                    uncorrected_moments_cat,
-                                    min_rad=params['min_rad'], mult=params['mult'])
+                                    min_rad=params['min_rad'], 
+                                 mult=params['mult'], **params)
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  

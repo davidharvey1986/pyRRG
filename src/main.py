@@ -82,7 +82,8 @@ def main(  ):
     if not os.path.isfile(uncorrected_moments_cat):
         measure_moms( params['FILENAME'], sex_catalogue,
                                    uncorrected_moments_cat,
-                                    min_rad=params['min_rad'], mult=params['mult'])
+                                    min_rad=params['min_rad'], 
+                                 mult=params['mult'], **params)
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
@@ -128,7 +129,7 @@ def main(  ):
     clean_cat = params['field'][:-5]+"_clean.shears"
 
     remove_doubles.remove_object(beforeDoubles_cat, \
-                    clean_cat, FWHM_to_radius=1)
+                    clean_cat, FWHM_to_radius=params['FWHM_to_radius'])
     
     if not params['batch_run']:
         plot.plot_shears( clean_cat )
