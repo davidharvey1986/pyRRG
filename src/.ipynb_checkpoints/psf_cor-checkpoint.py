@@ -18,11 +18,7 @@ np.seterr(divide='ignore', invalid='ignore')
 def psf_cor(    mom_file,
                 outfile,
                 drizzle_file,
-                wavelength,
-                mult=1, min_rad=1.5, chip=1,
-                constantpsf=0, mscale=0, 
-                order=3,
-                n_chip=2, jwst=False):
+                **kwargs):
     '''
     ;
     ; NAME:                  rrg_psf_cor
@@ -48,7 +44,6 @@ def psf_cor(    mom_file,
     ; MODIFICATION HISTORY:
     ;   
     ;    April 2003 jrhodes
-    ;  May 2005 jrhodes added mscale option, only works with constantpsf
     ;  July 2011 dharvey modified to allow for rotated images,(see section
     ;  for more details)
     
@@ -61,6 +56,18 @@ def psf_cor(    mom_file,
     ;class:class,area:area,area_ab:area_ab,flags:flags,$
     ;a:a,b:b,theta:theta,mag:mag,prob:prob}
     '''
+    
+    print("KWARGS", kwargs)
+    
+    if not 'min_rad' in kwargs.keys():
+        kwargs['min_rad'] = 1.5
+    if not 'jwst' in kwargs.keys():
+        kwargs['jwst'] = False
+    if not 'wavelength' in kwargs.keys():
+        raise ValueError("Please input wavelength in to arguments")
+                
+                
+    
     dirs = directories.return_dirs( )
 
     moms = fits.open(mom_file)[1].data
@@ -71,7 +78,7 @@ def psf_cor(    mom_file,
  
     sigma =  cp.copy(moms.radius[moms['galStarFlag']==1])
    
-    sigma[ sigma < min_rad ] = min_rad
+    sigma[ sigma < kwargs['min_rad'] ] = kwargs['min_rad']
     
 
     w2=(1./(sigma*sigma));
@@ -88,7 +95,7 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    if jwst:
+    if kwargs['jwst'] :
         scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
         psf_detectors = np.array([ i['detector'][0][:4] for i in meta])
     else:
@@ -107,7 +114,7 @@ def psf_cor(    mom_file,
     ;4. Then take the average of the moments for each 
     '''
 
-    images = gie.getIndividualExposures( drizzle_file )
+    images = gie.getIndividualExposures( **kwargs )
     
     if len(images) == 0:
         raise ValueError('Cant find single exposures of field')
@@ -150,7 +157,7 @@ def psf_cor(    mom_file,
     sys.stdout.write("\n")
     for iImage in tqdm(range(nImages)):
         #Which positions are in the cluster frame
-        if jwst:
+        if kwargs['jwst'] :
             iImage_name = images[iImage].split('/')[-1][0:34]
         else:
             iImage_name = images[iImage].split('/')[-1][0:8]
@@ -162,7 +169,7 @@ def psf_cor(    mom_file,
 
         #So get the focus position by fitting the true image stars to the
         #model
-        if not jwst:
+        if not kwargs['jwst'] :
             focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, wavelength)
         else:
@@ -174,7 +181,7 @@ def psf_cor(    mom_file,
         #iImage, interpolate the psf from the ref fram of the single
         #image  to the X,Y of the drizzled image
                    
-        if jwst:
+        if kwargs['jwst'] :
             image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:4]
             detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
             scat_use = scat[detector_num]
@@ -185,7 +192,7 @@ def psf_cor(    mom_file,
           acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
                                    galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
                                     np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                                    radius, scat_use, degree=[3,2,2], jwst=jwst )
+                                    radius, scat_use, degree=[3,2,2], jwst=kwargs['jwst']  )
         
         #now rotate the moments according to the angle in orient
         iPsfMomsRot = rm.rotate_moments( iPsfMoms, galaxy_moms[iImage_name+'_ORIENTAT'][inFrame])
@@ -257,7 +264,7 @@ def psf_cor(    mom_file,
     pxxyy=psf_moms.xxyy
     pxyyy=psf_moms.xyyy
     pyyyy=psf_moms.yyyy
-    w=min_rad
+    w=kwargs['min_rad']
     
     
 
@@ -321,9 +328,6 @@ def psf_cor(    mom_file,
 
     shear=np.sqrt(0.5*(a+d+trace))
     
-    if constantpsf:
-         shear=np.zeros(number)+np.sqrt(0.5*(a(0)+d(0)+trace(0)))
-
 
     corrected_moments = moments( galaxy_moms.x, galaxy_moms.y, \
                                      len(galaxy_moms.x))

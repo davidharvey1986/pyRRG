@@ -14,33 +14,35 @@ import numpy as np
 import os
 import json
 
-def getIndividualExposures( inputFileName ):
+def getIndividualExposures( verbose=True, **kwargs ):
     '''
     From an input file (named inputFIleName) return
     a list of names that are the input files that
     made up that image
     '''
+    if 'FILENAME' not in kwargs.keys():
+        raise ValueError("Please state FILENAME in kwargs")
+        
     
-    params = json.load(open("pyRRG.params",'r'))
-
-    if params['exposureNameList'] is None:
-        if params['jwst']:
-            exposureNameList = fits.open(inputFileName)[8].data['FILENAME']
+    if 'exposureNameList' not in kwargs.keys():
+        if kwargs['jwst']:
+            exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
         else:
-            inputHeader = fits.open(inputFileName)[0].header
+            inputHeader = fits.open(kwargs['FILENAME'])[0].header
             exposureNameList = \
               np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
                       for i in inputHeader.keys() \
                       if 'DATA' in i ])
     else:
-        exposureNameList = np.loadtxt(params['exposureNameList'], dtype=object)
+        exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
 
     fileCheck = []
     for iFile in exposureNameList:
         if not os.path.isfile(iFile):
             print("%s file not found" % iFile )
         else :
-            print("%s found!" % iFile )
+            if verbose:
+                print("%s found!" % iFile )
         fileCheck.append( os.path.isfile(iFile) )
     
     if np.all( np.array(fileCheck) == False):

@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import os as os
 import ipdb as pdb
 import RRGtools as tools
+from .getIndividualExposures import getIndividualExposures
+from .acs_limits import acs_limits
+from copy import deepcopy as cp
+import tqdm
 
 def plot_region_maskstar( filename, star):
     regionFile = open( filename, "w")
@@ -149,20 +153,77 @@ def inpoly(Px,Py,xl,yl):
     nc=nc%2
     return nc
 
+
 def main(  shear_catalog, object_catalog_fits, \
-         mask_file='mask.reg', outFile='Shear_remove.fits' ,plot_reg=True):
+         mask_file='mask.reg', outFile='Shear_remove.fits', 
+         **kwargs):
+    
+    main_single(shear_catalog, object_catalog_fits, \
+         mask_file='star_masks.reg', outFile=outFile, 
+         mask_stars=True,  plot_reg=None)
+    
+    return
+    
+    object_catalog = fits.open(object_catalog_fits)
+
+    allExposures = getIndividualExposures( verbose=False, **kwargs )
+    os.system("mkdir masks/exposures")
+    for iExposure in tqdm.tqdm(allExposures):
+        
+        new_obj = cp(object_catalog)
+        new_cat = new_obj[1].data
+        
+        x, y = tools.deg2pix( iExposure, new_cat['X_WORLD'], new_cat['Y_WORLD'], extension=0)
+        
+        new_cat['X_IMAGE'] = x
+        new_cat['Y_IMAGE'] = y
+       
+        
+        isin, oritentaion = acs_limits( x, y, iExposure, kwargs)
+    
+        
+        new_obj[1].data = new_cat[ isin ]
+        if len(new_cat[ isin ]) == 0:
+            continue
+            
+        new_obj.writeto('tmp_cat_mask.fits', overwrite=True)
+        
+        main_single( shear_catalog, 'tmp_cat_mask.fits', 
+                    outFile='tmp_shear_rm.fits', plot_reg="masks/%s.mask" % iExposure )
+        
+    os.system("cat masks/*.reg | grep polygon > star_masks.reg")
+    main_single(shear_catalog, object_catalog_fits, \
+         mask_file='star_masks.reg', outFile=outFile, 
+         mask_stars=False,  plot_reg=None)
+        
+    
+        
+        
+
+        
+        
+        
+    
+    
+    
+    
+
+def main_single(  shear_catalog, object_catalog_fits, \
+         mask_file='mask.reg', outFile='Shear_remove.fits', 
+         mask_stars=True,  plot_reg=None):
     '''
         This algoritm will do two things.
         a) Draw masks(polygon) around detected stars automatically and remove objects within the polygon.
         b) Take an additional optional mask file (defaulted to mask.reg) and remove
         any object that lies within those regions. This file MUST be a ds9 region file with a
         formatting with degrees and not sexidecimal.
+        
+        update that the polygn needs to be done in the frame of the individual exposure and then rotated.
         '''
     
     #-------------------------select the stars from the size vs mag diagram----------------------------------------------------
     
     object_catalog = fits.open(object_catalog_fits)[1].data
-    
     
     Star_catalogue = \
       object_catalog[ (object_catalog['galStarFlag']==-1) &
@@ -183,7 +244,6 @@ def main(  shear_catalog, object_catalog_fits, \
         shear_catalog.split('.')[1]
     hdu.writeto(clean_catalog, overwrite=True)
 
-
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
     for j in np.arange(len(Star_catalogue["ra"])):
@@ -192,32 +252,36 @@ def main(  shear_catalog, object_catalog_fits, \
         m=Star_catalogue["MAG_AUTO"][j]
         inside,star_corr_one=instar(1,1,star_x,star_y,m)
         star_corr[j]=star_corr_one
-    if plot_reg==True:
-        plot_region_maskstar("remove_star.reg",star_corr)
+    if plot_reg is not None:
+        plot_region_maskstar(plot_reg, star_corr)
     
 
     ##-------------------------------start masking-------------------------------
-    Shears=fits.open(clean_catalog)[1].data
+    if mask_stars:
+        Shears=fits.open(clean_catalog)[1].data
     ##go through the sources list:
-    for i in np.arange(len(Shears['ra'])):
-        xl=Shears['X_IMAGE'][i]
-        yl=Shears["Y_IMAGE"][i]
-        for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
-            star_x=Star_catalogue['X_IMAGE'][j]
-            star_y=Star_catalogue['Y_IMAGE'][j]
-            m=Star_catalogue["MAG_AUTO"][j]
-            inside, star_corr_one = instar(xl,yl,star_x,star_y,m)
+        for i in np.arange(len(Shears['ra'])):
+            xl=Shears['X_IMAGE'][i]
+            yl=Shears["Y_IMAGE"][i]
+            for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
+                star_x=Star_catalogue['X_IMAGE'][j]
+                star_y=Star_catalogue['Y_IMAGE'][j]
+                m=Star_catalogue["MAG_AUTO"][j]
+                inside, star_corr_one = instar(xl,yl,star_x,star_y,m)
             
-            #star_corr[j]=star_corr_one
-            if inside==1:
-                Shears['clean'][i]=1
+                #star_corr[j]=star_corr_one
+                if inside==1:
+                    Shears['clean'][i]=1
             
 
 
-    Shears_remove=Shears[Shears['clean']==0]
+        Shears_remove=Shears[Shears['clean']==0]
+
+    else:
+        Shears_remove=fits.open(clean_catalog)[1].data
 
     fits.writeto(outFile, Shears_remove, overwrite=True, output_verify='ignore' )
-
+    
     ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):
         mask_obj = open(mask_file, 'r')

@@ -6,19 +6,7 @@ import RRGtools as at
 import json
 from tqdm import tqdm
 
-def measure_moms(fits_image, sex_catalog, outfile,
-                     width=None,
-                     saturation=800000000, badval=-99,
-                     cut_off=2.5, fieldback=0, mult=1,
-                     min_rad=1.5, startx=0, starty=0,
-                     verbose=False, weight_image=None,
-                     wt_ext=0, nocenter=0,
-                     sgm_im='null',
-                     object_catalogue=None,
-                     bad_val=-99, regfile=None,
-                     skymed=None, skysd=None, skysw=None,
-                     return_moms=True, quiet=False,
-                     error=0.01, min_it=500, **kwargs):
+def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, **kwargs):
                      
     '''
     ;
@@ -40,7 +28,6 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ;   width- gaussian window function width, if not input is calculated from area
     ;   saturation,bad_value are saturation level and value of pixels not to use (outside image)
     ;   cut_off- cut_off for measuring objects default is 2.5x width
-    ;   fieldback -1 means use a field backgroup as calculated by IDL SKY, 0(default) uses object back from SEx
     ;   mult- multiplier used to find gaussian width from area
     ;   min_rad- stellar radius
     ;   startx, starty- lower left corner of image in pixel values, default to zero
@@ -66,6 +53,55 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ENDIF
     ;
     '''
+    if 'saturation' not in kwargs.keys():
+        kwargs['saturation'] = 800000000
+    if 'bad_val' not in kwargs.keys():
+        kwargs['bad_val'] = -99
+    if 'cut_off' not in kwargs.keys():
+        kwargs['cut_off'] = 2.5
+    if 'mult' not in kwargs.keys():
+        kwargs['mult'] = 1               
+    if 'min_rad' not in kwargs.keys():
+        kwargs['min_rad'] = 1.5           
+    if 'start' not in kwargs.keys():
+        startx, starty = 0, 0
+    else:
+        startx, starty = kwargs['start']
+        
+    if 'weight_file' not in kwargs.keys():
+        kwargs['weight_file'] =  None  
+    if 'nocenter' not in kwargs.keys():
+        kwargs['nocenter'] = 0. 
+            
+    if 'sgm_im' not in kwargs.keys():
+        kwargs['sgm_im'] = 'null'
+   
+    if 'object_catalogue' not in kwargs.keys():
+        object_catalogue = None
+    else:
+        object_catalogue = kwargs['object_catalogue']
+     
+    if 'regfile' not in kwargs.keys():
+        kwargs['regfile'] = None
+
+    if 'sky' not in kwargs.keys():
+        skymed, skysd, skysw = None, None, None
+    else:
+        skymed, skysd, skysw = kwargs['sky']['skymed'], kwargs['sky']['skysd'], kwargs['sky']['skysw']
+        
+    if 'return_moms' not in kwargs.keys():
+        kwargs['return_moms'] = True
+        
+    if 'error' not in kwargs.keys():
+        kwargs['error'] =  0.01
+        
+    if 'min_it' not in kwargs.keys():
+        kwargs['min_it'] =  500
+        
+                    
+                    
+                    
+                    
     img_file = fits.open( fits_image )
 
 
@@ -110,10 +146,10 @@ def measure_moms(fits_image, sex_catalog, outfile,
     ysize= imhead['NAXIS2']
     xsize= imhead['NAXIS1']
 
-    if weight_image is None:
+    if kwargs['weight_file'] is None:
         wt_image = np.ones( img.shape)
     else:
-        wt_image = fits.open( weight_image )[0].data
+        wt_image = fits.open( kwargs['weight_file'] )[0].data
 
 
 
@@ -125,8 +161,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
     
 
-    if (sgm_im != 'null') & (fieldback == 1):
-        seg_file = fits.open(sgm_im)
+    if (kwargs['sgm_im'] != 'null'):
+        seg_file = fits.open(kwargs['sgm_im'])
         seg = seg_file[0].data
         shdr = seg_file[0].header
         '''
@@ -136,17 +172,14 @@ def measure_moms(fits_image, sex_catalog, outfile,
         '''
     if not 'radius' in kwargs:
         area=np.pi*object_catalogue['A_IMAGE']*object_catalogue['B_IMAGE']
-        radius = np.sqrt( area / np.pi )*mult
+        radius = np.sqrt( area / np.pi )*kwargs['mult']
     else:
         radius = kwargs['radius']
     
-    radius[ radius < min_rad ] = min_rad
+    radius[ radius < kwargs['min_rad'] ] = kwargs['min_rad']
 
-    
-    if width is not None:
-        radius=np.zeros(nGalaxies) + width
         
-    cut_rad = radius*cut_off # cut off radius of object
+    cut_rad = radius*kwargs['cut_off'] # cut off radius of object
     offedge=0 #;number of objects off the endge initially
     centerprob=0 # number of objects with centroiding problems
     badpix_prob=0 #number of objects with bad pixels
@@ -185,10 +218,10 @@ def measure_moms(fits_image, sex_catalog, outfile,
             galaxy_moments.prob[i] += 1
             
 
-        if nocenter == 0:
-            while  ((np.abs(deltax) > error) |  \
-              (np.abs(deltay) > error)) & \
-               (count < min_it) & (go_on == 1) :
+        if kwargs['nocenter']  == 0:
+            while  ((np.abs(deltax) > kwargs['error']) |  \
+              (np.abs(deltay) > kwargs['error'])) & \
+               (count < kwargs['min_it']) & (go_on == 1) :
                 #These are needed for all moments
                 #Cut out a postage stamp of the image
                 begin_x = np.round(xc-cut_rad[i]-1).astype(int)
@@ -297,8 +330,8 @@ def measure_moms(fits_image, sex_catalog, outfile,
         if go_on == 1:
 
 
-            if (np.any(postage_stamp > saturation)) | \
-                (np.any(postage_stamp == bad_val)) | \
+            if (np.any(postage_stamp > kwargs['saturation'])) | \
+                (np.any(postage_stamp == kwargs['bad_val'])) | \
                 (np.any(postage_weight == 0)):
                 go_on = 0
                 galaxy_moments.prob[i] += 4
@@ -386,7 +419,7 @@ def measure_moms(fits_image, sex_catalog, outfile,
     galaxy_moments.ra = recentred_ra
     galaxy_moments.dec = recentred_dec
    
-    galaxy_moments.calc_e1e2( mult_rad=mult)     
+    galaxy_moments.calc_e1e2( mult_rad=kwargs['mult'])     
     #log this stuff as i want this for the star galaxy separation
     galaxy_moments['skymed'][:] = skymed
     galaxy_moments['skysd'][:] = skysd
@@ -396,10 +429,10 @@ def measure_moms(fits_image, sex_catalog, outfile,
 
     galaxy_moments.write_to_fits( object_catalogue, outfile )
 
-    if regfile is not None:
-        galaxy_moments.fits_to_ellipse( regfile)
+    if kwargs['regfile'] is not None:
+        galaxy_moments.fits_to_ellipse( kwargs['regfile'] )
     
-    if return_moms:
+    if kwargs['return_moms']:
         return fits.open(outfile)[1].data
 
 class moms( dict ):

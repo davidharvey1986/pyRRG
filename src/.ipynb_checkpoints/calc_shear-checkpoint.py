@@ -1,15 +1,7 @@
 import numpy as np
 from astropy.io import fits
 
-def calc_shear( corrected_moments, outfile,
-                min_rad=6, mult=2,
-                size_cut=[0., 100.],
-                mag_cut=[22.5, 30],
-                signal_noise_cut=3.,
-                rhodes_factor=0.86,
-                dataDir='./',
-                expThresh=4,
-                stat_type='median'):
+def calc_shear( corrected_moments, outfile, **kwargs):
     '''
     PURPOSE : TO WORK OUT VARIOUS FACTORS AND ADJUST THE PSF
     CORRECTED ELLIPICITY FOR THESE AND GET AN ESTAIMTE OF THE SHEAR
@@ -32,7 +24,6 @@ def calc_shear( corrected_moments, outfile,
         MAG_CUT [LO,HI] : two scalar array, the cut in the galaxy magnitude that is allowed to measure shear on
         SIGNAL_NOSIE_CUT : scalar, the lowest acceptable signal to nosie allowed in the catalogue
         rhodes_factor : The RRG rhodes factor (see paper)
-        dataDir : the directory in which all the data exists
         expThresh : the minimum number of exposures a galaxy has to have an acceptably robust shape.
         stat_type :  the stat type used over the field of galaxies to estimate the corrections to
                      from elliptcitiy to shear.
@@ -42,6 +33,27 @@ def calc_shear( corrected_moments, outfile,
                    two extra fields. GAMMA1 and GAMMA2, the two componenets of the estimated shear.
 
     '''
+    if 'min_rad' not in kwargs.keys():
+        kwargs['min_rad'] = 6.
+    if 'size_cut' not in kwargs.keys():
+        kwargs['size_cut'] = [0., 100.]
+    
+    if 'mag_cut' not in kwargs.keys():
+        kwargs['mag_cut'] = [22.5, 30]
+                             
+    if 'signal_noise_cut' not in kwargs.keys():
+        kwargs['signal_noise_cut'] = 3.
+                             
+    if 'rhodes_factor' not in kwargs.keys():
+        kwargs['rhodes_factor']=0.86
+        
+    if 'expThresh' not in kwargs.keys():
+        kwargs['expThresh'] = 4
+        
+    if 'stat_type' not in kwargs.keys():
+        kwargs['stat_type']='median'
+                
+                
     #Need to filter as i determine mean quantities that
     #shoudlnt be used from bad galaxies
     signal_noise = corrected_moments['FLUX_AUTO'] / \
@@ -57,13 +69,13 @@ def calc_shear( corrected_moments, outfile,
 
     good[ (corrected_moments.xx + corrected_moments.yy < 0)] = 0
     good[ (uncut_ell_sqr > 2 ) ]  = 0
-    good[ (uncor_size < size_cut[0] )]  = 0 
-    good[ (uncor_size > size_cut[1] )]  = 0
-    good[( corrected_moments.MAG_AUTO < mag_cut[0] )]  = 0 
-    good[( corrected_moments.MAG_AUTO > mag_cut[1] )]  = 0
-    good[ (signal_noise < signal_noise_cut)]  = 0 
+    good[ (uncor_size < kwargs['size_cut'][0] )]  = 0 
+    good[ (uncor_size > kwargs['size_cut'][1] )]  = 0
+    good[( corrected_moments.MAG_AUTO < kwargs['mag_cut'][0] )]  = 0 
+    good[( corrected_moments.MAG_AUTO > kwargs['mag_cut'][1] )]  = 0
+    good[ (signal_noise < kwargs['signal_noise_cut'])]  = 0 
     
-    good[ corrected_moments.nExposures < expThresh ] = 0
+    good[ corrected_moments.nExposures < kwargs['expThresh'] ] = 0
     good[  (~np.isfinite(corrected_moments.xx)) ] = 0
     good[  corrected_moments.prob != 0 ] = 0
     
@@ -73,7 +85,7 @@ def calc_shear( corrected_moments, outfile,
     nObjects=len(momc.xx)
 
     weight = momc['radius']
-    weight[ momc['radius'] < min_rad] = min_rad
+    weight[ momc['radius'] < kwargs['min_rad']] = kwargs['min_rad']
     
     beta = 1./(2.*momc['gal_size']**2*(momc['shear']**2+weight**2))
     
@@ -87,13 +99,13 @@ def calc_shear( corrected_moments, outfile,
     e_dot_u = momc['e1']*u1+momc['e2']*u2
     e_cross_u = momc['e1']*u2-momc['e2']*u1
 
-    if stat_type == 'mean':
+    if kwargs['stat_type'] == 'mean':
         #These are the mean G1, G2
         G2 = 0.5*np.nanmean(e_cross_u)
         G1 = 2-np.nanmean(ellipticity_sqr)-\
             0.5*np.nanmean(gal_lambda)-\
             0.5*np.nanmean(e_dot_u)
-    elif stat_type =='median':
+    elif kwargs['stat_type'] =='median':
         #The median
         G2 = 0.5*np.nanmedian(e_cross_u)
         
@@ -101,8 +113,8 @@ def calc_shear( corrected_moments, outfile,
     else:
         raise ValueError("Stat type not recognised")
     
-    gamma1=momc['e1']/G1/rhodes_factor
-    gamma2=momc['e2']/G1/rhodes_factor
+    gamma1=momc['e1']/G1/kwargs['rhodes_factor']
+    gamma2=momc['e2']/G1/kwargs['rhodes_factor']
 
     fits_cols = []
     for iName in momc.columns.names:

@@ -26,7 +26,6 @@ def acs_limits( x, y, filename, params ):
 
     
     isin = (x > 0) & ( x < header['NAXIS1']) &  (y > 0) & ( y < header['NAXIS2'])
-
     zeroarr = np.arange( len( y[isin] ))[imagedata[ y[isin].astype(int), x[isin].astype(int)] == 0]
     #Create an array the size of the entire field even
     #the positions outside the FOV

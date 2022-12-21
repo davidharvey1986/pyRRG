@@ -71,8 +71,8 @@ def main(  ):
                                          outfile=sex_catalogue,
                                          conf_path=params['dirs'].sex_files,
                                          dataDir=params['dirs'].data_dir,
-                                           zero_point=params['zero_point'],
-                                   extension=params['fits_extension'])
+                                         zero_point=params['zero_point'],
+                                         extension=params['fits_extension'])
     else:
         sources = fits.open( sex_catalogue )[1].data
 
@@ -81,9 +81,7 @@ def main(  ):
     
     if not os.path.isfile(uncorrected_moments_cat):
         measure_moms( params['FILENAME'], sex_catalogue,
-                                   uncorrected_moments_cat,
-                                    min_rad=params['min_rad'], 
-                                 mult=params['mult'], **params)
+                                 uncorrected_moments_cat, **params)
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
@@ -97,11 +95,7 @@ def main(  ):
     if not os.path.isfile(corrected_moments_cat):
          psf.psf_cor( uncorrected_moments_cat,
                     corrected_moments_cat,
-                    params['FILENAME'], params['wavelength'],
-                    mult=1, min_rad=params['min_rad'], chip=1,
-                    constantpsf=0, mscale=0, 
-                    order=3,
-                    n_chip=2, jwst=params['jwst'])
+                    params['FILENAME'], **params)
     
 
     corrected_moments = fits.open( corrected_moments_cat )[1].data
@@ -110,26 +104,20 @@ def main(  ):
   
     sheared_cat = params['field'][:-5]+".shears"
     
-    cs.calc_shear( corrected_moments,
-                   sheared_cat, 
-                    min_rad=params['min_rad'], mult=params['mult'],
-                    signal_noise_cut=params['signal_noise_cut'],
-                    size_cut=params['size_cut'],
-                    mag_cut=params['mag_cut'],
-                    dataDir=params['data_dir'],\
-                       expThresh=params['expThresh'])
+    cs.calc_shear( corrected_moments, sheared_cat, **params)
     
 
 
     beforeDoubles_cat = params['field'][:-5]+"_clean_withDoubles.shears"
+    
     mask.main( sheared_cat, uncorrected_moments_cat,
-                   outFile=beforeDoubles_cat)
+                   outFile=beforeDoubles_cat, **params)
 
 
     clean_cat = params['field'][:-5]+"_clean.shears"
 
     remove_doubles.remove_object(beforeDoubles_cat, \
-                    clean_cat, FWHM_to_radius=1)
+                    clean_cat, FWHM_to_radius=params['FWHM_to_radius'])
     
     if not params['batch_run']:
         plot.plot_shears( clean_cat )
