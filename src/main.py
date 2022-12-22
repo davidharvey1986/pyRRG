@@ -16,6 +16,7 @@ import subprocess
 from . import masking_star as mask
 from . import double_detection_removal as remove_doubles
 from .setDefaultParams import setDefaultParams
+from .remove_galaxy import remove_galaxy_members
 import sys
 import json
 
@@ -118,6 +119,10 @@ def main(  ):
 
     remove_doubles.remove_object(beforeDoubles_cat, \
                     clean_cat, FWHM_to_radius=params['FWHM_to_radius'])
+    
+    if params['cluster_members_cat'] is not None:
+        print("Removing Cluster Members from %s" % params['cluster_members_cat'])
+        remove_galaxy_members( params['cluster_members_cat'], clean_cat)
     
     if not params['batch_run']:
         plot.plot_shears( clean_cat )

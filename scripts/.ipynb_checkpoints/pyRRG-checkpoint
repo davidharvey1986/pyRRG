@@ -29,6 +29,8 @@ parser.add_argument('--exposureNameList', help="A list of the exposure names tha
 parser.add_argument('--orientation_header', help="The header keyword for the orientation of the image wrt to wcs", default=None, type=str)
 parser.add_argument('--batch_run', '-b', help="Run as a batch so ignore the star-gal separation prompt", action='store_true')
 parser.add_argument('--FWHM_to_radius', help="How many radii separation of each object", default=1, type=float)
+parser.add_argument('--cluster_members_cat', help="Input fits table of cluster members that must include RA and DEC in the table", default=None, type=str)
+
 
 
 
