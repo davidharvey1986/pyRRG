@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     hdulist=fits.open(rrg_catalogue)
     data_org=hdulist[1].data
-    print("num of objects in the rrg catalogue:",len(data_org))
+    print("Num of objects in the rrg catalogue: %i" % len(data_org))
 
     x=np.array(data_org['X_IMAGE'])
     y=np.array(data_org['Y_IMAGE'])

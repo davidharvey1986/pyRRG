@@ -133,11 +133,3 @@ def main(  ):
     rtl.rrg_to_lenstool( clean_cat, params['field'], params)
   
 
-if __name__ == "__main__":
-    print(len(sys.argv))
-    if len(sys.argv) == 1:
-        print("Please to add image name")
-        print("python main.py <image_name>")
-        raise ValueError()
-    
-    main(sys.argv[1])
