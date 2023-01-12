@@ -25,7 +25,9 @@ package_dir = {'RRGtools':'./lib/RRGtools',
                    'pyRRG':'./src',
                'asciidata':'./lib/asciidata',
                'stilts':'./lib/stilts/'}
-package_data = {'pyRRG': ['psf_lib_jwst/*/*','psf_lib/*/*','sex_files/*','*.pkl']}
+package_data = \
+    {'pyRRG': ['psf_lib_jwst/*/*','psf_lib/*/*','sex_files/*','*.pkl'],\
+     'stilts':['*.jar']}
 
 
 

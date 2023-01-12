@@ -56,9 +56,7 @@ def psf_cor(    mom_file,
     ;class:class,area:area,area_ab:area_ab,flags:flags,$
     ;a:a,b:b,theta:theta,mag:mag,prob:prob}
     '''
-    
-    print("KWARGS", kwargs)
-    
+        
     if not 'min_rad' in kwargs.keys():
         kwargs['min_rad'] = 1.5
     if not 'jwst' in kwargs.keys():
@@ -99,7 +97,7 @@ def psf_cor(    mom_file,
         scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
         psf_detectors = np.array([ i['detector'][0][:4] for i in meta])
     else:
-        scat = readsav( dirs.psf_model_dir+'/TinyTim'+wavelength+'.scat' )['scat']
+        scat = readsav( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -171,7 +169,7 @@ def psf_cor(    mom_file,
         #model
         if not kwargs['jwst'] :
             focus = adf.acs_determine_focus(  images[iImage], star_moms, \
-                                              drizzle_file, wavelength)
+                                              drizzle_file, kwargs['wavelength'])
         else:
             focus = 0
         #Just keep track of the focii i have used through out

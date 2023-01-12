@@ -13,6 +13,8 @@ def getHSTfilter( params ):
     header = fits.open( params['FILENAME'] )[0].header
 
     if params['jwst']:
+        print(("Using filter %s for image %s" % (header['FILTER'],  params['FILENAME'])))
+
         return header['FILTER']
 
     if 'CLEAR' in header['FILTER1']:
@@ -20,5 +22,5 @@ def getHSTfilter( params ):
     else:
         hst_filter = header['FILTER1']
         
-    print(("Using filter %s for image %s" % (hst_filter, infile)))
+    print(("Using filter %s for image %s" % (hst_filter,  params['FILENAME'])))
     return hst_filter

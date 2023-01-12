@@ -24,7 +24,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
         raise ValueError("Please state FILENAME in kwargs")
         
     
-    if 'exposureNameList' not in kwargs.keys():
+    if kwargs['exposureNameList'] is None:
         if kwargs['jwst']:
             exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
         else:
