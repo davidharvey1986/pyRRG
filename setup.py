@@ -13,9 +13,9 @@ long_description = """\
 This module uses the RRG method to measure the shapes of galaxies
 in Hubble Space Telescope data
 """
-#sudo python3 setup.py sdist upload -r pypi
+#twine upload dist/dist.tar.gz
 
-version='0.2.1'
+version='0.2.2'
          
     
 INCDIRS=['.']
