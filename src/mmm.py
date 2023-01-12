@@ -170,7 +170,7 @@ def mmm( sky_vector,
             sigma=-1.0 ;  skew = 0.0   
             print(('ERROR - Too many ('+str(mxiter) + ') iterations,' + \
                       ' unable to compute sky'))
-#            import pdb; pdb.set_trace()
+
             return(skymod,sigma,skew)
 
         if ( maximm-minimm < minsky ):    #Error? 

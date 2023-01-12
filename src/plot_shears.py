@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from astropy.io import fits
 import numpy as np
 from matplotlib import gridspec as gridspec
-import ipdb as pdb
+
 import matplotlib.colors as colors
 
 def plot_shears( moments_catalogue, nbins=None,

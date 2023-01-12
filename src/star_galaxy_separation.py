@@ -4,7 +4,6 @@ import pickle as pkl
 from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
-import ipdb as pdb
 from astropy.io import fits
 import sklearn
 

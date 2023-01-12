@@ -2,7 +2,6 @@ from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import os as os
-import ipdb as pdb
 import RRGtools as tools
 from .getIndividualExposures import getIndividualExposures
 from .acs_limits import acs_limits

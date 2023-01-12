@@ -1,5 +1,6 @@
 scripts/pyRRG
-scripts/stilts*
+scripts/stilts.sh
+lib/stilts/*
 docs/HowToStarGalaxyClassify.pdf
 docs/Manual.pdf
 galStar.sav

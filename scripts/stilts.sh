@@ -48,7 +48,9 @@ test -n "$scriptname" || scriptname=$0
 bindir="`dirname $scriptname`"
 
 #  Set locations of acceptable jar files (relative to this script).
+lib_path=`pip show pyRRG | grep Location | cut -f2 -d' '`
 stilts_jars="\
+ $lib_path/stilts/stilts.jar\
  $bindir/stilts.jar\
  $bindir/../lib/ttools/stilts-app.jar\
  $bindir/stilts-app.jar\
