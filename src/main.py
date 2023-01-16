@@ -56,7 +56,7 @@ def main(  ):
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
     params = setDefaultParams( default_params )
     
-   
+       
     # Define survey parameters
     #------------------------------------------
     #Now as keywords
