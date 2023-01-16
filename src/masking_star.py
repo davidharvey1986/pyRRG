@@ -291,12 +291,12 @@ def main_single(  shear_catalog, object_catalog_fits, \
                 continue
             elif mask[0:3] == 'box':
                 print("masking a box")
-                mask_x = np.float(mask.split('(')[1].split(',')[0])
-                mask_y = np.float(mask.split('(')[1].split(',')[1])
-                mask_sizex = np.float(mask.split('(')[1].split(',')[2][:-1])
-                mask_sizey = np.float(mask.split('(')[1].split(',')[3][:-1])
+                mask_x = float(mask.split('(')[1].split(',')[0])
+                mask_y = float(mask.split('(')[1].split(',')[1])
+                mask_sizex = float(mask.split('(')[1].split(',')[2][:-1])
+                mask_sizey = float(mask.split('(')[1].split(',')[3][:-1])
                 
-                mask_angle = np.float(mask.split('(')[1].split(',')[4][:-2])
+                mask_angle = float(mask.split('(')[1].split(',')[4][:-2])
                 #rotate the shears into fram of reference of the mask
                 shears_x_mask_ref = tools.ra_separation(Shears_remove['X_WORLD'], mask_y, mask_x , mask_y)
                 shears_y_mask_ref = (Shears_remove['Y_WORLD'] - mask_y)*3600.

@@ -6,7 +6,7 @@ import RRGtools as at
 import json
 from tqdm import tqdm
 
-def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, **kwargs):
+def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
                      
     '''
     ;
@@ -339,8 +339,8 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, *
                 
             if badpix_mom == 'yes':
                 badpix_prob += 1 
-                
-                print(('%i %f %f Bad pixel(s) in centroiding' %\
+                if verbose:
+                    print(('%i %f %f Bad pixel(s) in centroiding' %\
                         (i,xGal[i],yGal[i])))
 
         

@@ -11,7 +11,7 @@ def acs_determine_focus_metric( true, model ):
     match
     '''
 
-    dof = np.max( [np.float((len(model.e1)-1)), 1])
+    dof = np.max( [float((len(model.e1)-1)), 1])
     goodness_of_fit = np.sum( (true['e1']-model.e1)**2+(true['e2']-model.e2)**2) /dof
     
     return goodness_of_fit
