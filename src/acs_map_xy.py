@@ -157,7 +157,7 @@ def acs_map_xy( x, y,
                                5.9100563e-14, -3.2919786e-14, 1.9975680e-14])
         
 
-    order=np.int(np.min([order,np.round((np.sqrt(9-8*(1-len(chip1xcoeffs)))-3)/2.)])) # i.e. quartic!
+    order=int(np.min([order,np.round((np.sqrt(9-8*(1-len(chip1xcoeffs)))-3)/2.)])) # i.e. quartic!
 
     # Decide which chip the objects are on.
     if  chip is None:      

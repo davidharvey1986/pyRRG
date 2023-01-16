@@ -27,7 +27,7 @@ def plot_shears( moments_catalogue, nbins=None,
  
     
     if nbins is None:
-        nbins = np.int(nGalaxies / min_gals_per_bins)
+        nbins = int(nGalaxies / min_gals_per_bins)
     xbins = np.linspace( np.min(catalogue.x), np.max(catalogue.x), nbins + 1)
     ybins = np.linspace( np.min(catalogue.y), np.max(catalogue.y), nbins + 1)
     

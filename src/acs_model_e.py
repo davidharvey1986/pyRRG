@@ -73,7 +73,7 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     filenames2=".moms"
     n_focus = 16
     catalogues_focus = np.arange( n_focus ) - 10
-    catalogues_string = np.array([ "f"+str(np.int(i)) for i in catalogues_focus])
+    catalogues_string = np.array([ "f"+str(int(i)) for i in catalogues_focus])
     n_coords=len(x)
   
     # Load data (required on first use only)
