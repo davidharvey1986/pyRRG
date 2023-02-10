@@ -10,7 +10,7 @@ parser.add_argument("FILENAME", help="Absolute path of the input filename to be 
 parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
 parser.add_argument('-j', '--jwst', action='store_true')
 parser.add_argument('-w','--weight_file', help="Image weight file", default=None)
-
+parser.add_argument('-m','--mask', help="Mask stars out of the catalogue",  action='store_true')
 parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
 parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
 parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)

@@ -110,10 +110,11 @@ def main(  ):
 
 
     beforeDoubles_cat = params['field'][:-5]+"_clean_withDoubles.shears"
-    
-    mask.main( sheared_cat, uncorrected_moments_cat,
+    if params['mask']:
+        mask.main( sheared_cat, uncorrected_moments_cat,
                    outFile=beforeDoubles_cat, **params)
-
+    else:
+        os.system('cp %s %s' % (sheared_cat,beforeDoubles_cat))
 
     clean_cat = params['field'][:-5]+"_clean.shears"
 
