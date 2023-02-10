@@ -46,7 +46,7 @@ def rrg_to_lenstool( rrg_catalogue,
     rotang = image[rrgParams['fits_extension']].header[rrgParams['orientation_header']]
     theta += rotang
     #print image[0].header['ORIENTAT']
-    gamma = np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
+    gamma = 2.*np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
 
     size = np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.)/2.
 

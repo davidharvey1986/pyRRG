@@ -245,6 +245,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
 
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
+    print("Masking")
     for j in np.arange(len(Star_catalogue["ra"])):
         star_x=Star_catalogue["X_IMAGE"][j]
         star_y=Star_catalogue["Y_IMAGE"][j]
@@ -259,7 +260,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
     if mask_stars:
         Shears=fits.open(clean_catalog)[1].data
     ##go through the sources list:
-        for i in np.arange(len(Shears['ra'])):
+        for i in tqdm.tqdm(np.arange(len(Shears['ra']))):
             xl=Shears['X_IMAGE'][i]
             yl=Shears["Y_IMAGE"][i]
             for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
