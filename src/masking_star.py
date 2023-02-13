@@ -158,7 +158,7 @@ def main(  shear_catalog, object_catalog_fits, \
          **kwargs):
     
     main_single(shear_catalog, object_catalog_fits, \
-         mask_file='star_masks.reg', outFile=outFile, 
+         mask_file=mask_file, outFile=outFile, 
          mask_stars=True,  plot_reg=None)
     
     return

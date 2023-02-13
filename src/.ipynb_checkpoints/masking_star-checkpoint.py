@@ -2,7 +2,6 @@ from astropy.io import fits
 import numpy as np
 import matplotlib.pyplot as plt
 import os as os
-import ipdb as pdb
 import RRGtools as tools
 from .getIndividualExposures import getIndividualExposures
 from .acs_limits import acs_limits
@@ -159,7 +158,7 @@ def main(  shear_catalog, object_catalog_fits, \
          **kwargs):
     
     main_single(shear_catalog, object_catalog_fits, \
-         mask_file='star_masks.reg', outFile=outFile, 
+         mask_file=mask_file, outFile=outFile, 
          mask_stars=True,  plot_reg=None)
     
     return
@@ -246,6 +245,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
 
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
+    print("Masking")
     for j in np.arange(len(Star_catalogue["ra"])):
         star_x=Star_catalogue["X_IMAGE"][j]
         star_y=Star_catalogue["Y_IMAGE"][j]
@@ -260,7 +260,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
     if mask_stars:
         Shears=fits.open(clean_catalog)[1].data
     ##go through the sources list:
-        for i in np.arange(len(Shears['ra'])):
+        for i in tqdm.tqdm(np.arange(len(Shears['ra']))):
             xl=Shears['X_IMAGE'][i]
             yl=Shears["Y_IMAGE"][i]
             for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
@@ -292,12 +292,12 @@ def main_single(  shear_catalog, object_catalog_fits, \
                 continue
             elif mask[0:3] == 'box':
                 print("masking a box")
-                mask_x = np.float(mask.split('(')[1].split(',')[0])
-                mask_y = np.float(mask.split('(')[1].split(',')[1])
-                mask_sizex = np.float(mask.split('(')[1].split(',')[2][:-1])
-                mask_sizey = np.float(mask.split('(')[1].split(',')[3][:-1])
+                mask_x = float(mask.split('(')[1].split(',')[0])
+                mask_y = float(mask.split('(')[1].split(',')[1])
+                mask_sizex = float(mask.split('(')[1].split(',')[2][:-1])
+                mask_sizey = float(mask.split('(')[1].split(',')[3][:-1])
                 
-                mask_angle = np.float(mask.split('(')[1].split(',')[4][:-2])
+                mask_angle = float(mask.split('(')[1].split(',')[4][:-2])
                 #rotate the shears into fram of reference of the mask
                 shears_x_mask_ref = tools.ra_separation(Shears_remove['X_WORLD'], mask_y, mask_x , mask_y)
                 shears_y_mask_ref = (Shears_remove['Y_WORLD'] - mask_y)*3600.
