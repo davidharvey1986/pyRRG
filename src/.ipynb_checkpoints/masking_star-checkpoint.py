@@ -243,6 +243,8 @@ def main_single(  shear_catalog, object_catalog_fits, \
         shear_catalog.split('.')[1]
     hdu.writeto(clean_catalog, overwrite=True)
 
+       
+
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
     print("Masking")
@@ -294,6 +296,10 @@ def main_single(  shear_catalog, object_catalog_fits, \
                 print("masking a box")
                 mask_x = float(mask.split('(')[1].split(',')[0])
                 mask_y = float(mask.split('(')[1].split(',')[1])
+                
+                if (mask_x > 360.) or (mask_y > 360.):
+                    raise ValueError("Invalid value found in mask file. Mask coordinates must be in WCS (degrees)")
+                    
                 mask_sizex = float(mask.split('(')[1].split(',')[2][:-1])
                 mask_sizey = float(mask.split('(')[1].split(',')[3][:-1])
                 
@@ -302,8 +308,10 @@ def main_single(  shear_catalog, object_catalog_fits, \
                 shears_x_mask_ref = tools.ra_separation(Shears_remove['X_WORLD'], mask_y, mask_x , mask_y)
                 shears_y_mask_ref = (Shears_remove['Y_WORLD'] - mask_y)*3600.
                 
-                shears_x_mask_rot = np.cos(mask_angle*np.pi/180.)*shears_x_mask_ref +  np.sin(mask_angle*np.pi/180.)*shears_y_mask_ref
-                shears_y_mask_rot = -np.sin(mask_angle*np.pi/180.)*shears_x_mask_ref + np.cos(mask_angle*np.pi/180.)*shears_y_mask_ref
+                shears_x_mask_rot = np.cos(mask_angle*np.pi/180.)*shears_x_mask_ref + \
+                                    np.sin(mask_angle*np.pi/180.)*shears_y_mask_ref
+                shears_y_mask_rot = -np.sin(mask_angle*np.pi/180.)*shears_x_mask_ref + \
+                                    np.cos(mask_angle*np.pi/180.)*shears_y_mask_ref
                 
                 inBox =  (shears_x_mask_rot < mask_sizex/2.) & \
                     (shears_x_mask_rot > -mask_sizex/2.) &\
@@ -330,4 +338,4 @@ def main_single(  shear_catalog, object_catalog_fits, \
         fits.writeto(outFile,Shears_remove, overwrite=True,output_verify='ignore' )
 
 
-
+    return
