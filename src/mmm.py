@@ -98,7 +98,7 @@ def mmm( sky_vector,
            Added MINSKY keyword                                         W.L.                       December, 2011
            Converted to Python                                          D. Jones                   January,  2014
     """
-
+    print("Getting the background of the image, this can take a while for large images")
     if nan: sky_vector = sky_vector[np.where(sky_vector == sky_vector)]
     nsky = len( sky_vector )            #Get number of sky elements 
  
