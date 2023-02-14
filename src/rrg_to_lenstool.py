@@ -46,7 +46,7 @@ def rrg_to_lenstool( rrg_catalogue,
     rotang = image[rrgParams['fits_extension']].header[rrgParams['orientation_header']]
     theta += rotang
     #print image[0].header['ORIENTAT']
-    gamma = np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
+    gamma = 2.*np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
 
     #For a2-b^2 ellipticuity e= e* + 2g
     size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
