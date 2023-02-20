@@ -159,7 +159,7 @@ def main(  shear_catalog, object_catalog_fits, \
     
     main_single(shear_catalog, object_catalog_fits, \
          mask_file=mask_file, outFile=outFile, 
-         mask_stars=True,  plot_reg=None)
+         mask_stars=False,  plot_reg=None)
     
     return
     
