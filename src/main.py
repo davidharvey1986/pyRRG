@@ -81,6 +81,11 @@ def main(  ):
     uncorrected_moments_cat = params['field'][:-5]+"_uncor.cat"
     
     if not os.path.isfile(uncorrected_moments_cat):
+        params['sky'] = {}
+        params['sky']['skymed'] = 0.
+        params['sky']['skysd'] = 0.
+        params['sky']['skysw'] = 0.
+
         measure_moms( params['FILENAME'], sex_catalogue,
                                  uncorrected_moments_cat, **params)
 
