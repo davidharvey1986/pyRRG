@@ -69,7 +69,6 @@ def plot_shears( moments_catalogue, nbins=None,
     quiveropts = dict( headlength=0, pivot='middle', 
                         linewidth=5., units='xy', width=width, \
                           headwidth=1, alpha=1.,cmap='autumn') 
-    
     ax1.quiver( xgrid+np.mean( xbins), \
                     ygrid+np.mean( ybins), \
                     e1_map, e2_map, \

@@ -6,7 +6,7 @@ import RRGtools as at
 import json
 from tqdm import tqdm
 
-def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, **kwargs):
+def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
                      
     '''
     ;
@@ -58,7 +58,7 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, *
     if 'bad_val' not in kwargs.keys():
         kwargs['bad_val'] = -99
     if 'cut_off' not in kwargs.keys():
-        kwargs['cut_off'] = 2.5
+        kwargs['cut_off'] = 10
     if 'mult' not in kwargs.keys():
         kwargs['mult'] = 1               
     if 'min_rad' not in kwargs.keys():
@@ -98,7 +98,10 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, *
     if 'min_it' not in kwargs.keys():
         kwargs['min_it'] =  500
         
-                    
+                 
+    if verbose:
+        for i in kwargs.keys():
+            print("%s: %s" % (i, str(kwargs[i])))
                     
                     
                     
@@ -156,11 +159,15 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, *
     #The background for each galaxy. if none take from sex cata;pgue
     try:
         back=object_catalogue.BACKGROUND
+        if verbose:
+            print("USING OBJECT BACKGROUND WITH MEDIAN %0.5f" % np.median(back))
     except:
-        back =  np.zeros( nGalaxies) + skysd
+        if verbose:
+            print("USING SKYMED")
+        back =  np.zeros( nGalaxies) + skymed
 
     
-
+    
     if (kwargs['sgm_im'] != 'null'):
         seg_file = fits.open(kwargs['sgm_im'])
         seg = seg_file[0].data
@@ -339,8 +346,8 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, quiet=False, *
                 
             if badpix_mom == 'yes':
                 badpix_prob += 1 
-                
-                print(('%i %f %f Bad pixel(s) in centroiding' %\
+                if verbose:
+                    print(('%i %f %f Bad pixel(s) in centroiding' %\
                         (i,xGal[i],yGal[i])))
 
         

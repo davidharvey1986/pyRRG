@@ -1,4 +1,4 @@
-scripts/pyRRG
+scripts/pyRRGA
 scripts/stilts.sh
 lib/stilts/*
 docs/HowToStarGalaxyClassify.pdf
@@ -17,6 +17,7 @@ lib/RRGtools/pysex.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
+src/superbit_psf.py
 src/remove_galaxy.py
 src/setDefaultParams.py
 src/getIndividualExposures.py

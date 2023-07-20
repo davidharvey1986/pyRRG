@@ -12,6 +12,7 @@ import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
 from tqdm import tqdm
+from .superbit_psf import superbit_psf
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -93,11 +94,12 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    if kwargs['jwst'] :
-        scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
-        psf_detectors = np.array([ i['detector'][0][:4] for i in meta])
-    else:
-        scat = readsav( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.scat' )['scat']
+    if not kwargs['empirical_psf']:
+        if kwargs['jwst'] :
+            scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
+            psf_detectors = np.array([ i['detector'][0][:4] for i in meta])
+        else:
+            scat = readsav( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.scat' )['scat']
 
     #so this function interpolates.
  
@@ -178,16 +180,20 @@ def psf_cor(    mom_file,
         #For all the points in the main drizzled field that are within
         #iImage, interpolate the psf from the ref fram of the single
         #image  to the X,Y of the drizzled image
-                   
-        if kwargs['jwst'] :
-            image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:4]
-            detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
-            scat_use = scat[detector_num]
-        else:
-            scat_use = scat
+          
+        if not kwargs['empirical_psf']:
+            if kwargs['jwst'] :
+                image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:4]
+                detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
+                scat_use = scat[detector_num]
+            else:
+                scat_use = scat
     
-        iPsfMoms=\
-          acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
+        if kwargs['empirical_psf']:
+            iPsfMoms = superbit_psf( galaxy_moms[inFrame], star_moms, degree=4 )
+        else:
+            iPsfMoms=\
+              acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
                                    galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
                                     np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
                                     radius, scat_use, degree=[3,2,2], jwst=kwargs['jwst']  )

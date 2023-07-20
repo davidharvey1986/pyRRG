@@ -21,7 +21,7 @@ def interpolate_jwst_psf_moms( x, y, radius, scat, degree=3):
 
     x_vector = np.unique(scat['X'])
     y_vector = np.unique(scat['Y'])
-    grid_size = np.int(len(x_vector))
+    grid_size = int(len(x_vector))
 
     
     psf_grid_size = (grid_size, grid_size)

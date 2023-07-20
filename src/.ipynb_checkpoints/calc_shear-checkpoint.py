@@ -66,18 +66,39 @@ def calc_shear( corrected_moments, outfile, **kwargs):
                                corrected_moments.yy_uncorrected))
           
     good = np.ones(len(corrected_moments.x))
-
+    if kwargs['verbose']:
+        print("%i galaxies to filter" % np.sum(good))
     good[ (corrected_moments.xx + corrected_moments.yy < 0)] = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from positive moments" % np.sum(good))
     good[ (uncut_ell_sqr > 2 ) ]  = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from positive uncut_ell_sqr" % np.sum(good))
     good[ (uncor_size < kwargs['size_cut'][0] )]  = 0 
+    if kwargs['verbose']:
+        print("%i galaxies filtered from upper size cut" % np.sum(good))
     good[ (uncor_size > kwargs['size_cut'][1] )]  = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from lower size cut" % np.sum(good))   
     good[( corrected_moments.MAG_AUTO < kwargs['mag_cut'][0] )]  = 0 
+    if kwargs['verbose']:
+        print("%i galaxies filtered from mag cut" % np.sum(good)) 
     good[( corrected_moments.MAG_AUTO > kwargs['mag_cut'][1] )]  = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from mag cut" % np.sum(good)) 
     good[ (signal_noise < kwargs['signal_noise_cut'])]  = 0 
-    
+    if kwargs['verbose']:
+        print("%i galaxies filtered from snr cut" % np.sum(good)) 
+        
     good[ corrected_moments.nExposures < kwargs['expThresh'] ] = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from exposure cut" % np.sum(good)) 
     good[  (~np.isfinite(corrected_moments.xx)) ] = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from finite xx" % np.sum(good)) 
     good[  corrected_moments.prob != 0 ] = 0
+    if kwargs['verbose']:
+        print("%i galaxies filtered from prob not zero cut" % np.sum(good)) 
     
     momc = corrected_moments[good == 1]
     size = np.sqrt( 0.5*(momc.xx + momc.yy))
