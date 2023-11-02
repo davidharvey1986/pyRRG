@@ -240,8 +240,11 @@ def psf_cor(    mom_file,
           (iMom != 'x') & (iMom != 'y'):
             psf_moms[iMom] /= psf_moms['nExposures']
             psf_moms[iMom][psf_moms['nExposures'] == 0] = 0.
-        
-   
+    
+    filename = '%s/psf_moments.fits' % (dirs.data_dir)
+    print("WRITING OUT FITS FILE %s" % filename)
+    
+    psf_moms.writeto(filename)
         
     #Refind e1 and e2, assuming we want  <q11>-<q22>/<q11>+<q22> not <e1>
     psf_moms.e1=(psf_moms.xx-psf_moms.yy)/ \
@@ -268,6 +271,7 @@ def psf_cor(    mom_file,
     pxxyy=psf_moms.xxyy
     pxyyy=psf_moms.xyyy
     pyyyy=psf_moms.yyyy
+    
     w=kwargs['min_rad']
     
     
@@ -418,6 +422,22 @@ class moments( dict ):
 
     def __getitem__(self, key): 
         return self.__dict__[key]
+    
+    def writeto( self, filename, overwrite=True):
+        momentNames = self.keys()
+        columns = []
+        for i in momentNames:
+            iColumn = \
+              fits.Column(i, format=self[i].dtype, \
+                            array=self[i])
+            columns.append(iColumn)
+                
+        new_cols = fits.ColDefs(columns)
+    
+        hdu = fits.BinTableHDU.from_columns(new_cols)            
+        hdu.writeto(filename,overwrite=overwrite)
+    
+    
 
 
 def   writeAndRemoveUnusedColums( moments):

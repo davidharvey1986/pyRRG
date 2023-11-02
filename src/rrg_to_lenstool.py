@@ -56,8 +56,8 @@ def rrg_to_lenstool( rrg_catalogue,
     semi_minor = size*np.sqrt(1.-gamma)
 
     if reference is None:
-        reference = [ np.mean( MaskedRRGCat.RA ), 
-                          np.mean( MaskedRRGCat.DEC ) ]
+        reference = [ np.mean( MaskedRRGCat['RA'] ), 
+                          np.mean( MaskedRRGCat['DEC'] ) ]
 
 
     if lenstool_catalogue is None:
@@ -71,7 +71,7 @@ def rrg_to_lenstool( rrg_catalogue,
 
     redshifts = np.zeros( nGalaxies, float)+default_src_redshift
         
-    write_array = np.transpose([ ngal, MaskedRRGCat.ra, MaskedRRGCat.dec, \
+    write_array = np.transpose([ ngal, MaskedRRGCat['RA'], MaskedRRGCat['DEC'], \
                                   semi_major, semi_minor, \
                                   theta, \
                                   redshifts,

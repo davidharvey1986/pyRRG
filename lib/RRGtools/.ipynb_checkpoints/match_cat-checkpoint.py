@@ -5,13 +5,19 @@ import numpy as np
 from . import color_color as color
 from numpy.lib.recfunctions import append_fields as append_rec
 
-def run_match( cat_A, cat_B, \
-                   search_rad=2 ):
+def run_match( cat_A, cat_B, matcher='sky', \
+                   search_rad=2, coords=["RA","DEC"] ):
     
-    command_str ='stilts.sh tmatch2 in1="'+cat_A+'" in2="'+\
-        cat_B+'" matcher=sky values1="RA DEC" values2="RA DEC" params="'\
-        +str(search_rad)+'" out=matched_A_B.fits progress=none'
+    #command_str ='stilts.sh tmatch2 in1="'+cat_A+'" in2="'+\
+    #    cat_B+'" matcher=sky values1="RA DEC" values2="RA DEC" params="'\
+    #    +str(search_rad)+'" out=matched_A_B.fits progress=none'
 
+    command_str = ('stilts.sh tmatch2 in1="%s" in2="%s" '
+                   'matcher=%s values1="%s %s" values2="%s %s" '
+                   'params="%0.1f" out=mathced_A_B.fits progress=none' % 
+        (cat_A, cat_B, matcher, coords[0], coords[1], coords[0], coords[1], search_rad))
+    
+    print(command_str)
 
     os.system(command_str)
 
