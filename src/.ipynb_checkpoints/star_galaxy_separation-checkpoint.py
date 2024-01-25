@@ -4,7 +4,6 @@ import pickle as pkl
 from matplotlib import gridspec as gridspec
 import sys as sys
 import numpy as np
-import ipdb as pdb
 from astropy.io import fits
 import sklearn
 
@@ -46,8 +45,12 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, b
     #this first attempt will get the stars and galaxies automatically
     galStarObject = galStar( sources, redoML=redoML )
 
-    if batch_run:
+        
+        
+    if batch_run | galStarObject.manual:
         overwrite='c'
+    elif galStarObject.manual:
+        overwrite='y'
     else:
         overwrite = \
           input('Accept automated selection?\n'+\
@@ -110,9 +113,13 @@ class galStar():
                 self.defaults( sources )
             else:
                 self.galStarFlag = sources['galStarFlag']
-            self.generate_axes( sources )   
-            self.plot_stars_galaxies(  sources )
-            
+                if np.all(self.galStarFlag == -2):
+                    self.defaults( sources )
+                else:
+                    self.generate_axes( sources )   
+                    self.plot_stars_galaxies(  sources )                   
+                
+  
         def alreadyDefinedStarGalaxySeparation( self, sources ):
                 checkFieldNames = np.array([ 'galStarFlag' in i for i in sources.columns.names])
                 self.fieldExists = np.any(checkFieldNames)
@@ -132,17 +139,24 @@ class galStar():
             
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
-            print(codeDir+'/'+rfModel)
             if not os.path.isfile( codeDir+'/'+rfModel ):
-                raise ValueError("RF Model not found. If you have downloaded this directly from GIT then you will need to contact davidharvey1986@googlemail.com to get the latest RF model and copy it to %s." % codeDir)
-            galStarFlagClassifier =  \
-              pkl.load(open(codeDir+'/'+rfModel,'rb'), encoding='latin1')
+                print("Cannot Random Forest, please either contact david.harvey@epfl.ch or manually continue")
+                self.galStarFlag = np.zeros(len(sources))-2
+                self.generate_axes( sources)
+                self.get_params_interactively( sources )    
+                self.manual = True
+            else:
+                galStarFlagClassifier =  \
+                  pkl.load(open(codeDir+'/'+rfModel,'rb'), encoding='latin1')
 
 
-            self.galStarFlag = np.zeros(len(sources))-2
-            self.galStarFlag[self.nanCheck] = \
-              galStarFlagClassifier.predict(self.sourcesArray[self.nanCheck,:])
-
+                self.galStarFlag = np.zeros(len(sources))-2
+                self.galStarFlag[self.nanCheck] = \
+                  galStarFlagClassifier.predict(self.sourcesArray[self.nanCheck,:])
+                
+                self.generate_axes( sources )   
+                self.plot_stars_galaxies(  sources )
+                self.manual=False
         def generateNumpyArrayWithNoNans( self, sources ):
             #Only plot non nan values, also this is used for Random For
             self.sourcesArray = rec2array( sources )
