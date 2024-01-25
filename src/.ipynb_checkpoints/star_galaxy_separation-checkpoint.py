@@ -106,7 +106,7 @@ class galStar():
             self.gal_points = []
             #all sources that are predicted to be noise
             self.noise_points = []
-            
+            self.manual=False
             self.alreadyDefinedStarGalaxySeparation(sources)
             
             if (not self.fieldExists) | (redoML):
