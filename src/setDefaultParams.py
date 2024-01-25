@@ -66,12 +66,6 @@ def setDefaultParams( params ):
             
             
                 
-    if params['weight_file'] is None:
-        if params['jwst']:
-            params['weight_file'] = params['FILENAME']+'[4]'
-        else:
-            params['weight_file'] = params['FILENAME'][:-8]+'wht.fits'
-     
     if params['expTimeName'] is None:
         if params['jwst']:
             params['expTimeName'] = 'XPOSURE'

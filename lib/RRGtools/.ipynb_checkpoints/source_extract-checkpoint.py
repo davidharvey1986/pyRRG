@@ -45,15 +45,17 @@ def source_extract( image_name, weight_file, zero_point='jwst',
             header = fits.open( image_name )[extension].header
             
         zero_point = acs_zero_point(header)
-        
-    conf_args = {'WEIGHT_IMAGE': dataDir+'/'+weight_file,
-                 'MAG_ZEROPOINT': zero_point,
-                 'WEIGHT_TYPE':'MAP_WEIGHT',
+    
+    conf_args = {'MAG_ZEROPOINT': zero_point,
+                 'WEIGHT_TYPE':'NONE',
                  'PARAMETERS_NAME':conf_path+'/rrg.param',
                  'STARNNW_NAME':conf_path+'/default.nnw',
                  'FILTER_NAME':conf_path+'/gauss_5.0_9x9.conv'}
         
-    
+    if weight_file is not None:
+        conf_args['WEIGHT_IMAGE'] = dataDir+'/'+weight_file
+        conf_args['WEIGHT_TYPE'] = 'MAP_WEIGHT'
+
 
     if extension == 1:
         image_name = '%s[%i]' % (image_name, extension)
