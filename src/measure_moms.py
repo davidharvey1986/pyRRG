@@ -143,7 +143,12 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
         else:
             yGal = kwargs['yGal']
     except:
-        xGal, yGal = at.deg2pix( fits_image, object_catalogue['RA'], object_catalogue['DEC'] )
+        xGal, yGal = at.deg2pix(
+            fits_image,
+            object_catalogue['RA'],
+            object_catalogue['DEC'],
+            extension=params['fits_extension']
+        )
 
   
     ysize= imhead['NAXIS2']
