@@ -97,7 +97,7 @@ def psf_cor(    mom_file,
     if not kwargs['empirical_psf']:
         if kwargs['jwst'] :
             scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
-            psf_detectors = np.array([ i['detector'][0][:4] for i in meta])
+            psf_detectors = np.array([ i['detector'][0][:5] for i in meta])
         else:
             scat = readsav( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.scat' )['scat']
 
@@ -183,7 +183,7 @@ def psf_cor(    mom_file,
           
         if not kwargs['empirical_psf']:
             if kwargs['jwst'] :
-                image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:4]
+                image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:5]
                 detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
                 scat_use = scat[detector_num]
             else:

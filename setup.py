@@ -15,7 +15,7 @@ in Hubble Space Telescope data
 """
 #twine upload dist/dist.tar.gz
 
-version='0.3'
+version='0.4'
          
     
 INCDIRS=['.']
