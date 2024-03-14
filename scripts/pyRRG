@@ -27,6 +27,7 @@ parser.add_argument('--cut_off', help="The multiple of radius to cut out the gal
 parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
 parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
 parser.add_argument('--fits_extension','-f', help="Fits extension to use", default=None, type=int)
+parser.add_argument('--wht-fits-extension', help="Fits extension to use for weight file", default=0, type=int)
 parser.add_argument('--expTimeName', help="Header key for the exposure time", default=None, type=str)
 parser.add_argument('--exposureNameList', help="A list of the exposure names that went in to the drizzle file", default=None, type=str)
 parser.add_argument('--orientation_header', help="The header keyword for the orientation of the image wrt to wcs", default=None, type=str)

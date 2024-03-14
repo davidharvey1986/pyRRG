@@ -147,7 +147,7 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
             fits_image,
             object_catalogue['RA'],
             object_catalogue['DEC'],
-            extension=params['fits_extension']
+            extension=kwargs['fits_extension']
         )
 
   
@@ -157,7 +157,7 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
     if kwargs['weight_file'] is None:
         wt_image = np.ones( img.shape)
     else:
-        wt_image = fits.open( kwargs['weight_file'] )[0].data
+        wt_image = fits.open( kwargs['weight_file'] )[kwargs['wht_fits_extension']].data
 
 
 
