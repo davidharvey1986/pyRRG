@@ -1,7 +1,7 @@
 import numpy as np
 import os as os
 def return_dirs( ):
-    dirs = directories('.','.','.','.','.')
+    dirs = directories('.','.','.','.','.','.')
     dirs.get_dirs()
     return dirs
 
