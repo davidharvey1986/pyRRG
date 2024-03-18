@@ -231,7 +231,7 @@ def psf_cor(    mom_file,
         #then give the position the value of the averaged psf_moms.
 
     #Save the focus array
-    focuslist = open(dirs.data_dir+'/FocusArray.txt', "w")
+    focuslist = open(dirs.output_dir+'/FocusArray.txt', "w")
     
     for i in range(nImages):
         ExpName = images[i].split('/')[-1].split('_')[0]
