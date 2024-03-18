@@ -8,8 +8,7 @@ from tqdm import tqdm
 
 def drizzle_position(      drizzle_file,
                            individual_files,
-                           moments,
-                           dataDir='.'):
+                           moments):
     
     '''
     ;PURPOSE : RETURN THE POSITIONS OF EACH POINT IN THE DRIZZLED
@@ -47,7 +46,7 @@ def drizzle_position(      drizzle_file,
     
 
         
-    drizzle_obj = fits.open(dataDir+'/'+drizzle_file)
+    drizzle_obj = fits.open(drizzle_file)
     ImageData = drizzle_obj[params['fits_extension']].data
     header =  drizzle_obj[params['fits_extension']].header
     orig_cols = moments.columns
