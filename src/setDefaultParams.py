@@ -7,10 +7,24 @@ from . import check_external_packages as cep
 from astropy.io import fits
 
 def setDefaultParams( params ):
+    #Check files exist
+    params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
+    params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
+    if params["root_name"] is None:
+        params["root_name"] = params['FILENAME'].split('.')[0]
+        
+    params["root_name"] = os.path.join(params["output_dir"],params["root_name"])
+    
+    if not os.path.isfile( params["field"] ):
+        raise ValueError('Cant find input image (%s)' % params["field"])
+        
     
     params["hst_filter"] = getHSTfilter(params)
-    
     params["wavelength"] = ''.join([  s for s in params["hst_filter"] if s.isdigit()])
+    
+
+    
+
     
     #get the cwd first, and make sure these are aboslute paths!
     if params["code_dir"] is None:
@@ -31,22 +45,19 @@ def setDefaultParams( params ):
     
     params['stilts_dir'] = '/'+'/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])
     
-    params["dirs"] = directories.directories(params['data_dir'],  params['sex_files'],
-                           params['psf_model_dir']+'/'+str(params['wavelength'])+'/',
-                                       params['code_dir'], params['stilts_dir'])
+    params["dirs"] = directories.directories(
+        params['data_dir'],
+        params['output_dir'],
+        params['sex_files'],
+        params['psf_model_dir']+'/'+str(params['wavelength'])+'/',
+        params['code_dir'], params['stilts_dir'])
+    
     params["dirs"].check_dirs()
     params["dirs"].write_dirs()
     cep.check_external_packages()
 
     
-    #Check files exist
-    params["field"] = params["dirs"].data_dir+params["FILENAME"]
     
-    if not os.path.isfile( params["field"] ):
-        raise ValueError('Cant find input image (%s)' % params["field"])
-        
-    
-
     if params['jwst']:
         params['zero_point'] = 'jwst'
     else:

@@ -157,6 +157,8 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
     if kwargs['weight_file'] is None:
         wt_image = np.ones( img.shape)
     else:
+        print("Getting weight image from %s with ext %i" %
+              (kwargs['weight_file']  , kwargs['wht_fits_extension']))
         wt_image = fits.open( kwargs['weight_file'] )[kwargs['wht_fits_extension']].data
 
 

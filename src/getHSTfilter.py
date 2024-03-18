@@ -10,10 +10,10 @@ def getHSTfilter( params ):
     Take the input infile and get the filter name
     '''
     
-    header = fits.open( params['FILENAME'] )[0].header
+    header = fits.open( params['field'] )[0].header
 
     if params['jwst']:
-        print(("Using filter %s for image %s" % (header['FILTER'],  params['FILENAME'])))
+        print(("Using filter %s for image %s" % (header['FILTER'],  params['field'])))
 
         return header['FILTER']
 

@@ -15,6 +15,8 @@ parser.add_argument('-w','--weight_file', help="Image weight file", default=None
 parser.add_argument('-m','--mask', help="Mask stars out of the catalogue",  action='store_true')
 parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
 parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
+parser.add_argument('--output_dir', '-o', help="The directory in which to put all output", default='./', type=str)
+parser.add_argument('--root_name', '-r', help="The root name in which to put all catalogues", default=None, type=str)
 parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
 parser.add_argument('--sex_files', help="Directory in which the sex_files are", default=None, type=str)
 parser.add_argument('--expThresh', help="The minimum number of exposure that a galaxy has to have covering it to be included in the catalogue.", default=2, type=int)

@@ -53,22 +53,22 @@ def main(  ):
     default_params = json.load(open("pyRRG.params","r"))
     
     
+    
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
     params = setDefaultParams( default_params )
     
-       
+    print("Storing all catalogues with root: %s" % params['root_name'])
     # Define survey parameters
     #------------------------------------------
     #Now as keywords
 
 
-    sex_catalogue = params['field'][:-5]+"_sex.cat"
-
+    sex_catalogue = params['root_name']+"_sex.cat"
         
     #Find objects and measure their raw shapes
     if not os.path.isfile( sex_catalogue):
 
-        sources = at.source_extract( params['FILENAME'], params['weight_file'],
+        sources = at.source_extract( params['field'], params['weight_file'],
                                          outfile=sex_catalogue,
                                          conf_path=params['dirs'].sex_files,
                                          dataDir=params['dirs'].data_dir,
@@ -78,10 +78,10 @@ def main(  ):
         sources = fits.open( sex_catalogue )[1].data
 
   
-    uncorrected_moments_cat = params['field'][:-5]+"_uncor.cat"
+    uncorrected_moments_cat = params['root_name']+"_uncor.cat"
     
     if not os.path.isfile(uncorrected_moments_cat):
-        measure_moms( params['FILENAME'], sex_catalogue,
+        measure_moms( params['field'], sex_catalogue,
                                  uncorrected_moments_cat, **params)
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
@@ -90,34 +90,37 @@ def main(  ):
     
     sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat, batch_run=params['batch_run'])
   
-    corrected_moments_cat = params['field'][:-5]+"_cor.cat"
+    corrected_moments_cat =params['root_name']+"_cor.cat"
 
     #Correct for the PSF
     if not os.path.isfile(corrected_moments_cat):
          psf.psf_cor( uncorrected_moments_cat,
                     corrected_moments_cat,
-                    params['FILENAME'], **params)
+                    params['field'], **params)
     
 
     corrected_moments = fits.open( corrected_moments_cat )[1].data
 
     #Correct zerpoint for the stacked num exposures
   
-    sheared_cat = params['field'][:-5]+".shears"
+    sheared_cat = params['root_name']+".shears"
     
     cs.calc_shear( corrected_moments, sheared_cat, **params)
     
 
 
-    beforeDoubles_cat = params['field'][:-5]+"_clean_withDoubles.shears"
+    beforeDoubles_cat = params['root_name']+"_clean_withDoubles.shears"
+    
+    
+    
     if params['mask']:
         mask.main( sheared_cat, uncorrected_moments_cat,
                    outFile=beforeDoubles_cat, **params)
     else:
         os.system('cp %s %s' % (sheared_cat,beforeDoubles_cat))
 
-    clean_cat = params['field'][:-5]+"_clean.shears"
-
+    clean_cat = params['root_name']+"_clean.shears"
+    
     remove_doubles.remove_object(beforeDoubles_cat, \
                     clean_cat, FWHM_to_radius=params['FWHM_to_radius'])
     
@@ -130,7 +133,8 @@ def main(  ):
 
     etr.ellipse_to_reg( clean_cat )
     
-    lenstool_file =  params['field'][:-5]+".lenstool"
+    lenstool_file = params['root_name']+".lenstool"
+    
     rtl.rrg_to_lenstool( clean_cat, params['field'], params)
   
 
