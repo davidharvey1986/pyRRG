@@ -251,7 +251,7 @@ def psf_cor(    mom_file,
             psf_moms[iMom] /= psf_moms['nExposures']
             psf_moms[iMom][psf_moms['nExposures'] == 0] = 0.
     
-    filename = '%s/psf_moments.fits' % (dirs.data_dir)
+    filename = '%s/psf_moments.fits' % (dirs.output_dir)
     print("WRITING OUT FITS FILE %s" % filename)
     
     psf_moms.writeto(filename)
