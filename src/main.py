@@ -71,7 +71,6 @@ def main(  ):
         sources = at.source_extract( params['field'], params['weight_file'],
                                          outfile=sex_catalogue,
                                          conf_path=params['dirs'].sex_files,
-                                         dataDir=params['dirs'].data_dir,
                                          zero_point=params['zero_point'],
                                          extension=params['fits_extension'])
     else:

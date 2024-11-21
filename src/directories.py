@@ -40,7 +40,7 @@ class directories( dict ):
         for iKey in keys:
 
             if not (os.path.isdir(self.__dict__[iKey])):
-                raise ValueError('Cant find directory, ensure the path is correct (%s)' % self.__dict__[iKey])
+                raise ValueError('Cant find directory for %s, ensure the path is correct (%s)' % (iKey, self.__dict__[iKey]))
             
 
             

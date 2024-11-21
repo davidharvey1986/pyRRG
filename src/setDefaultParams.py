@@ -7,6 +7,10 @@ from . import check_external_packages as cep
 from astropy.io import fits
 
 def setDefaultParams( params ):
+
+    if params["data_dir"] is None:
+        params["data_dir"] = os.getcwd()+'/'    
+
     #Check files exist
     params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
     params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
@@ -32,15 +36,21 @@ def setDefaultParams( params ):
         
     if params["sex_files"] is None:
         params['sex_files']=params['code_dir']+'/sex_files/'
-    
-    if params["psf_model_dir"] is None:
-        if params['jwst']:
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib_jwst/'
-        else:
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib/'
 
-    if params["data_dir"] is None:
-        params["data_dir"] = os.getcwd()+'/'    
+        
+    if params['jwst'] and (params["psf_model"] == 'tinytim'):
+        raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
+    if (not params['jwst']) and (params["psf_model"] == 'tinytim')or (params["psf_model"] == 'empirical'):
+        raise ValueError("You have selected HST but not a HST compatible PSF model")
+
+    params["psf_model"] = params["psf_model"].lower( )
+
+    if params["psf_model"] != "empirical":
+        if params["psf_model_dir"] is None:
+            params["psf_model_dir"]=params['code_dir']+'/psf_lib/%s' % params["psf_model"].lower()
+        
+    print("Using model from %s " % params["psf_model_dir"])
+
    
     
     params['stilts_dir'] = '/'+'/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])

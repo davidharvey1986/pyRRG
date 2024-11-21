@@ -12,7 +12,7 @@ import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
 from tqdm import tqdm
-from .superbit_psf import superbit_psf
+from .interpolate_psf import interpolate_psf
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -94,8 +94,8 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    if not kwargs['empirical_psf']:
-        if kwargs['jwst'] :
+    if kwargs['psf_model'] != 'empirical':
+        if kwargs['psf_model'].lower() != 'tinytim' :
             scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
             psf_detectors = np.array([ i['detector'][0][:5] for i in meta])
         else:
@@ -182,8 +182,8 @@ def psf_cor(    mom_file,
         #iImage, interpolate the psf from the ref fram of the single
         #image  to the X,Y of the drizzled image
           
-        if not kwargs['empirical_psf']:
-            if kwargs['jwst'] :
+        if kwargs['psf_model'] != 'empirical':
+            if  kwargs['psf_model'] != 'tinytim' :
                 image_detector = fits.open(
                     images[iImage])[
                         kwargs['fits_extension']
@@ -199,8 +199,8 @@ def psf_cor(    mom_file,
             else:
                 scat_use = scat
     
-        if kwargs['empirical_psf']:
-            iPsfMoms = superbit_psf( galaxy_moms[inFrame], star_moms, degree=4 )
+        if kwargs["psf_model"] == 'empirical':
+            iPsfMoms = interpolate_psf( galaxy_moms[inFrame], star_moms, degree=4 )
         else:
             iPsfMoms=\
               acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
