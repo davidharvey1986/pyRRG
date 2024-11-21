@@ -4,12 +4,20 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def interpolate_psf( galaxy_moms, star_moms, degree=2 ):
-    
+def empirical_psf( galaxy_moms, star_moms, degree=2 ):
+
+
     radius = np.sqrt( ( galaxy_moms.xx + galaxy_moms.yy)/2.)
     
-    moms = moments( galaxy_moms['x'], galaxy_moms['y'], galaxy_moms['radius'], degree )
-    star_ell = np.sqrt( star_moms['e1']**2 + star_moms['e2']**2 )
+    moms = moments(
+        galaxy_moms['x'],
+        galaxy_moms['y'],
+        galaxy_moms['radius'],
+        degree
+    )
+
+    star_ell = np.sqrt( star_moms['e1']**2 + \
+                        star_moms['e2']**2 )
   
     for iMom in moms.keys():
         
@@ -17,14 +25,22 @@ def interpolate_psf( galaxy_moms, star_moms, degree=2 ):
             continue
             
 
-        no_ninety_nines = (star_moms[iMom] != -99) & ( star_moms[iMom] < np.quantile( star_moms[iMom], 0.68)) \
-            & ( star_ell < np.quantile( star_ell, 0.90))
+        no_ninety_nines = \
+            (star_moms[iMom] != -99) & \
+            ( star_moms[iMom] < np.quantile( star_moms[iMom], 0.68)) & \
+            ( star_ell < np.quantile( star_ell, 0.90))
         
                                                       
-        interpolate_fct = SmoothBivariateSpline( star_moms['x'][no_ninety_nines], star_moms['y'][no_ninety_nines], 
-                                                star_moms[iMom][no_ninety_nines], kx=degree, ky=degree)
+        interpolate_fct = SmoothBivariateSpline(
+            star_moms['x'][no_ninety_nines],
+            star_moms['y'][no_ninety_nines], 
+            star_moms[iMom][no_ninety_nines],
+            kx=degree, ky=degree
+        )
         
-        moms[iMom][:] = interpolate_fct.ev(galaxy_moms['x'], galaxy_moms['y'] )[:][:]
+        moms[iMom][:] = interpolate_fct.ev(
+            galaxy_moms['x'], galaxy_moms['y']
+        )[:][:]
     
     
     fig, ax = plt.subplots( 3, 1)

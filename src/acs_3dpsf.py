@@ -233,12 +233,12 @@ def acs_3dpsf_reconstruct( acs_3dpsf_coeffs, x, y, focus, radius=None, verbose=F
 def acs_3dpsf( x, y, focus, radius, scat, 
                 acs_3dpsf_coeffs=None, 
                 degree=np.array([3,2,2]),
-             jwst=False):
+               psf_model='tinytim'):
 
     # Fit the PSF
-    if jwst:
+    if psf_model == 'webbpsf':
         acs_moms = interpolate_jwst_psf_moms( x, y, radius, scat )
-    else:
+    elif psf_model == 'tinytim':
         if acs_3dpsf_coeffs is None:
             acs_3dpsf_coeffs=acs_3dpsf_fit(scat, degree=degree)
         

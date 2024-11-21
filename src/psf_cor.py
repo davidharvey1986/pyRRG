@@ -12,7 +12,7 @@ import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
 from tqdm import tqdm
-from .interpolate_psf import interpolate_psf
+from .empirical_psf import empirical_psf
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -182,34 +182,43 @@ def psf_cor(    mom_file,
         #iImage, interpolate the psf from the ref fram of the single
         #image  to the X,Y of the drizzled image
           
-        if kwargs['psf_model'] != 'empirical':
-            if  kwargs['psf_model'] != 'tinytim' :
-                image_detector = fits.open(
+
+        if  kwargs['psf_model'] == 'webbpsf' :
+            image_detector = fits.open(
                     images[iImage])[
                         kwargs['fits_extension']
                     ].header['DETECTOR'][:5]
-                detector_num = np.arange(
-                    len(
+            detector_num = np.arange(len(
                         psf_detectors))[
                             psf_detectors
                             ==
                             image_detector
                         ][0]
-                scat_use = scat[detector_num]
-            else:
-                scat_use = scat
+            scat_use = scat[detector_num]
+        elif kwargs['psf_model'] == 'tinytim':
+            scat_use = scat
+        elif kwargs['psf_model'] == 'empirical':
+            scat_use = star_moms
+        elif kwargs['psf_model'] == 'webb_psfex':
+            scat_use = scat
     
-        if kwargs["psf_model"] == 'empirical':
-            iPsfMoms = interpolate_psf( galaxy_moms[inFrame], star_moms, degree=4 )
+        if (kwargs["psf_model"] == 'empirical') or \
+           (kwargs["psf_model"] == 'webb_psfex'):
+            iPsfMoms = empirical_psf( galaxy_moms[inFrame], scat_use, degree=4 )
         else:
             iPsfMoms=\
-              acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
-                                   galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
-                                    np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                                    radius, scat_use, degree=[3,2,2], jwst=kwargs['jwst']  )
+              acs_3dpsf.acs_3dpsf(
+                  galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
+                  galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
+                  np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
+                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model']
+              )
         
         #now rotate the moments according to the angle in orient
-        iPsfMomsRot = rm.rotate_moments( iPsfMoms, galaxy_moms[iImage_name+'_ORIENTAT'][inFrame])
+        iPsfMomsRot = rm.rotate_moments(
+            iPsfMoms,
+            galaxy_moms[iImage_name+'_ORIENTAT'][inFrame]
+        )
         
         #CHECK THAT ANGLES ARE CORRECT HERE PLEASE
         
