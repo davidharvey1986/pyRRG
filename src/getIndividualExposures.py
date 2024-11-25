@@ -37,7 +37,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
         exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
 
     fileCheck = []
-    for iFile in exposureNameList:
+    for iFile in np.atleast_1d(np.exposureNameList):
         if not os.path.isfile(iFile):
             print("%s file not found" % iFile )
         else :
@@ -56,7 +56,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
         else:
             raise ValueError("Not all individual files found")
 
-    return exposureNameList
+    return np.atleast_1d(exposureNameList)
                 
             
                 
