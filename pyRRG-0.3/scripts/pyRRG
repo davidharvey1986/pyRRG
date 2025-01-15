@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+import sys
+import pyRRG
+import argparse
+import json 
+
+description = "pyRRG weak lensing shape measurement code. Measuring the 2nd and 4th order moments it uses a TinyTim model to correct for PSF distortions. It is invariant to number exposures, ortientation of the drizzle images. Using a machine learning algorithm it automatically star and galaxy classifies, howeve the user is able to do this manually if not accurate enough. For more see https://arxiv.org/abs/astro-ph/9905090. For bugs please report them to https://github.com/davidharvey1986/pyRRG or contact harvey@lorentz.leidenuniv.nl"
+parser = argparse.ArgumentParser("pyRRG",description=description)
+parser.add_argument("FILENAME", help="Absolute path of the input filename to be run through pyRRG", type=str)
+parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
+parser.add_argument('-j', '--jwst', action='store_true')
+parser.add_argument('-w','--weight_file', help="Image weight file", default=None)
+parser.add_argument('-m','--mask', help="Mask stars out of the catalogue",  action='store_true')
+parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
+parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
+parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
+parser.add_argument('--sex_files', help="Directory in which the sex_files are", default=None, type=str)
+parser.add_argument('--expThresh', help="The minimum number of exposure that a galaxy has to have covering it to be included in the catalogue.", default=2, type=int)
+parser.add_argument('--mag_cut_upper', help="Upper (faint end) magnitude cut", default=40., type=float)
+parser.add_argument('--mag_cut_lower', help="Lower (bright end) magnitude cut", default=0., type=float)
+parser.add_argument('--size_cut_upper', help="Upper galaxy size cuts", default=30., type=float)
+parser.add_argument('--size_cut_lower', help="Lower galaxy size cuts", default=3., type=float)
+parser.add_argument('--min_rad', help="The minumum radius for a galaxy to be included", default=6., type=float)
+parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
+parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
+parser.add_argument('--fits_extension','-f', help="Fits extension to use", default=None, type=int)
+parser.add_argument('--expTimeName', help="Header key for the exposure time", default=None, type=str)
+parser.add_argument('--exposureNameList', help="A list of the exposure names that went in to the drizzle file", default=None, type=str)
+parser.add_argument('--orientation_header', help="The header keyword for the orientation of the image wrt to wcs", default=None, type=str)
+parser.add_argument('--batch_run', '-b', help="Run as a batch so ignore the star-gal separation prompt", action='store_true')
+parser.add_argument('--FWHM_to_radius', help="How many radii separation of each object", default=1, type=float)
+parser.add_argument('--cluster_members_cat', help="Input fits table of cluster members that must include RA and DEC in the table", default=None, type=str)
+
+
+
+
+
+
+args = parser.parse_args()
+
+print(("Running pyRRG version %s" % pyRRG.__version__))
+
+args_dict = vars(args) 
+args_dict['size_cut'] = [ args_dict['size_cut_lower'], args_dict['size_cut_upper']]
+args_dict['mag_cut'] = [ args_dict['mag_cut_lower'], args_dict['mag_cut_upper']]
+
+
+json.dump(args_dict, open("pyRRG.params","w"))
+
+pyRRG.main()
