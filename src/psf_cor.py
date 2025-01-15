@@ -202,9 +202,24 @@ def psf_cor(    mom_file,
         elif kwargs['psf_model'] == 'webb_psfex':
             scat_use = scat
     
-        if (kwargs["psf_model"] == 'empirical') or \
-           (kwargs["psf_model"] == 'webb_psfex'):
-            iPsfMoms = empirical_psf( galaxy_moms[inFrame], scat_use, degree=4 )
+        if (kwargs["psf_model"] == 'empirical'):
+            iPsfMoms = empirical_psf(
+                galaxy_moms[inFrame],
+                scat_use,
+                degree=4,
+                interpolation=kwargs['psf_interpolation'],
+                clean=True
+            )
+            
+        elif (kwargs["psf_model"] == 'webb_psfex'):
+            iPsfMoms = empirical_psf(
+                galaxy_moms[inFrame],
+                scat_use,
+                degree=4,
+                interpolation=kwargs['psf_interpolation'],
+                clean=False
+            )
+            print("MEAN E1 IS ", np.mean(iPsfMoms['e1']))
         else:
             iPsfMoms=\
               acs_3dpsf.acs_3dpsf(
@@ -262,7 +277,7 @@ def psf_cor(    mom_file,
     
     filename = '%s/psf_moments.fits' % (dirs.output_dir)
     print("WRITING OUT FITS FILE %s" % filename)
-    
+
     psf_moms.writeto(filename)
         
     #Refind e1 and e2, assuming we want  <q11>-<q22>/<q11>+<q22> not <e1>

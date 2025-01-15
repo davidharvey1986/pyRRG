@@ -43,7 +43,7 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, b
 
    
     #this first attempt will get the stars and galaxies automatically
-    galStarObject = galStar( sources, redoML=redoML )
+    galStarObject = galStar( sources, redoML=redoML, batch_run=batch_run)
 
         
         
@@ -94,13 +94,12 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, b
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
-        def __init__( self, sources, include_sat=False, redoML=False ):
+        def __init__( self, sources, include_sat=False, redoML=False, batch_run=False):
 
             #These store the plotted points and the order they are plotted
             #so they can be removed if the user decideds to undo a line
 
             self.generateNumpyArrayWithNoNans( sources )
-
             self.include_sat = include_sat
             self.star_points = []
             self.gal_points = []
@@ -108,7 +107,7 @@ class galStar():
             self.noise_points = []
             self.manual=False
             self.alreadyDefinedStarGalaxySeparation(sources)
-            
+            self.batch_run=batch_run
             if (not self.fieldExists) | (redoML):
                 self.defaults( sources )
             else:
@@ -143,7 +142,7 @@ class galStar():
                 print("Cannot Random Forest, please either contact david.harvey@epfl.ch or manually continue")
                 self.galStarFlag = np.zeros(len(sources))-2
                 self.generate_axes( sources)
-                self.get_params_interactively( sources )    
+                self.get_params_interactively( sources )
                 self.manual = True
             else:
                 galStarFlagClassifier =  \
@@ -226,9 +225,22 @@ class galStar():
                 filename : the name of string that the settings will be saved to
                 sources : a fits_record of the objects in the catalogue
             '''
-            self.StarsLowCut = 0.
-            self.StarsUpCut = 100
-            self.GalLowCut = 0
+
+            
+            self.StarsLowCut = 13.106699751861044
+            self.StarsUpCut =  20.905352711804323
+
+            self.GalLowCut = 13.886565047855374 
+
+            self.GradGal = 0.862233005090149
+            self.IntGal = -1.626263137783896
+
+            self.GradStarsLowCut = 0.9746351209765847 
+            self.IntStarsLowCut = -5.730010351568183
+
+            self.get_stars(sources)
+            self.get_galaxies(sources)
+
             
         def get_params_interactively( self, sources ):
             '''
@@ -240,6 +252,11 @@ class galStar():
             '''
             #first get the default params
             self.defaultsInteractiveParams(  sources )
+
+            if self.batch_run:
+                self.plot_stars_galaxies( sources )
+                plt.savefig("star_gal_class.pdf")
+                return
             #Write on the plot some useful directions for the user
             self.ax3.annotate( 'Use double left click to select point',\
                                        xy=( 0.01, 0.9), \
@@ -544,7 +561,7 @@ def rec2array( recArray):
 
 
     includeNames = \
-      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+      ['MAG_AUTO','gal_size','MU_MAX','RADIUS','FLUX_AUTO',\
            'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
       'ell','skymed','exp_time','skysd']
    
