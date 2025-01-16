@@ -238,10 +238,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
                  )
     orig_cols = data.columns
     new_cols = fits.ColDefs(cols)
-    hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
-    clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
-        shear_catalog.split('.')[1]
-    hdu.writeto(clean_catalog, overwrite=True)
+    clean_hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
 
        
 
@@ -260,7 +257,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
 
     ##-------------------------------start masking-------------------------------
     if mask_stars:
-        Shears=fits.open(clean_catalog)[1].data
+        Shears=clean_hdu.data
     ##go through the sources list:
         for i in tqdm.tqdm(np.arange(len(Shears['ra']))):
             xl=Shears['X_IMAGE'][i]
@@ -280,7 +277,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
         Shears_remove=Shears[Shears['clean']==0]
 
     else:
-        Shears_remove=fits.open(clean_catalog)[1].data
+        Shears_remove=clean_hdu.data
 
     fits.writeto(outFile, Shears_remove, overwrite=True, output_verify='ignore' )
     
