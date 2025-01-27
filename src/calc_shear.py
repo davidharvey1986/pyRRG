@@ -142,7 +142,11 @@ def calc_shear( corrected_moments, outfile, **kwargs):
         fits_cols.append( fits.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
         
     newcol = [ fits.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
-               fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2) ]
+               fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
+               fits.Column(name='g1', format=g1.dtype, array=g1)
+                fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda)
+                fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
+              ]
 
  
     hdu = fits.BinTableHDU.from_columns(fits_cols + newcol)
