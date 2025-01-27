@@ -34,21 +34,21 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 
     '''
     if 'min_rad' not in kwargs.keys():
-        kwargs['min_rad'] = 6.
+        kwargs['min_rad'] = 0.
     if 'size_cut' not in kwargs.keys():
         kwargs['size_cut'] = [0., 100.]
     
     if 'mag_cut' not in kwargs.keys():
-        kwargs['mag_cut'] = [22.5, 30]
+        kwargs['mag_cut'] = [0, 300]
                              
     if 'signal_noise_cut' not in kwargs.keys():
-        kwargs['signal_noise_cut'] = 3.
+        kwargs['signal_noise_cut'] = 0.
                              
     if 'rhodes_factor' not in kwargs.keys():
         kwargs['rhodes_factor']=0.86
         
     if 'expThresh' not in kwargs.keys():
-        kwargs['expThresh'] = 4
+        kwargs['expThresh'] = 0
         
     if 'stat_type' not in kwargs.keys():
         kwargs['stat_type']='median'
@@ -140,11 +140,13 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     fits_cols = []
     for iName in momc.columns.names:
         fits_cols.append( fits.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
-        
+
+
+    g1_arr = np.zeros(len(gamma1))+G1
     newcol = [ fits.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
                fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
-               fits.Column(name='g1', format=g1.dtype, array=g1)
-                fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda)
+               fits.Column(name='g1', format=g1_arr.dtype, array=g1_arr),
+                fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
                 fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
               ]
 
