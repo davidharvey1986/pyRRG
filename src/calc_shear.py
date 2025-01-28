@@ -1,5 +1,7 @@
 import numpy as np
 from astropy.io import fits
+from scipy.optimize import curve_fit
+from scipy.stats import binned_statistic
 
 def calc_shear( corrected_moments, outfile, **kwargs):
     '''
@@ -52,8 +54,7 @@ def calc_shear( corrected_moments, outfile, **kwargs):
         
     if 'stat_type' not in kwargs.keys():
         kwargs['stat_type']='median'
-                
-                
+        
     #Need to filter as i determine mean quantities that
     #shoudlnt be used from bad galaxies
     signal_noise = corrected_moments['FLUX_AUTO'] / \
@@ -119,18 +120,46 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     ellipticity_sqr = momc['e1']**2+momc['e2']**2
     e_dot_u = momc['e1']*u1+momc['e2']*u2
     e_cross_u = momc['e1']*u2-momc['e2']*u1
-
+    if kwargs['verbose']:
+        print("Using STAT TYPE : %s" % kwargs['stat_type'])
+    g1_gal = 2-ellipticity_sqr- 0.5*gal_lambda-0.5*e_dot_u
+    
     if kwargs['stat_type'] == 'mean':
         #These are the mean G1, G2
         G2 = 0.5*np.nanmean(e_cross_u)
         G1 = 2-np.nanmean(ellipticity_sqr)-\
             0.5*np.nanmean(gal_lambda)-\
             0.5*np.nanmean(e_dot_u)
+        g1_model = np.zeros(len(gal_lambda))+G1
     elif kwargs['stat_type'] =='median':
         #The median
         G2 = 0.5*np.nanmedian(e_cross_u)
         
         G1 = 2-np.nanmedian(ellipticity_sqr)- 0.5*np.nanmedian(gal_lambda)-0.5*np.nanmedian(e_dot_u)
+        g1_model = np.zeros(len(gal_lambda))+G1
+    elif kwargs['stat_type'] =='snr':
+
+        snr = momc['FLUX_AUTO']/momc['FLUXERR_AUTO']
+
+        snr = snr[np.isfinite(g1_gal)]
+        g1_gal = g1_gal[np.isfinite(g1_gal)]
+
+
+        g1_gal_cut=g1_gal[snr<30]
+        snr_cut = snr[snr<30]
+        is_not_nan = np.isfinite(snr_cut*g1_gal_cut)
+
+        try:
+            popt, pcov = curve_fit(
+                g1_func,
+                snr_cut[is_not_nan],
+                g1_gal_cut[is_not_nan])
+
+        except:
+            raise ValueError("Failed to fit - consisder a snr cut on the data")
+
+        G1 = g1_func( snr, *popt)
+        g1_model = G1
     else:
         raise ValueError("Stat type not recognised")
     
@@ -142,10 +171,11 @@ def calc_shear( corrected_moments, outfile, **kwargs):
         fits_cols.append( fits.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
 
 
-    g1_arr = np.zeros(len(gamma1))+G1
+
     newcol = [ fits.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
                fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
-               fits.Column(name='g1', format=g1_arr.dtype, array=g1_arr),
+               fits.Column(name='g1_gal', format=g1_gal.dtype, array=g1_gal),
+               fits.Column(name='g1_model', format=g1_model.dtype, array=g1_model),
                 fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
                 fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
               ]
@@ -154,3 +184,6 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     hdu = fits.BinTableHDU.from_columns(fits_cols + newcol)
     hdu.writeto(outfile, overwrite=True,output_verify='ignore')
 
+def g1_func( snr, a, b, c, d):
+
+    return a + b*np.arctan( ( snr - c)/d)
