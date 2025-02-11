@@ -7,7 +7,13 @@ import numpy as np
 from astropy.io import fits
 import sklearn
 
-def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, batch_run=False):
+def star_galaxy_separation( sources,
+                            outfile,
+                            include_sat=False,
+                            redoML=False,
+                            batch_run=False,
+                            verbose=False
+):
 
     '''
     PURPORSE : To separate out the stars and galaxies in the input
@@ -90,7 +96,15 @@ def star_galaxy_separation( sources, outfile, include_sat=False, redoML=False, b
         sources['galStarFlag'] = galStarObject.galStarFlag
         fits.writeto(  outfile, sources, overwrite=True )
 
-        
+    if verbose:
+        galStarObject.generate_axes( sources )
+        galStarObject.plot_stars_galaxies( sources )
+        plt.savefig("star_gal_class.pdf")
+
+        if (overwrite =='n') | (overwrite=='m'):
+            print("Finished separating : locus information is as follows:")
+            galStarObject.report_locus()
+      
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
@@ -118,7 +132,28 @@ class galStar():
                     self.generate_axes( sources )   
                     self.plot_stars_galaxies(  sources )                   
                 
-  
+        def report_locus( self ):
+            print( "StarsLowCut = %0.5f" %  self.StarsLowCut )
+            print( "StarsUpCut = %0.5f" %  self.StarsUpCut )
+            print( "GalLowCut = %0.5f" %  self.GalLowCut )
+            print( "GradGal = %0.5f" %  self.GradGal )
+            print( "IntGal = %0.5f" %  self.IntGal )
+            print( "GradStarsLowCut = %0.5f" %  self.GradStarsLowCut )
+            print( "IntStarsLowCut = %0.5f" %  self.IntStarsLowCut )
+            
+            self.StarsLowCut = 14.91068
+            self.StarsUpCut =  21.06389
+
+            self.GalLowCut = 16.14132
+
+            self.GradGal = 0.93908
+            self.IntGal = -1.93295
+
+            self.GradStarsLowCut =  1.01017
+            self.IntStarsLowCut = -4.18013
+
+
+
         def alreadyDefinedStarGalaxySeparation( self, sources ):
                 checkFieldNames = np.array([ 'galStarFlag' in i for i in sources.columns.names])
                 self.fieldExists = np.any(checkFieldNames)
@@ -227,20 +262,24 @@ class galStar():
             '''
 
             
-            self.StarsLowCut = 13.106699751861044
-            self.StarsUpCut =  20.905352711804323
+            self.StarsLowCut = 14.91068
+            self.StarsUpCut =  21.06389
 
-            self.GalLowCut = 13.886565047855374 
+            self.GalLowCut = 16.14132
 
-            self.GradGal = 0.862233005090149
-            self.IntGal = -1.626263137783896
+            self.GradGal = 0.93908
+            self.IntGal = -1.93295
 
-            self.GradStarsLowCut = 0.9746351209765847 
-            self.IntStarsLowCut = -5.730010351568183
+            self.GradStarsLowCut =  1.01017
+            self.IntStarsLowCut = -4.18013
 
             self.get_stars(sources)
             self.get_galaxies(sources)
 
+            if self.batch_run:
+                self.plot_stars_galaxies( sources )
+                plt.savefig("star_gal_class.pdf")
+                return
             
         def get_params_interactively( self, sources ):
             '''
@@ -252,10 +291,7 @@ class galStar():
             '''
             #first get the default params
             self.defaultsInteractiveParams(  sources )
-
             if self.batch_run:
-                self.plot_stars_galaxies( sources )
-                plt.savefig("star_gal_class.pdf")
                 return
             #Write on the plot some useful directions for the user
             self.ax3.annotate( 'Use double left click to select point',\
@@ -442,7 +478,7 @@ class galStar():
             Plot the stars in yellow stars
             Plot the galaxies in red points
             '''
-
+            
             if len(self.star_points) > 0:
                 iStar_points = self.star_points[ -1 ]
                 iGal_points = self.gal_points[ -1]
@@ -460,12 +496,7 @@ class galStar():
                 
             #Now plot the stars and galaxies and store the plotted points in
             #star_points and gal_points
-            self.star_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
-                                                         sources['MU_MAX'][self.galStarFlag==0], 'y*'),
-                                           self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
-                                                             sources['gal_size'][self.galStarFlag==0], 'y*', label='Stars'),
-                                           self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
-                                                             sources['RADIUS'][self.galStarFlag==0], 'y*') ])
+            
                                                              
             self.gal_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==1], \
                                                         sources['MU_MAX'][self.galStarFlag==1], 'r.'  ),
@@ -481,6 +512,13 @@ class galStar():
                                                             sources['gal_size'][self.galStarFlag==-1], 'g,', label='Noise' ),
                                           self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==-1], \
                                                             sources['RADIUS'][self.galStarFlag==-1], 'g,' )])
+            
+            self.star_points.append( [ self.axes[0].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+                                                         sources['MU_MAX'][self.galStarFlag==0], 'y*'),
+                                           self.axes[1].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+                                                             sources['gal_size'][self.galStarFlag==0], 'y*', label='Stars'),
+                                           self.axes[2].plot( sources['MAG_AUTO'][self.galStarFlag==0], \
+                                                             sources['RADIUS'][self.galStarFlag==0], 'y*') ])
 
             self.axes[1].legend()
 
