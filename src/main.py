@@ -87,7 +87,11 @@ def main(  ):
  
 
     
-    sgs.star_galaxy_separation( uncorrected_moments, outfile=uncorrected_moments_cat, batch_run=params['batch_run'])
+    sgs.star_galaxy_separation( uncorrected_moments,
+                                outfile=uncorrected_moments_cat,
+                                batch_run=params['batch_run'],
+                                verbose=params['verbose']
+                               )
   
     corrected_moments_cat =params['root_name']+"_cor.cat"
 

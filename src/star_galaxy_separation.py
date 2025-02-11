@@ -44,6 +44,7 @@ def star_galaxy_separation( sources,
     I sack of using the galStar as teh savefile as will pass the sourecs through with flags in it.
     '''
 
+
     plt.ion()
     object_indexes = np.arange( len(sources['X_IMAGE']) )
 
