@@ -10,7 +10,7 @@ import sklearn
 def star_galaxy_separation( sources,
                             outfile,
                             include_sat=False,
-                            redoML=False,
+                            redo_separation=False,
                             batch_run=False,
                             verbose=False
 ):
@@ -49,7 +49,7 @@ def star_galaxy_separation( sources,
 
    
     #this first attempt will get the stars and galaxies automatically
-    galStarObject = galStar( sources, redoML=redoML, batch_run=batch_run)
+    galStarObject = galStar( sources, redo_separation=redo_separation, batch_run=batch_run)
 
         
         
@@ -71,8 +71,8 @@ def star_galaxy_separation( sources,
         print('Writing over gal file and removing j*uncor.cat')
         os.system('rm -fr j*uncor.cat *_cor.cat')
     elif overwrite == 'm':
-        print('Reseparating Automatically')
-        star_galaxy_separation( sources, outfile, include_sat=False, redoML=True)
+        print('Reseparating')
+        star_galaxy_separation( sources, outfile, include_sat=False, redo_separation=True)
     elif overwrite == 'n':
         #If i reseparate i will want to remeasure all stars and galaxies
         print('Reseparating Interactively')
@@ -97,10 +97,12 @@ def star_galaxy_separation( sources,
         fits.writeto(  outfile, sources, overwrite=True )
 
     if verbose:
-        galStarObject.generate_axes( sources )
+        galStarObject.generate_axes( sources, show=False )
         galStarObject.plot_stars_galaxies( sources )
         plt.savefig("star_gal_class.pdf")
-
+        plt.show()
+        print("Separated in to %i galaxies and %i stars" %
+              (sum(galStarObject.galStarFlag==1), sum(galStarObject.galStarFlag==0)))
         if (overwrite =='n') | (overwrite=='m'):
             print("Finished separating : locus information is as follows:")
             galStarObject.report_locus()
@@ -108,7 +110,7 @@ def star_galaxy_separation( sources,
 #This class is where all the meat of the code is run including the interactive plotting
 class galStar():
 
-        def __init__( self, sources, include_sat=False, redoML=False, batch_run=False):
+        def __init__( self, sources, include_sat=False, redo_separation=False, batch_run=False):
 
             #These store the plotted points and the order they are plotted
             #so they can be removed if the user decideds to undo a line
@@ -122,7 +124,7 @@ class galStar():
             self.manual=False
             self.alreadyDefinedStarGalaxySeparation(sources)
             self.batch_run=batch_run
-            if (not self.fieldExists) | (redoML):
+            if (not self.fieldExists) | (redo_separation):
                 self.defaults( sources )
             else:
                 self.galStarFlag = sources['galStarFlag']
@@ -141,7 +143,7 @@ class galStar():
             print( "GradStarsLowCut = %0.5f" %  self.GradStarsLowCut )
             print( "IntStarsLowCut = %0.5f" %  self.IntStarsLowCut )
             
-            self.StarsLowCut = 14.91068
+            self.StarsLowCut = 12.91068
             self.StarsUpCut =  21.06389
 
             self.GalLowCut = 16.14132
@@ -176,7 +178,8 @@ class galStar():
             if not os.path.isfile( codeDir+'/'+rfModel ):
                 print("Cannot Random Forest, please either contact david.harvey@epfl.ch or manually continue")
                 self.galStarFlag = np.zeros(len(sources))-2
-                self.generate_axes( sources)
+                if not self.batch_run:
+                    self.generate_axes( sources)
                 self.get_params_interactively( sources )
                 self.manual = True
             else:
@@ -196,7 +199,7 @@ class galStar():
             self.sourcesArray = rec2array( sources )
             self.nanCheck = np.isfinite(np.sum(self.sourcesArray, axis=1))
             
-        def generate_axes( self, sources ):
+        def generate_axes( self, sources, show=True ):
             '''
             Generate the axes and label the three plots 
             that will be used to separaet the stars and galaxies
@@ -229,7 +232,8 @@ class galStar():
             self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'g,')
             self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'g,')
             self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'g,')
-            plt.show(block=False)
+            if show:
+                plt.show(block=False)
             
         def plot_boundaries( self, sources ):
             '''
@@ -262,7 +266,7 @@ class galStar():
             '''
 
             
-            self.StarsLowCut = 14.91068
+            self.StarsLowCut = 12.91068
             self.StarsUpCut =  21.06389
 
             self.GalLowCut = 16.14132
@@ -275,11 +279,6 @@ class galStar():
 
             self.get_stars(sources)
             self.get_galaxies(sources)
-
-            if self.batch_run:
-                self.plot_stars_galaxies( sources )
-                plt.savefig("star_gal_class.pdf")
-                return
             
         def get_params_interactively( self, sources ):
             '''
@@ -536,7 +535,7 @@ class galStar():
                  ( sources['MU_MAX'] > self.GalLowCut )
 
             self.galStarFlag[ self.galaxies ] = 1
-                                
+
         def get_stars( self, sources):
             '''
             Using the boundaries set determien which of the sourecs
