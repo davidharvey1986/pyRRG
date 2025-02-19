@@ -40,7 +40,8 @@ def setDefaultParams( params ):
         
     if params['jwst'] and (params["psf_model"] == 'tinytim'):
         raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
-    if (not params['jwst']) and (params["psf_model"] == 'tinytim')or (params["psf_model"] == 'empirical'):
+    
+    if (not params['jwst']) and (params["psf_model"] != 'tinytim') or (params["psf_model"] == 'empirical'):
         raise ValueError("You have selected HST but not a HST compatible PSF model")
 
     params["psf_model"] = params["psf_model"].lower( )
@@ -80,10 +81,12 @@ def setDefaultParams( params ):
         else:
             params['fits_extension'] = 0
         try:
-            test = fits.open( params['FILENAME'] )[ params['fits_extension']]
+            test = fits.open( params["field"] )[ params['fits_extension']]
             assert len(test.data.shape) == 2, "Data does not seem to be an image, consider fits extension"
         except:
-            raise ValueError("Failed to open fits file extension consider --fits_extension keyword")
+            raise ValueError("Failed to open fits file (%s) with"
+                             "extension (%i) consider --fits_extension keyword" %
+                             ( params['FILENAME'],  params['fits_extension']))
             
             
                 
@@ -101,3 +104,4 @@ def setDefaultParams( params ):
             
     json.dump(params, open("pyRRG.params","w"))
     return params
+
