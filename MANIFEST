@@ -195,3 +195,4 @@ lib/asciidata/asciifunction.py
 lib/asciidata/asciiheader.py
 lib/asciidata/asciisorter.py
 lib/asciidata/asciiutils.py
+src/write_rrgparams_to_header.py

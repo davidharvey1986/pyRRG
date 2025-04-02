@@ -23,18 +23,20 @@ def getIndividualExposures( verbose=True, **kwargs ):
     if 'FILENAME' not in kwargs.keys():
         raise ValueError("Please state FILENAME in kwargs")
         
-    
-    if kwargs['exposureNameList'] is None:
-        if kwargs['jwst']:
-            exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
+    if not kwargs['no_exposures']:
+        if kwargs['exposureNameList'] is None:
+            if kwargs['jwst']:
+                exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
+            else:
+                inputHeader = fits.open(kwargs['FILENAME'])[0].header
+                exposureNameList = \
+                    np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
+                                for i in inputHeader.keys() \
+                                if 'DATA' in i ])
         else:
-            inputHeader = fits.open(kwargs['FILENAME'])[0].header
-            exposureNameList = \
-              np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
-                      for i in inputHeader.keys() \
-                      if 'DATA' in i ])
+            exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
     else:
-        exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
+        exposureNameList=kwargs["field"]
 
     fileCheck = []
     for iFile in np.atleast_1d(exposureNameList):

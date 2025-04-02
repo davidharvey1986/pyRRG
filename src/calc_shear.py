@@ -183,8 +183,8 @@ def calc_shear( corrected_moments, outfile, **kwargs):
                fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
                fits.Column(name='g1_gal', format=g1_gal.dtype, array=g1_gal),
                fits.Column(name='g1_model', format=g1_model.dtype, array=g1_model),
-                fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
-                fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
+               fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
+               fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
               ]
 
  

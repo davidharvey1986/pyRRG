@@ -49,8 +49,13 @@ def rrg_to_lenstool( rrg_catalogue,
     gamma = 2.*np.sqrt(  MaskedRRGCat.gamma2**2 + MaskedRRGCat.gamma1**2)
 
     #For a2-b^2 ellipticuity e= e* + 2g
-    size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
-        image[rrgParams['fits_extension']].header['CD2_2']*3600.
+    if 'CD2_2' in list(image[rrgParams['fits_extension']].header.keys()):
+        size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
+            image[rrgParams['fits_extension']].header['CD2_2']*3600.
+    else:
+        print("Cant find pixel scale assuming 30 mili-arcseconds")
+        size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
+            0.030*3600.
 
     semi_major = size*np.sqrt(1.+gamma) ##RRG returns shear(gamma) and lenstool defines a=sqrt(1+e),b=sqrt(1-e), where e~2gamma. Thus,we define a=(1.+gamma) and b=(1.-gamma) here to match the definition of lenstool input.    
     semi_minor = size*np.sqrt(1.-gamma)

@@ -17,6 +17,7 @@ from . import masking_star as mask
 from . import double_detection_removal as remove_doubles
 from .setDefaultParams import setDefaultParams
 from .remove_galaxy import remove_galaxy_members
+from .write_rrgparams_to_header import write_rrgparams_to_header
 import sys
 import json
 
@@ -90,8 +91,7 @@ def main(  ):
     sgs.star_galaxy_separation( uncorrected_moments,
                                 outfile=uncorrected_moments_cat,
                                 batch_run=params['batch_run'],
-                                verbose=params['verbose']
-                               )
+                                verbose=params['verbose'])
   
     corrected_moments_cat =params['root_name']+"_cor.cat"
 
@@ -134,6 +134,8 @@ def main(  ):
     if not params['batch_run']:
         plot.plot_shears( clean_cat )
 
+    write_rrgparams_to_header( clean_cat, params )
+    
     etr.ellipse_to_reg( clean_cat )
     
     lenstool_file = params['root_name']+".lenstool"
