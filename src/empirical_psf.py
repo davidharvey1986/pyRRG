@@ -4,8 +4,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
-
-def empirical_psf( galaxy_moms, star_moms, degree=2, plot=False, interpolation='spline', clean=True ):
+import pickle as pkl
+import os
+def empirical_psf( galaxy_moms,
+                   star_moms,
+                   degree=2,
+                   plot=False,
+                   interpolation='spline',
+                   clean=True, **kwargs ):
 
 
     radius = np.sqrt( ( galaxy_moms.xx + galaxy_moms.yy)/2.)
@@ -66,7 +72,7 @@ def empirical_psf( galaxy_moms, star_moms, degree=2, plot=False, interpolation='
         if interpolation.lower() == 'nearest':
             x = star_moms['x'][no_ninety_nines]
             y = star_moms['y'][no_ninety_nines]
-            print( x )
+
             interp = NearestNDInterpolator(
                 (x, y),
                 star_moms[iMom][no_ninety_nines]
@@ -76,6 +82,35 @@ def empirical_psf( galaxy_moms, star_moms, degree=2, plot=False, interpolation='
                 (galaxy_moms['x'], galaxy_moms['y']))
             
 
+        if interpolation.lower() == 'callable':
+            psf_model_path = "%s/%s/psf_model.pkl" % (
+                kwargs['psf_model_dir'],kwargs['wavelength']
+            )
+            if not os.path.isfile( psf_model_path ):
+                raise ValueError("Cant find psf model in %s" % psf_model_path)
+
+            try:
+                functions = pkl.load(open(psf_model_path,'rb'))
+            except:
+                raise ValueError("Cant open psf model please ensure it is a pickle file")
+
+            assert  isinstance(functions, dict), "Contents of psf model is not a dictionary"
+
+            if iMom not in list(functions.keys()):
+                raise ValueError("Cant find %s in psf_model keys" % iMom)
+            
+            assert callable(functions[iMom]), "%s of psf model is not callable" % iMom
+
+            if 'args' in functions.keys():
+                args=functions['args']
+            else:
+                args = {}
+            moms[iMom][:] = functions[iMom](
+                galaxy_moms['x'],
+                galaxy_moms['y'],
+                **args
+            )
+            
             
     if plot:
         fig, ax = plt.subplots( 3, 1)

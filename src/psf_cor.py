@@ -151,7 +151,10 @@ def psf_cor(    mom_file,
 
     #PsfMoms is an vector of many classes of moments
     nGalaxies=len(galaxy_moms.x)
-    psf_moms = moments( galaxy_moms.x, galaxy_moms.y, nGalaxies )
+    psf_moms = moments(
+        momsWithDrizzlePosition.x,
+        momsWithDrizzlePosition.y,
+        len(momsWithDrizzlePosition.x) )
 
     FocusArray = np.zeros(nImages)
 
@@ -163,7 +166,7 @@ def psf_cor(    mom_file,
         else:
             iImage_name = images[iImage].split('/')[-1][0:8]
 
-        inFrame = galaxy_moms[iImage_name+'_INFRAME'] == 1
+        inFrame = momsWithDrizzlePosition[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
         #position of the image in question
@@ -204,37 +207,36 @@ def psf_cor(    mom_file,
     
         if (kwargs["psf_model"] == 'empirical'):
             iPsfMoms = empirical_psf(
-                galaxy_moms[inFrame],
+                momsWithDrizzlePosition[inFrame],
                 scat_use,
                 degree=4,
                 interpolation=kwargs['psf_interpolation'],
-                clean=True
+                clean=True,
+                **kwargs
             )
             
         elif (kwargs["psf_model"] == 'webb_psfex'):
             iPsfMoms = empirical_psf(
-                galaxy_moms[inFrame],
+                momsWithDrizzlePosition[inFrame],
                 scat_use,
                 degree=4,
                 interpolation=kwargs['psf_interpolation'],
                 clean=False
             )
-            print("MEAN E1 IS ", np.mean(iPsfMoms['e1']))
         else:
             iPsfMoms=\
               acs_3dpsf.acs_3dpsf(
-                  galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
-                  galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
-                  np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model']
+                  momsWithDrizzlePosition[iImage_name+'_X_IMAGE'][inFrame], 
+                  momsWithDrizzlePosition[iImage_name+'_Y_IMAGE'][inFrame],
+                  np.zeros(len(momsWithDrizzlePosition[iImage_name+'_INFRAME'][inFrame]))+focus, \
+                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model'],
+                  star_moms=star_moms, verbose=kwargs['verbose'], interpolation=kwargs['psf_interpolation']
               )
-        
         #now rotate the moments according to the angle in orient
         iPsfMomsRot = rm.rotate_moments(
             iPsfMoms,
-            galaxy_moms[iImage_name+'_ORIENTAT'][inFrame]
+            momsWithDrizzlePosition[iImage_name+'_ORIENTAT'][inFrame]
         )
-        
         #CHECK THAT ANGLES ARE CORRECT HERE PLEASE
         
         mom_names = list(iPsfMoms.keys())
@@ -279,7 +281,10 @@ def psf_cor(    mom_file,
     print("WRITING OUT FITS FILE %s" % filename)
 
     psf_moms.writeto(filename)
-        
+
+    for iMom in psf_moms.keys():
+        psf_moms[iMom] = psf_moms[iMom][ momsWithDrizzlePosition['galStarFlag'] == 1 ]
+    
     #Refind e1 and e2, assuming we want  <q11>-<q22>/<q11>+<q22> not <e1>
     psf_moms.e1=(psf_moms.xx-psf_moms.yy)/ \
         (psf_moms.xx+psf_moms.yy)

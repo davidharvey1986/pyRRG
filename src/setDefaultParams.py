@@ -41,7 +41,7 @@ def setDefaultParams( params ):
     if params['jwst'] and (params["psf_model"] == 'tinytim'):
         raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
     
-    if (not params['jwst']) and (params["psf_model"] != 'tinytim') or (params["psf_model"] == 'empirical'):
+    if (not params['jwst']) and (params["psf_model"] != 'tinytim'):
         raise ValueError("You have selected HST but not a HST compatible PSF model")
 
     params["psf_model"] = params["psf_model"].lower( )
