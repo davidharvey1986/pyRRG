@@ -7,6 +7,7 @@ lib/asciidata/*~
 src/*.pkl
 src/starGalaxyModelRF.pkl
 src/*~
+src/#*
 log
 virtualenv
 trainStarGalClass
