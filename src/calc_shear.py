@@ -100,6 +100,14 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     good[  corrected_moments.prob != 0 ] = 0
     if kwargs['verbose']:
         print("%i galaxies filtered from prob not zero cut" % np.sum(good)) 
+
+    if np.sum(good) == 0:
+        if not kwargs['verbose']:
+            kwargs['verbose'] = True
+            calc_shear( corrected_moments, outfile, **kwargs)
+        else:
+            raise ValueError("No galaxies in final catalogue"+
+                             "- See output for more information")
     
     momc = corrected_moments[good == 1]
     size = np.sqrt( 0.5*(momc.xx + momc.yy))

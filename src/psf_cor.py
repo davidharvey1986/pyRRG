@@ -176,7 +176,8 @@ def psf_cor(    mom_file,
         #model
         if not kwargs['jwst'] :
             focus = adf.acs_determine_focus(  images[iImage], star_moms, \
-                                              drizzle_file, kwargs['wavelength'])
+                                              drizzle_file, 
+                                              **kwargs)
         else:
             focus = 0
         #Just keep track of the focii i have used through out

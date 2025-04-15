@@ -22,11 +22,11 @@ def acs_determine_focus_metric( true, model ):
 def acs_determine_focus( unknown_focus_image,
                          observed_moments_stars,
                          drizzle_file,
-                         wavelength,
                          data_dir=None,
                          psf_model_dir=None,
                          pixel_scale=0.03,
-                         r_match=600):
+                         r_match=600,
+                         **kwargs):
     '''
     ;+      
     ; NAME:
@@ -77,20 +77,33 @@ def acs_determine_focus( unknown_focus_image,
     image_name = unknown_focus_image.split('/')[-1][0:8]
     inframe_stars = observed_moments_stars[observed_moments_stars[image_name+'_INFRAME'] == 1]
 
-    if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
-        measure_moms( unknown_focus_image,  'NOCAT_NEED',
+    if not kwargs['no_exposures']:
+        if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
+            measure_moms( unknown_focus_image,  'NOCAT_NEED',
                     unknown_focus_image[:-5]+'_uncor.cat',
                     object_catalogue=inframe_stars,
                     xGal=inframe_stars[image_name+'_X_IMAGE'],
                     yGal=inframe_stars[image_name+'_Y_IMAGE'],
                     mult=2, min_rad=6,  quiet=True)
         
-    star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
-    
+        star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
+        model_e, focus = acs_model.acs_model_e(
+            star_moments[image_name+'_X_IMAGE'],
+            star_moments[image_name+'_Y_IMAGE'], 
+            wavelength=kwargs['wavelength']
+        )
+
+    else:
+        all_moments = fits.open( kwargs['root_name']+'_uncor.cat' )[1].data
+        star_moments = all_moments[all_moments['galStarFlag'] == 0]
+        
+        model_e, focus = acs_model.acs_model_e(
+            star_moments['X_IMAGE'],
+            star_moments['Y_IMAGE'], 
+            wavelength=kwargs['wavelength']
+        )
+
     #Now get an array of moments for all the possible focus positions
-    model_e, focus = acs_model.acs_model_e(star_moments[image_name+'_X_IMAGE'],
-                                           star_moments[image_name+'_Y_IMAGE'], 
-                                           wavelength=wavelength )
 
     #Number of focus positions
     n_focus, nobjects = model_e.xx.shape

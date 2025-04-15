@@ -13,7 +13,11 @@ def setDefaultParams( params ):
 
     #Check files exist
     params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
-    params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
+    if params["weight_file"] is None:
+        
+        params["weight_file"] = None
+        print("WARNING : NO WEIGHT FILE USED - THIS IS UNADVISED")
+    
     if params["root_name"] is None:
         params["root_name"] = params['FILENAME'].split('.')[0]
         
@@ -40,7 +44,7 @@ def setDefaultParams( params ):
         
     if params['jwst'] and (params["psf_model"] == 'tinytim'):
         raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
-    if (not params['jwst']) and (params["psf_model"] == 'tinytim'):
+    if (not params['jwst']) and (not params["psf_model"] == 'tinytim'):
         raise ValueError("You have selected HST but not a HST compatible PSF model")
 
     params["psf_model"] = params["psf_model"].lower( )
