@@ -129,6 +129,7 @@ def psf_cor(    mom_file,
 
     momsWithDrizzlePosition =  \
       dp.drizzle_position( drizzle_file, images,  moms )
+    print(momsWithDrizzlePosition.dtype.names)
     
     galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
     star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])

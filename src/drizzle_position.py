@@ -95,18 +95,11 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 2, :] = isinArr
 
 
-        tmp_name = individual_files[iImage].split('/')[-1].split('.')[0]
         
         if params['jwst']:
-            if len(tmp_name) > 10:
-                iFilename = individual_files[iImage].split('/')[-1][0:34]
-            else:
-                iFilename = tmp_name
+            iFilename = individual_files[iImage].split('/')[-1][0:34]
         else:
-            if len(tmp_name) > 10:
-                iFilename = individual_files[iImage].split('/')[-1][0:8]
-            else:
-                iFilename = tmp_name
+            iFilename = individual_files[iImage].split('/')[-1][0:8]
             
 
         x_column = fits.Column( name=iFilename+'_X_IMAGE', \
