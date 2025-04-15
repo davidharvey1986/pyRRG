@@ -93,12 +93,22 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 0, :] = SingleImageX
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
+
+
+        tmp_name = individual_files[iImage].split('/')[-1].split('.')[0]
         
         if params['jwst']:
-            iFilename = individual_files[iImage].split('/')[-1][0:34]
+            if len(tmp_name) > 10:
+                iFilename = individual_files[iImage].split('/')[-1][0:34]
+            else:
+                iFilename = tmp_name
         else:
-            iFilename = individual_files[iImage].split('/')[-1][0:8]
-
+            if len(tmp_name) > 10:
+                iFilename = individual_files[iImage].split('/')[-1][0:8]
+            else:
+                iFilename = tmp_name
+            
+            iFilename=
         x_column = fits.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )
