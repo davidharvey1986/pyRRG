@@ -23,23 +23,22 @@ def getIndividualExposures( verbose=True, **kwargs ):
     if 'FILENAME' not in kwargs.keys():
         raise ValueError("Please state FILENAME in kwargs")
         
-    if not kwargs['no_exposures']:
-        if kwargs['exposureNameList'] is None:
-            if kwargs['jwst']:
-                exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
-            else:
-                inputHeader = fits.open(kwargs['FILENAME'])[0].header
-                exposureNameList = \
-                    np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
-                                for i in inputHeader.keys() \
-                                if 'DATA' in i ])
+    
+    if kwargs['exposureNameList'] is None:
+        if kwargs['jwst']:
+            exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
         else:
-            exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
+            inputHeader = fits.open(kwargs['FILENAME'])[0].header
+            exposureNameList = \
+              np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
+                      for i in inputHeader.keys() \
+                      if 'DATA' in i ])
     else:
-        exposureNameList=kwargs["field"]
+        exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
+
 
     fileCheck = []
-    for iFile in np.atleast_1d(exposureNameList):
+    for iFile in  np.atleast_1d(exposureNameList):
         if not os.path.isfile(iFile):
             print("%s file not found" % iFile )
         else :

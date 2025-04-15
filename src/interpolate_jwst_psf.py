@@ -1,9 +1,16 @@
 
-from scipy.interpolate import RectBivariateSpline
+from scipy.interpolate import RectBivariateSpline, NearestNDInterpolator
 import numpy as np
 
 
-def interpolate_jwst_psf_moms( x, y, radius, scat, degree=3):
+def interpolate_jwst_psf_moms(
+        x, y,
+        radius,
+        scat,
+        degree=3,
+        star_moms=None,
+        verbose=False,
+        interpolation='spline'):
     '''
     
     Use the same interpolation function as photoutils use for the webb psf grid
@@ -25,21 +32,56 @@ def interpolate_jwst_psf_moms( x, y, radius, scat, degree=3):
 
     
     psf_grid_size = (grid_size, grid_size)
+    if star_moms is not None:
+
+        calibrate_to_these = ( star_moms['xx'] > 0 )
+        
+        all_corrs = 1./np.array([
+            np.median(scat['xx'])/np.median(star_moms['xx'][ calibrate_to_these ]),
+            np.median(scat['yy'])/np.median(star_moms['yy'][ calibrate_to_these ])
+            ])
+            
+        corr = np.sqrt(np.nanmean(all_corrs))
+        
+        if verbose:
+            print("APPLING PSF MOMENT CORRECT OF %0.4f" % corr)
+        if corr == 0:
+            raise ValueError("Zero correction not valid")
+        if ~np.isfinite(corr):
+            raise ValueError("Non finite correction")
+            
+    else:
+        corr = 1
     
     for iMom in moms.keys():
         
         if iMom in ['x','y','radius','degree']:
             continue
-        z_vector = scat[iMom].reshape(psf_grid_size)
-        
-        interpolate_fct = RectBivariateSpline(
-            x_vector,
-            y_vector,
-            z_vector,
-            kx=degree, ky=degree)
-        
-        moms[iMom] = interpolate_fct.ev(x, y)
 
+        z_vector = scat[iMom].reshape(psf_grid_size)
+
+        if interpolation.lower() == 'spline':        
+            interpolate_fct = RectBivariateSpline(
+                x_vector,
+                y_vector,
+                z_vector,
+                kx=degree, ky=degree)
+            this_mom = interpolate_fct.ev(x, y)
+            
+        else:
+            interpolate_fct = NearestNDInterpolator(
+                (scat['X'], scat['Y']),
+                scat[iMom]
+            )
+            this_mom = interpolate_fct(x, y)
+
+            
+            
+
+        if 'e' in iMom.lower():
+            moms[iMom] = this_mom
+        else:
+            moms[iMom] = this_mom*corr**len(iMom)
 
         
     return moms

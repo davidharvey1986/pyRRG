@@ -72,7 +72,10 @@ def drizzle_position(      drizzle_file,
 
         #now see where each of our positions lie on each of the individual images
 
-        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=params['fits_extension']) 
+        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage],
+                                                 ra, dec,
+                                                 extension=params['fits_extension']
+        ) 
         
         
         
