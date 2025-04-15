@@ -1,4 +1,4 @@
-from astropy.io import fits
+\1;95;0cfrom astropy.io import fits
 import numpy as np
 import os as os
 from . import drizzle_position as dp
@@ -230,8 +230,7 @@ def psf_cor(    mom_file,
                   momsWithDrizzlePosition[iImage_name+'_X_IMAGE'][inFrame], 
                   momsWithDrizzlePosition[iImage_name+'_Y_IMAGE'][inFrame],
                   np.zeros(len(momsWithDrizzlePosition[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model'],
-                  interpolation=kwargs['psf_interpolation']
+                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model']
               )
         #now rotate the moments according to the angle in orient
         iPsfMomsRot = rm.rotate_moments(
