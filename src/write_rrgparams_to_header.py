@@ -1,6 +1,5 @@
 from astropy.io import fits
-import warnings
-warnings.filterwarnings('ignore', category=UserWarning, append=True)
+
 
 def write_rrgparams_to_header( fitsname, params, outputname=None):
     '''

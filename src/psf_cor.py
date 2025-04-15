@@ -230,7 +230,8 @@ def psf_cor(    mom_file,
                   momsWithDrizzlePosition[iImage_name+'_X_IMAGE'][inFrame], 
                   momsWithDrizzlePosition[iImage_name+'_Y_IMAGE'][inFrame],
                   np.zeros(len(momsWithDrizzlePosition[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model']
+                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model'],
+                  star_moms=None, verbose=kwargs['verbose'], interpolation=kwargs['psf_interpolation']
               )
         #now rotate the moments according to the angle in orient
         iPsfMomsRot = rm.rotate_moments(

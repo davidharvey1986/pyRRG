@@ -3,8 +3,6 @@ from astropy.io import fits
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
 
-
-
 def calc_shear( corrected_moments, outfile, **kwargs):
     '''
     PURPOSE : TO WORK OUT VARIOUS FACTORS AND ADJUST THE PSF
@@ -139,15 +137,10 @@ def calc_shear( corrected_moments, outfile, **kwargs):
         
         G1 = 2-np.nanmedian(ellipticity_sqr)- 0.5*np.nanmedian(gal_lambda)-0.5*np.nanmedian(e_dot_u)
         g1_model = np.zeros(len(gal_lambda))+G1
-    else:
-        
-        if kwargs['stat_type'] =='snr':
-            snr = momc['FLUX_AUTO']/momc['FLUXERR_AUTO']
-        else:
-            try:
-                snr = momc[kwargs['stat_type']]
-            except:
-                raise ValueError("Stat type not recorgnised")
+    elif kwargs['stat_type'] =='snr':
+
+        snr = momc['FLUX_AUTO']/momc['FLUXERR_AUTO']
+
         snr = snr[np.isfinite(g1_gal)]
         g1_gal = g1_gal[np.isfinite(g1_gal)]
 
@@ -158,17 +151,17 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 
         try:
             popt, pcov = curve_fit(
-                g1_func_snr,
+                g1_func,
                 snr_cut[is_not_nan],
                 g1_gal_cut[is_not_nan])
 
         except:
             raise ValueError("Failed to fit - consisder a snr cut on the data")
 
-        G1 = g1_func_snr( snr, *popt)
+        G1 = g1_func( snr, *popt)
         g1_model = G1
-    #else:
-    #    raise ValueError("Stat type not recognised")
+    else:
+        raise ValueError("Stat type not recognised")
     
     gamma1=momc['e1']/G1/kwargs['rhodes_factor']
     gamma2=momc['e2']/G1/kwargs['rhodes_factor']
@@ -183,20 +176,14 @@ def calc_shear( corrected_moments, outfile, **kwargs):
                fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
                fits.Column(name='g1_gal', format=g1_gal.dtype, array=g1_gal),
                fits.Column(name='g1_model', format=g1_model.dtype, array=g1_model),
-               fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
-               fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
+                fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
+                fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
               ]
 
  
     hdu = fits.BinTableHDU.from_columns(fits_cols + newcol)
     hdu.writeto(outfile, overwrite=True,output_verify='ignore')
 
-def g1_func_snr( snr, a, b, c, d, e):
+def g1_func( snr, a, b, c, d):
 
     return a + b*np.arctan( ( snr - c)/d)
-
-
-def g1_func_gen( snr, a, b, c, d):
-    return a + b*np.arctan( ( snr - c)/d)
-
-
