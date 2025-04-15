@@ -108,7 +108,7 @@ def drizzle_position(      drizzle_file,
             else:
                 iFilename = tmp_name
             
-            iFilename=
+
         x_column = fits.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \
                                 array=SingleImageX )
