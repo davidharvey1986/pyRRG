@@ -72,13 +72,13 @@ def sex_to_reg( sex_cat, outfile,
     if SexStructure is None:
         if cat_type == 'FITS':
             try:
-                cat_list = fits.open( sex_cat )
+                cat_list = py.open( sex_cat )
             except:
                 print('Error raised, could not be a fits file, try ascii')
                 return 0
             SexStructure = cat_list[-1].data
         else:
-            SexStructure = ascii_to_rec( sex_cat, param_file)
+            SexStructure = at.ascii_to_rec( sex_cat, param_file)
   
     
     
@@ -217,7 +217,7 @@ def mask_sexcat( sex_cat, mask_file, param_file=None,
         if cat_type == 'ASCII':
             catalogue = ascii_to_rec( sex_cat, param_file )
         else:
-            cat_list = fits.open( sex_cat )
+            cat_list = py.open( sex_cat )
             catalogue = cat_list[-1].data
 
             
@@ -336,7 +336,7 @@ def fits_to_reg( fitsfile, outfile, circle_rad=3.):
     '''
 
 
-    regionFile = open( outfile, 'w')
+    regionFile = open( outfile, 'wb')
 
     #Write the necessary header
     regionFile.write('# Region file format: DS9 version 4.1\n')
@@ -344,7 +344,7 @@ def fits_to_reg( fitsfile, outfile, circle_rad=3.):
     regionFile.write("global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\n")
     regionFile.write("fk5\n")
 
-    data = fits.open(fitsfile)[-1].data
+    data = py.open(fitsfile)[-1].data
     ra = data['RA']
     dec = data['DEC']
     for iGal in range(len(ra)):
