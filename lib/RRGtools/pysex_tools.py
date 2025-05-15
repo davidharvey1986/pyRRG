@@ -325,8 +325,6 @@ def ascii_to_rec( sex_cat, param_file):
     
                                             
     dtypes = [ ( iParam, float) for iParam in params ]
-    print(params)
-    print(dtypes)
     return np.loadtxt( sex_cat, dtype=dtypes )
 
 
