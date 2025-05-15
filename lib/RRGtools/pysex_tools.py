@@ -75,7 +75,7 @@ def sex_to_reg( sex_cat, outfile,
                 cat_list = fits.open( sex_cat )
             except:
                 print('Error raised, could not be a fits file, try ascii')
-                return 0
+                raise
             SexStructure = cat_list[-1].data
         else:
             SexStructure = ascii_to_rec( sex_cat, param_file)
@@ -85,7 +85,7 @@ def sex_to_reg( sex_cat, outfile,
     x, y, a, b, theta, coordinate_sys = check_fields( SexStructure, \
                                                       coordinate_sys=coordinate_sys)
 
-    regionFile = c.writer( open( outfile, 'wb'))
+    regionFile = c.writer( open( outfile, 'w'))
 
     #Write the necessary header
     regionFile.writerow(['# Region file format: DS9 version 4.1'])
@@ -130,30 +130,31 @@ def check_fields( structure, coordinate_sys='IMAGE' ):
         if coordinate_sys == 'IMAGE':
             x = structure['X_IMAGE']
             y = structure['Y_IMAGE']
-            a = structure['A_IMAGE']
-            b = structure['B_IMAGE']
-            theta = structure['THETA_IMAGE']
             coordinate='IMAGE'
         else:
             x = structure['X_WORLD']
             y = structure['Y_WORLD']
-            a = structure['A_WORLD']
-            b = structure['B_WORLD']
-            theta = structure['THETA_WORLD']
             coordinate='WCS'
     except:
         try: 
             x = structure['X_WORLD']
             y = structure['Y_WORLD']
-            a = structure['A_WORLD']
-            b = structure['B_WORLD']
-            theta = structure['THETA_WORLD']
             coordinate='WCS'
         except:
-            print('No coordinates of the right sort found')
+            print('No coordinates of the right sort found or missing entries')
             sys.exit(0)
 
+    if "A_" not in list(structure.dtype.names):
 
+        a=np.ones(x.shape[0])
+        b=np.ones(x.shape[0])
+        theta=a=np.zeros(x.shape[0])
+    else:
+        a=structure('A_%s' %coordinate_sys)
+        b=structure('B_%s' %coordinate_sys)
+        theta=structure('THETA_%s' %coordinate_sys)
+        
+            
     return x, y, a, b, theta, coordinate
         
 def wcs_separation( ra1, dec1, ra2, dec2, mag=True):
@@ -217,7 +218,7 @@ def mask_sexcat( sex_cat, mask_file, param_file=None,
         if cat_type == 'ASCII':
             catalogue = ascii_to_rec( sex_cat, param_file )
         else:
-            cat_list = fits.open( sex_cat )
+            cat_list = py.open( sex_cat )
             catalogue = cat_list[-1].data
 
             
@@ -319,10 +320,13 @@ def ascii_to_rec( sex_cat, param_file):
     '''
     Convert a ascii catalogue to a recarray
     '''
-
-    params = np.loadtxt( param_file, dtype=[('params', object)], unpack=True)
-    dtypes = [ ( iParam[0], float) for iParam in params ]
-   
+    
+    params = np.loadtxt( param_file, dtype=[('params', object)], unpack=True)[0]
+    
+                                            
+    dtypes = [ ( iParam, float) for iParam in params ]
+    print(params)
+    print(dtypes)
     return np.loadtxt( sex_cat, dtype=dtypes )
 
 
@@ -336,7 +340,7 @@ def fits_to_reg( fitsfile, outfile, circle_rad=3.):
     '''
 
 
-    regionFile = open( outfile, 'w')
+    regionFile = open( outfile, 'wb')
 
     #Write the necessary header
     regionFile.write('# Region file format: DS9 version 4.1\n')
@@ -344,7 +348,7 @@ def fits_to_reg( fitsfile, outfile, circle_rad=3.):
     regionFile.write("global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\n")
     regionFile.write("fk5\n")
 
-    data = fits.open(fitsfile)[-1].data
+    data = py.open(fitsfile)[-1].data
     ra = data['RA']
     dec = data['DEC']
     for iGal in range(len(ra)):
