@@ -146,8 +146,9 @@ def check_fields( structure, coordinate_sys='IMAGE' ):
 
     if "A_" not in list(structure.dtype.names):
 
-        a=np.ones(x.shape[0])
-        b=np.ones(x.shape[0])
+        a=np.zeros(x.shape[0])+10. #
+        b=np.zeros(x.shape[0])+10 # PIXELS
+
         theta=a=np.zeros(x.shape[0])
     else:
         a=structure('A_%s' %coordinate_sys)
