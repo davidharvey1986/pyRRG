@@ -10,12 +10,16 @@ parser.add_argument("FILENAME", help="Absolute path of the input filename to be 
 parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
 parser.add_argument('-j', '--jwst', action='store_true')
 parser.add_argument('--verbose', action='store_true')
-parser.add_argument('-e', '--empirical_psf', action='store_true', help="Use the stars to get an empirival PSF")
 parser.add_argument('-w','--weight_file', help="Image weight file", default=None)
 parser.add_argument('-m','--mask', help="Mask stars out of the catalogue",  action='store_true')
 parser.add_argument('-d','--data_dir', help="The directory in which the data is", default=None, type=str)
 parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
+parser.add_argument('--output_dir', '-o', help="The directory in which to put all output", default='./', type=str)
+parser.add_argument('--root_name', '-r', help="The root name in which to put all catalogues", default=None, type=str)
+parser.add_argument('--psf_model', help="Name of the psf model to be use - default is TinyTim however if this is used in conjucntion with JWST it will fail. Options are 'tinytim','webbpsf','webb_psfex','empirical'", default='tinytim', type=str)
 parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
+parser.add_argument('--psf_interpolation', help="Method to interpolate the PSF either 'spline' or 'gp' (gaussian process)",
+                    default='spline', type=str)
 parser.add_argument('--sex_files', help="Directory in which the sex_files are", default=None, type=str)
 parser.add_argument('--expThresh', help="The minimum number of exposure that a galaxy has to have covering it to be included in the catalogue.", default=2, type=int)
 parser.add_argument('--mag_cut_upper', help="Upper (faint end) magnitude cut", default=40., type=float)
@@ -27,14 +31,20 @@ parser.add_argument('--cut_off', help="The multiple of radius to cut out the gal
 parser.add_argument('--mult', help="A factor to multiply the galaxies by in the code", default=2., type=float)
 parser.add_argument('--signal_noise_cut', help="A signal to noise cut in galaxies", default=4.4, type=float)
 parser.add_argument('--fits_extension','-f', help="Fits extension to use", default=None, type=int)
+parser.add_argument('--wht-fits-extension', help="Fits extension to use for weight file", default=0, type=int)
 parser.add_argument('--expTimeName', help="Header key for the exposure time", default=None, type=str)
 parser.add_argument('--exposureNameList', help="A list of the exposure names that went in to the drizzle file", default=None, type=str)
 parser.add_argument('--orientation_header', help="The header keyword for the orientation of the image wrt to wcs", default=None, type=str)
 parser.add_argument('--batch_run', '-b', help="Run as a batch so ignore the star-gal separation prompt", action='store_true')
 parser.add_argument('--FWHM_to_radius', help="How many radii separation of each object", default=1, type=float)
 parser.add_argument('--cluster_members_cat', help="Input fits table of cluster members that must include RA and DEC in the table", default=None, type=str)
+parser.add_argument('--stat_type', help="How to calculate G1 in calc_shear, either 'median', 'mean' or a function of 'snr'", default="median", type=str)
+parser.add_argument('--no-exposures',
+                    help="If there are no exposures to be added in just create a fake one",
+                    action='store_true'
+                    )
 
-
+parser.add_argument('-f','--overwrite', help="Force overwrite of existing files",  action='store_true')
 
 
 
