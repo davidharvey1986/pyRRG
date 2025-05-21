@@ -20,7 +20,6 @@ from .remove_galaxy import remove_galaxy_members
 from .write_rrgparams_to_header import write_rrgparams_to_header
 import sys
 import json
-import warnings
 
 def main(  ):
     '''
@@ -76,7 +75,6 @@ def main(  ):
                                          zero_point=params['zero_point'],
                                          extension=params['fits_extension'])
     else:
-        warnings.warn("SEX FILE ALREADY EXISTS: CONTINUING WITHOUT EXTRACTING")
         sources = fits.open( sex_catalogue )[1].data
 
   
@@ -85,8 +83,6 @@ def main(  ):
     if not os.path.isfile(uncorrected_moments_cat):
         measure_moms( params['field'], sex_catalogue,
                                  uncorrected_moments_cat, **params)
-    else:
-        warnings.warn("MOMENT FILE ALREADY EXISTS: CONTINUING WITHOUT REMEASURING")
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
@@ -104,13 +100,8 @@ def main(  ):
          psf.psf_cor( uncorrected_moments_cat,
                     corrected_moments_cat,
                     params['field'], **params)
-    else:
-        if not params['overwrite']:
-            raise ValueError('%s already exists, please either "+
-                             'add "--overwrite" or delete file' % 
-                             corrected_moments_cat)
-            
-
+    
+"
     corrected_moments = fits.open( corrected_moments_cat )[1].data
 
     #Correct zerpoint for the stacked num exposures

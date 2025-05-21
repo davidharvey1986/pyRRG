@@ -44,7 +44,6 @@ parser.add_argument('--no-exposures',
                     action='store_true'
                     )
 
-parser.add_argument('-f','--overwrite', help="Force overwrite of existing files",  action='store_true')
 
 
 

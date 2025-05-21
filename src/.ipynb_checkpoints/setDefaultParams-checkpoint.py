@@ -7,10 +7,32 @@ from . import check_external_packages as cep
 from astropy.io import fits
 
 def setDefaultParams( params ):
+
+    if params["data_dir"] is None:
+        params["data_dir"] = os.getcwd()+'/'    
+
+    #Check files exist
+    params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
+    if params["weight_file"] is None:
+        
+        params["weight_file"] = None
+        print("WARNING : NO WEIGHT FILE USED - THIS IS UNADVISED")
+    
+    if params["root_name"] is None:
+        params["root_name"] = params['FILENAME'].split('.')[0]
+        
+    params["root_name"] = os.path.join(params["output_dir"],params["root_name"])
+    
+    if not os.path.isfile( params["field"] ):
+        raise ValueError('Cant find input image (%s)' % params["field"])
+        
     
     params["hst_filter"] = getHSTfilter(params)
-    
     params["wavelength"] = ''.join([  s for s in params["hst_filter"] if s.isdigit()])
+    
+
+    
+
     
     #get the cwd first, and make sure these are aboslute paths!
     if params["code_dir"] is None:
@@ -18,35 +40,38 @@ def setDefaultParams( params ):
         
     if params["sex_files"] is None:
         params['sex_files']=params['code_dir']+'/sex_files/'
-    
-    if params["psf_model_dir"] is None:
-        if params['jwst']:
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib_jwst/'
-        else:
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib/'
 
-    if params["data_dir"] is None:
-        params["data_dir"] = os.getcwd()+'/'    
+        
+    if params['jwst'] and (params["psf_model"] == 'tinytim'):
+        raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
+    if (not params['jwst']) and (not params["psf_model"] == 'tinytim'):
+        raise ValueError("You have selected HST but not a HST compatible PSF model")
+
+    params["psf_model"] = params["psf_model"].lower( )
+
+    if params["psf_model"] != "empirical":
+        if params["psf_model_dir"] is None:
+            params["psf_model_dir"]=params['code_dir']+'/psf_lib/%s' % params["psf_model"].lower()
+        
+    print("Using model from %s " % params["psf_model_dir"])
+
    
     
     params['stilts_dir'] = '/'+'/'.join(str(subprocess.check_output(['which','stilts.sh'])).split('/')[1:-1])
     
-    params["dirs"] = directories.directories(params['data_dir'],  params['sex_files'],
-                           params['psf_model_dir']+'/'+str(params['wavelength'])+'/',
-                                       params['code_dir'], params['stilts_dir'])
+    params["dirs"] = directories.directories(
+        params['data_dir'],
+        params['output_dir'],
+        params['sex_files'],
+        params['psf_model_dir']+'/'+str(params['wavelength'])+'/',
+        params['code_dir'], params['stilts_dir'])
+    
     params["dirs"].check_dirs()
     params["dirs"].write_dirs()
-    cep.check_external_packages()
+    #cep.check_external_packages()
 
     
-    #Check files exist
-    params["field"] = params["dirs"].data_dir+params["FILENAME"]
     
-    if not os.path.isfile( params["field"] ):
-        raise ValueError('Cant find input image (%s)' % params["field"])
-        
-    
-
     if params['jwst']:
         params['zero_point'] = 'jwst'
     else:
