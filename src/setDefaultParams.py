@@ -11,8 +11,16 @@ def setDefaultParams( params ):
     if params["data_dir"] is None:
         params["data_dir"] = os.getcwd()+'/'    
 
+    #Make sure the the filename is not the entire path
+    if '/' in params["FILENAME"]:
+        raise ValueError("Filename seems to contain path,"+
+                         " please use only the name of the"+
+                         "image and the data_dir argument for the path"
+                        )
+        
     #Check files exist
     params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
+    
     if params["weight_file"] is None:
         
         params["weight_file"] = None
