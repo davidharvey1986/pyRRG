@@ -58,6 +58,14 @@ def main(  ):
     #SET GLOBAL PARAMETERS TO BE USED FOR ALL
     params = setDefaultParams( default_params )
     
+    if params['verbose']:
+        print("########################")
+        print("ALL PYRRG PARAMS")
+        print("########################")
+        for ikey in params.keys():
+            print("%s: %s" % (ikey, str(params[ikey])))
+        print("########################")
+
     print("Storing all catalogues with root: %s" % params['root_name'])
     # Define survey parameters
     #------------------------------------------
@@ -101,7 +109,7 @@ def main(  ):
                     corrected_moments_cat,
                     params['field'], **params)
     
-"
+
     corrected_moments = fits.open( corrected_moments_cat )[1].data
 
     #Correct zerpoint for the stacked num exposures
