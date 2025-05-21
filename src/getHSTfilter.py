@@ -22,5 +22,5 @@ def getHSTfilter( params ):
     else:
         hst_filter = header['FILTER1']
         
-    print(("Using filter %s for image %s" % (hst_filter,  params['FILENAME'])))
+    print(("Using filter %s for image %s" % (hst_filter,  params['field'])))
     return hst_filter
