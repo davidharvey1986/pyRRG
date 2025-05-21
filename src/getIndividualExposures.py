@@ -26,9 +26,9 @@ def getIndividualExposures( verbose=True, **kwargs ):
     if not kwargs['no_exposures']:
         if kwargs['exposureNameList'] is None:
             if kwargs['jwst']:
-                exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
+                exposureNameList = fits.open(kwargs['field'])[8].data['FILENAME']
             else:
-                inputHeader = fits.open(kwargs['FILENAME'])[0].header
+                inputHeader = fits.open(kwargs['field'])[0].header
                 exposureNameList = \
                     np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
                       for i in inputHeader.keys() \

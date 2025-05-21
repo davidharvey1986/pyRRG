@@ -23,21 +23,24 @@ def getIndividualExposures( verbose=True, **kwargs ):
     if 'FILENAME' not in kwargs.keys():
         raise ValueError("Please state FILENAME in kwargs")
         
-    
-    if kwargs['exposureNameList'] is None:
-        if kwargs['jwst']:
-            exposureNameList = fits.open(kwargs['FILENAME'])[8].data['FILENAME']
-        else:
-            inputHeader = fits.open(kwargs['FILENAME'])[0].header
-            exposureNameList = \
-              np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
+    if not kwargs['no_exposures']:
+        if kwargs['exposureNameList'] is None:
+            if kwargs['jwst']:
+                exposureNameList = fits.open(kwargs['field'])[8].data['FILENAME']
+            else:
+                inputHeader = fits.open(kwargs['field'])[0].header
+                exposureNameList = \
+                    np.unique([ inputHeader[i].split('_')[0]+'_drz_sci.fits'\
                       for i in inputHeader.keys() \
                       if 'DATA' in i ])
+        else:
+            exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
     else:
-        exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
-
+        print("WARNING - NO EXPOSURES - USING DRIZZLE FILE TO ESTIMATE")
+        exposureNameList = kwargs['FILENAME' ]  
+                    
     fileCheck = []
-    for iFile in exposureNameList:
+    for iFile in  np.atleast_1d(exposureNameList):
         if not os.path.isfile(iFile):
             print("%s file not found" % iFile )
         else :
@@ -56,7 +59,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
         else:
             raise ValueError("Not all individual files found")
 
-    return exposureNameList
+    return np.atleast_1d(exposureNameList)
                 
             
                 
