@@ -8,7 +8,6 @@ description = "pyRRG weak lensing shape measurement code. Measuring the 2nd and 
 parser = argparse.ArgumentParser("pyRRG",description=description)
 parser.add_argument("FILENAME", help="Absolute path of the input filename to be run through pyRRG", type=str)
 parser.add_argument('-v','--version', action='version', version=pyRRG.__version__)
-parser.add_argument('-j', '--jwst', action='store_true')
 parser.add_argument('--verbose', action='store_true')
 parser.add_argument('-w','--weight_file', help="Image weight file", default=None)
 parser.add_argument('-m','--mask', help="Mask stars out of the catalogue",  action='store_true')
@@ -16,7 +15,7 @@ parser.add_argument('-d','--data_dir', help="The directory in which the data is"
 parser.add_argument('--code_dir', help="The directory in which the code is", default=None, type=str)
 parser.add_argument('--output_dir', '-o', help="The directory in which to put all output", default='./', type=str)
 parser.add_argument('--root_name', '-r', help="The root name in which to put all catalogues", default=None, type=str)
-parser.add_argument('--psf_model', help="Name of the psf model to be use - default is TinyTim however if this is used in conjucntion with JWST it will fail. Options are 'tinytim','webbpsf','webb_psfex','empirical'", default='tinytim', type=str)
+parser.add_argument('--psf_model', help="Name of the psf model to be use - default is TinyTim for HST and webbPSF for JWST. Options are 'tinytim','webbpsf','webb_psfex','empirical'", default=None, type=str)
 parser.add_argument('--psf_model_dir', help="Directory in which the psf models are", default=None, type=str)
 parser.add_argument('--psf_interpolation', help="Method to interpolate the PSF either 'spline' or 'gp' (gaussian process)",
                     default='spline', type=str)

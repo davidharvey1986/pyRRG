@@ -1,4 +1,4 @@
-from .getHSTfilter import getHSTfilter 
+from .getImageData import getImageData 
 import os
 import json
 import subprocess 
@@ -20,12 +20,16 @@ def setDefaultParams( params ):
         
     #Check files exist
     params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
+    params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
     
     if params["weight_file"] is None:
         
         params["weight_file"] = None
         print("WARNING : NO WEIGHT FILE USED - THIS IS UNADVISED")
-    
+    else:
+        if not os.path.isfile(params["weight_file"]):
+            raise IOError("Can't find weight file: %s" % params["weight_file"])
+            
     if params["root_name"] is None:
         params["root_name"] = params['FILENAME'].split('.')[0]
         
@@ -34,10 +38,12 @@ def setDefaultParams( params ):
     if not os.path.isfile( params["field"] ):
         raise ValueError('Cant find input image (%s)' % params["field"])
         
-    instrument, image_filter = getHSTfilter(params)
-    params["hst_filter"] = image_filter
+    telescope, instrument, image_filter = getImageData(params)
+    
+    params["telescope"] = telescope
+    params["filter"] = image_filter
     params["instrument"] = instrument
-    params["wavelength"] = ''.join([  s for s in params["hst_filter"] if s.isdigit()])
+    params["wavelength"] = ''.join([  s for s in params["filter"] if s.isdigit()])
     
 
     
@@ -51,18 +57,32 @@ def setDefaultParams( params ):
         params['sex_files']=params['code_dir']+'/sex_files/'
 
         
-    if params['jwst'] and (params["psf_model"] == 'tinytim'):
-        raise ValueError("You have selected TinyTim PSF model with JWST -> this is not allowed")
-    if (not params['jwst']) and (not params["psf_model"] == 'tinytim'):
+    if params["telescope"] == "JWST" and (params["psf_model"] == 'tinytim'):
+        raise ValueError("You have selected TinyTim PSF model with JWST image -> this is not allowed")
+        
+    if  params["telescope"] == "HST" and  params["psf_model"] != 'tinytim':
         raise ValueError("You have selected HST but not a HST compatible PSF model")
-
-    params["psf_model"] = params["psf_model"].lower( )
+    
+    default_psf_model = {
+        'JWST':'webbPSF',
+        'HST':'tinytim'
+    }
+    
+    if params["psf_model"] is None:
+        params["psf_model"] = default_psf_model[telescope].lower()
+        
+        print("WARNING: No PSF MODEL put so defaulting to %s (for %s)" %
+              ( params["psf_model"], telescope )
+             )
 
     if params["psf_model"] != "empirical":
         if params["psf_model_dir"] is None:
             
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib/%s/%s/' %
-            ( params["psf_model"].lower(), params["instrument"])
+            params["psf_model_dir"]='%s/psf_lib/%s/%s/' % \
+                ( params['code_dir'], 
+                  params["psf_model"].lower(), 
+                  params["instrument"]
+                )
         
     print("Using model from %s " % params["psf_model_dir"])
 
@@ -83,14 +103,11 @@ def setDefaultParams( params ):
 
     
     
-    if params['jwst']:
-        params['zero_point'] = 'jwst'
-    else:
-        params['zero_point'] = 'hst'
-                   
+    params['zero_point'] = params["telescope"] 
+   
     
     if params['fits_extension'] is None:
-        if params['jwst']:
+        if params["telescope"]  == 'JWST':
             params['fits_extension'] = 1
         else:
             params['fits_extension'] = 0
@@ -103,16 +120,20 @@ def setDefaultParams( params ):
             
                 
     if params['expTimeName'] is None:
-        if params['jwst']:
+        if params["telescope"]  == 'JWST':
             params['expTimeName'] = 'XPOSURE'
         else:
             params['expTimeName'] = 'EXPTIME'
         
     if params['orientation_header'] is None:
-        if params['jwst']:
+        if params["telescope"]  == 'JWST':
             params['orientation_header'] = 'PA_V3'
         else:
             params['orientation_header'] = 'ORIENTAT'      
-            
+     
+    if params['no_exposures'] and (params['expThresh'] > 0):
+        print("WARNING: With --no-exposures and exposure threshold > 0"+\
+                         "there will be no galaxies, so making exposure threshold=0")
+        params['expThresh'] = 0
     json.dump(params, open("pyRRG.params","w"))
     return params

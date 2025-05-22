@@ -12,7 +12,7 @@ import sys
 from . import getIndividualExposures as gie
 import pickle as pkl
 from tqdm import tqdm
-from .superbit_psf import superbit_psf
+from .empirical_psf import empirical_psf
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -60,8 +60,8 @@ def psf_cor(    mom_file,
         
     if not 'min_rad' in kwargs.keys():
         kwargs['min_rad'] = 1.5
-    if not 'jwst' in kwargs.keys():
-        kwargs['jwst'] = False
+    if not 'telescope' in kwargs.keys():
+        raise ValueError("Please ensure telescope is in kwargs")
     if not 'wavelength' in kwargs.keys():
         raise ValueError("Please input wavelength in to arguments")
                 
@@ -94,8 +94,8 @@ def psf_cor(    mom_file,
     #need to think about this
     #tinytim_make_scat, data_dir=dirs.model_dir, wavelength=filter[0], scat=scat
 
-    if not kwargs['empirical_psf']:
-        if kwargs['jwst'] :
+    if kwargs['psf_model'] != 'empirical':
+        if kwargs['psf_model'].lower() != 'tinytim' :
             scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
             psf_detectors = np.array([ i['detector'][0][:5] for i in meta])
         else:
@@ -128,7 +128,9 @@ def psf_cor(    mom_file,
     print("Getting position of stars & galaxies in each exposure")
 
     momsWithDrizzlePosition =  \
-      dp.drizzle_position( drizzle_file, images,  moms, dataDir=dirs.data_dir)
+      dp.drizzle_position( drizzle_file, images,  moms )
+
+    
     galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
     star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
 
@@ -150,28 +152,32 @@ def psf_cor(    mom_file,
 
     #PsfMoms is an vector of many classes of moments
     nGalaxies=len(galaxy_moms.x)
-    psf_moms = moments( galaxy_moms.x, galaxy_moms.y, nGalaxies )
+    psf_moms = moments(
+        momsWithDrizzlePosition.x,
+        momsWithDrizzlePosition.y,
+        len(momsWithDrizzlePosition.x) )
 
     FocusArray = np.zeros(nImages)
 
     sys.stdout.write("\n")
     for iImage in tqdm(range(nImages)):
         #Which positions are in the cluster frame
-        if kwargs['jwst'] :
+        if kwargs['telescope'] == 'JWST':
             iImage_name = images[iImage].split('/')[-1][0:34]
         else:
             iImage_name = images[iImage].split('/')[-1][0:8]
 
-        inFrame = galaxy_moms[iImage_name+'_INFRAME'] == 1
+        inFrame = momsWithDrizzlePosition[iImage_name+'_INFRAME'] == 1
 
         #before i determine the psf moments i need to get the focus
         #position of the image in question
 
         #So get the focus position by fitting the true image stars to the
         #model
-        if not kwargs['jwst'] :
+        if kwargs['telescope'] == 'HST':
             focus = adf.acs_determine_focus(  images[iImage], star_moms, \
-                                              drizzle_file, kwargs['wavelength'])
+                                              drizzle_file, 
+                                              **kwargs)
         else:
             focus = 0
         #Just keep track of the focii i have used through out
@@ -181,26 +187,58 @@ def psf_cor(    mom_file,
         #iImage, interpolate the psf from the ref fram of the single
         #image  to the X,Y of the drizzled image
           
-        if not kwargs['empirical_psf']:
-            if kwargs['jwst'] :
-                image_detector = fits.open(images[iImage])[0].header['DETECTOR'][:5]
-                detector_num = np.arange(len(psf_detectors))[psf_detectors == image_detector][0]
-                scat_use = scat[detector_num]
-            else:
-                scat_use = scat
+
+        if  kwargs['psf_model'] == 'webbpsf' :
+            image_detector = fits.open(
+                    images[iImage])[
+                        kwargs['fits_extension']
+                    ].header['DETECTOR'][:5]
+            detector_num = np.arange(len(
+                        psf_detectors))[
+                            psf_detectors
+                            ==
+                            image_detector
+                        ][0]
+            scat_use = scat[detector_num]
+        elif kwargs['psf_model'] == 'tinytim':
+            scat_use = scat
+        elif kwargs['psf_model'] == 'empirical':
+            scat_use = star_moms
+        elif kwargs['psf_model'] == 'webb_psfex':
+            scat_use = scat
     
-        if kwargs['empirical_psf']:
-            iPsfMoms = superbit_psf( galaxy_moms[inFrame], star_moms, degree=4 )
+        if (kwargs["psf_model"] == 'empirical'):
+            iPsfMoms = empirical_psf(
+                momsWithDrizzlePosition[inFrame],
+                scat_use,
+                degree=4,
+                interpolation=kwargs['psf_interpolation'],
+                clean=True,
+                **kwargs
+            )
+            
+        elif (kwargs["psf_model"] == 'webb_psfex'):
+            iPsfMoms = empirical_psf(
+                momsWithDrizzlePosition[inFrame],
+                scat_use,
+                degree=4,
+                interpolation=kwargs['psf_interpolation'],
+                clean=False
+            )
         else:
             iPsfMoms=\
-              acs_3dpsf.acs_3dpsf( galaxy_moms[iImage_name+'_X_IMAGE'][inFrame], 
-                                   galaxy_moms[iImage_name+'_Y_IMAGE'][inFrame],
-                                    np.zeros(len(galaxy_moms[iImage_name+'_INFRAME'][inFrame]))+focus, \
-                                    radius, scat_use, degree=[3,2,2], jwst=kwargs['jwst']  )
-        
+              acs_3dpsf.acs_3dpsf(
+                  momsWithDrizzlePosition[iImage_name+'_X_IMAGE'][inFrame], 
+                  momsWithDrizzlePosition[iImage_name+'_Y_IMAGE'][inFrame],
+                  np.zeros(len(momsWithDrizzlePosition[iImage_name+'_INFRAME'][inFrame]))+focus, \
+                  radius, scat_use, degree=[3,2,2], psf_model=kwargs['psf_model'],
+                  star_moms=None, verbose=kwargs['verbose'], interpolation=kwargs['psf_interpolation']
+              )
         #now rotate the moments according to the angle in orient
-        iPsfMomsRot = rm.rotate_moments( iPsfMoms, galaxy_moms[iImage_name+'_ORIENTAT'][inFrame])
-        
+        iPsfMomsRot = rm.rotate_moments(
+            iPsfMoms,
+            momsWithDrizzlePosition[iImage_name+'_ORIENTAT'][inFrame]
+        )
         #CHECK THAT ANGLES ARE CORRECT HERE PLEASE
         
         mom_names = list(iPsfMoms.keys())
@@ -221,7 +259,7 @@ def psf_cor(    mom_file,
         #then give the position the value of the averaged psf_moms.
 
     #Save the focus array
-    focuslist = open(dirs.data_dir+'/FocusArray.txt', "w")
+    focuslist = open(dirs.output_dir+'/FocusArray.txt', "w")
     
     for i in range(nImages):
         ExpName = images[i].split('/')[-1].split('_')[0]
@@ -241,11 +279,14 @@ def psf_cor(    mom_file,
             psf_moms[iMom] /= psf_moms['nExposures']
             psf_moms[iMom][psf_moms['nExposures'] == 0] = 0.
     
-    filename = '%s/psf_moments.fits' % (dirs.data_dir)
+    filename = '%s/psf_moments.fits' % (dirs.output_dir)
     print("WRITING OUT FITS FILE %s" % filename)
-    
+
     psf_moms.writeto(filename)
-        
+
+    for iMom in psf_moms.keys():
+        psf_moms[iMom] = psf_moms[iMom][ momsWithDrizzlePosition['galStarFlag'] == 1 ]
+    
     #Refind e1 and e2, assuming we want  <q11>-<q22>/<q11>+<q22> not <e1>
     psf_moms.e1=(psf_moms.xx-psf_moms.yy)/ \
         (psf_moms.xx+psf_moms.yy)
