@@ -20,13 +20,14 @@ def setDefaultParams( params ):
         
     #Check files exist
     params["field"] = os.path.join(params["data_dir"],params["FILENAME"])
-    params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
     
     if params["weight_file"] is None:
         
         params["weight_file"] = None
         print("WARNING : NO WEIGHT FILE USED - THIS IS UNADVISED")
     else:
+        params["weight_file"] = os.path.join(params["data_dir"],params["weight_file"])
+
         if not os.path.isfile(params["weight_file"]):
             raise IOError("Can't find weight file: %s" % params["weight_file"])
             
@@ -55,14 +56,7 @@ def setDefaultParams( params ):
         
     if params["sex_files"] is None:
         params['sex_files']=params['code_dir']+'/sex_files/'
-
         
-    if params["telescope"] == "JWST" and (params["psf_model"] == 'tinytim'):
-        raise ValueError("You have selected TinyTim PSF model with JWST image -> this is not allowed")
-        
-    if  params["telescope"] == "HST" and  params["psf_model"] != 'tinytim':
-        raise ValueError("You have selected HST but not a HST compatible PSF model")
-    
     default_psf_model = {
         'JWST':'webbPSF',
         'HST':'tinytim'
@@ -74,6 +68,14 @@ def setDefaultParams( params ):
         print("WARNING: No PSF MODEL put so defaulting to %s (for %s)" %
               ( params["psf_model"], telescope )
              )
+
+        
+    if params["telescope"] == "JWST" and (params["psf_model"] == 'tinytim'):
+        raise ValueError("You have selected TinyTim PSF model with JWST image -> this is not allowed")
+        
+    if  params["telescope"] == "HST" and  params["psf_model"] != 'tinytim':
+        raise ValueError("You have selected HST but not a HST compatible PSF model")
+    
 
     if params["psf_model"] != "empirical":
         if params["psf_model_dir"] is None:
