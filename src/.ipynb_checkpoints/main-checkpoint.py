@@ -128,6 +128,7 @@ def main(  ):
     
     
     if params['mask']:
+        print("Auto-masking saturated stars")
         mask.main( sheared_cat, uncorrected_moments_cat,
                    outFile=beforeDoubles_cat, **params)
     else:

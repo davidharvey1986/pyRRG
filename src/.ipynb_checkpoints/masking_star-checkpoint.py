@@ -8,7 +8,35 @@ from .acs_limits import acs_limits
 from copy import deepcopy as cp
 import tqdm
 
-def plot_region_maskstar( filename, star):
+def plot_region_maskstar( filename, star, convert_wcs=None, **kwargs):
+    
+    flatten_star = np.concatenate(star)
+    ncoords = len(star[0])//2
+    
+    if convert_wcs is not None:
+        xinds = np.arange(flatten_star.shape[0]//2)*2
+        x = flatten_star[xinds]
+        y = flatten_star[xinds+1]
+        
+        ra, dec = tools.pix2deg( 
+            convert_wcs[0], x, y, 
+            extension=0
+        )
+        newx, newy = tools.deg2pix(
+            convert_wcs[1], ra, dec, 
+            extension=kwargs['fits_extension']
+        )
+        converted_star = [ ]
+        for istar in range(len(star)):
+            thisx = newx[istar*ncoords:(istar+1)*ncoords]
+            thisy = newy[istar*ncoords:(istar+1)*ncoords]
+            converted_coord = []
+            for icoord in range(ncoords):
+                converted_coord.append( thisx[icoord]  )
+                converted_coord.append( thisy[icoord]  )
+            converted_star.append( converted_coord )
+    else:
+        converted_star = star
     
     regionFile = open( filename, "w")
     regionFile.write('# Region file format: DS9 version 4.1\n')
@@ -18,7 +46,7 @@ def plot_region_maskstar( filename, star):
     
     for j in range(len(star)):
         polygonStr = 'polygon('
-        for i in star[j]:
+        for i in converted_star[j]:
             polygonStr += '%0.4f,'  % i
         polygonStr=polygonStr[:-2]  ##delete , in the end
         polygonStr += ')\n'
@@ -161,14 +189,24 @@ def main(
     outFile='Shear_remove.fits', 
     **kwargs):
     
-    main_single(shear_catalog, object_catalog_fits, \
-         mask_file=mask_file, outFile=outFile, 
-         mask_stars=False,  plot_reg=None)
+    main_single(
+        shear_catalog, 
+        object_catalog_fits, \
+        mask_file=mask_file, 
+        outFile=outFile, 
+        mask_stars=False,  
+        plot_reg=None, 
+        report=True,
+    )
     
     
     object_catalog = fits.open(object_catalog_fits)
     
     allExposures = getIndividualExposures( **kwargs )
+    
+    if len(allExposures) > 10:
+        print("WARNING: MASKING %i EXPOSURES -> COULD TAKE SOME TIME" % len(allExposures))
+        
     for iExposure in tqdm.tqdm(allExposures):
         
         new_obj = cp(object_catalog)
@@ -185,7 +223,12 @@ def main(
         new_cat['Y_IMAGE'] = y
        
         
-        isin, oritentaion = acs_limits( x, y, iExposure, kwargs)
+        isin, oritentaion = acs_limits( 
+            x, 
+            y, 
+            iExposure, 
+            kwargs
+        )
     
         
         new_obj[1].data = new_cat[ isin ]
@@ -197,7 +240,9 @@ def main(
         main_single( shear_catalog, 
                     'tmp_cat_mask.fits', 
                     outFile='tmp_shear_rm.fits', 
-                    plot_reg="masks/%s.mask" % iExposure.replace('/','_')
+                    plot_reg="masks/%s_mask.reg" % iExposure.replace('/','_'),
+                    convert_wcs=( iExposure, kwargs['field'] ),
+                    **kwargs
                    )
         
     os.system("cat masks/*.reg | grep polygon > star_masks.reg")
@@ -206,15 +251,7 @@ def main(
          mask_file='star_masks.reg', outFile=outFile, 
          mask_stars=False,  plot_reg=None)
         
-    
-        
-        
 
-        
-        
-        
-    
-    
     
     
 
@@ -223,7 +260,12 @@ def main_single(
         object_catalog_fits,
         mask_file='mask.reg', 
         outFile='Shear_remove.fits', 
-        mask_stars=True,  plot_reg=None ):
+        mask_stars=True,  
+        plot_reg=None,
+        convert_wcs=None,
+        report=False,
+        **kwargs
+    ):
     '''
         This algoritm will do two things.
         a) Draw masks(polygon) around detected stars automatically and remove objects within the polygon.
@@ -245,10 +287,14 @@ def main_single(
             ( object_catalog['MAG_AUTO'] <  
              np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0])
             )
-    
+    if ~np.any(indexes):
+        return
+        
     Star_catalogue = object_catalog[ indexes ]
 
-
+    if report:
+        print("There are %i saturated stars to mask out" % len(Star_catalogue))
+        
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
     clean=np.zeros(len(data['ra']))
     cols = []
@@ -268,14 +314,21 @@ def main_single(
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
     for j in np.arange(len(Star_catalogue["ra"])):
+        
         star_x=Star_catalogue["X_IMAGE"][j]
         star_y=Star_catalogue["Y_IMAGE"][j]
-        m=Star_catalogue["MAG_AUTO"][j]
-        inside,star_corr_one=instar(1,1,star_x,star_y,m)
-        star_corr[j]=star_corr_one
         
+        m=Star_catalogue["MAG_AUTO"][j]
+        
+        inside,star_corr_one=instar( 1, 1,
+                                    star_x, star_y, m)
+        star_corr[j]=star_corr_one
+
     if plot_reg is not None:
-        plot_region_maskstar(plot_reg, star_corr)
+        plot_region_maskstar(plot_reg, 
+                             star_corr, 
+                             convert_wcs=convert_wcs,
+                             **kwargs)
     
 
     ##-------------------------------start masking-------------------------------
@@ -286,10 +339,16 @@ def main_single(
             xl=Shears['X_IMAGE'][i]
             yl=Shears["Y_IMAGE"][i]
             for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
+                
                 star_x=Star_catalogue['X_IMAGE'][j]
                 star_y=Star_catalogue['Y_IMAGE'][j]
                 m=Star_catalogue["MAG_AUTO"][j]
-                inside, star_corr_one = instar(xl,yl,star_x,star_y,m)
+                
+                inside, star_corr_one = instar(
+                    xl, yl,
+                    star_x,star_y,
+                    m
+                )
             
                 #star_corr[j]=star_corr_one
                 if inside==1:
@@ -340,7 +399,6 @@ def main_single(
                 Shears_remove = Shears_remove[ inBox == False ]
           
             elif mask[0:7] =='polygon':
-                print("masking a ploygon")
                 mask_x = mask.split('(')[1].split(',')[::2]
                 px1 = [float(i) for i in mask_x]
                 mask_y = mask.split('(')[1].split(',')[1::2]
