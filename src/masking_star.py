@@ -288,12 +288,16 @@ def main_single(
              np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0])
             )
     if ~np.any(indexes):
+        print("There are no saturated stars to mask out")
         return
         
     Star_catalogue = object_catalog[ indexes ]
 
     if report:
         print("There are %i saturated stars to mask out" % len(Star_catalogue))
+        
+    if not os.path.isdir("masks"):
+        os.system("mkdir masks")
         
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
     clean=np.zeros(len(data['ra']))
