@@ -12,15 +12,18 @@ def getHSTfilter( params ):
     
     header = fits.open( params['field'] )[0].header
 
+    instrument =  header['INSTRUME'].upper()
+
+    
     if params['jwst']:
-        print(("Using filter %s for image %s" % (header['FILTER'],  params['field'])))
+        image_filter = header['FILTER']
 
-        return header['FILTER']
-
-    if 'CLEAR' in header['FILTER1']:
-        hst_filter = header['FILTER2']
     else:
-        hst_filter = header['FILTER1']
+        if 'CLEAR' in header['FILTER1']:
+            image_filter = header['FILTER2']
+        else:
+            image_filter = header['FILTER1']
         
-    print(("Using filter %s for image %s" % (hst_filter,  params['field'])))
-    return hst_filter
+    print(("Using instrument: %s with filetr: %s for image %s" %
+           (instrument, image_filter,  params['field'])))
+    return instrument, image_filter
