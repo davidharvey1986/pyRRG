@@ -1,4 +1,6 @@
-scripts/pyRRG
+scripts/pyRRGA
+scripts/stilts.sh
+lib/stilts/*
 docs/HowToStarGalaxyClassify.pdf
 docs/Manual.pdf
 galStar.sav
@@ -15,10 +17,11 @@ lib/RRGtools/pysex.py
 lib/RRGtools/pysex_tools.py
 lib/RRGtools/source_extract.py
 src/__init__.py
+src/superbit_psf.py
 src/remove_galaxy.py
 src/setDefaultParams.py
 src/getIndividualExposures.py
-src/getHSTfilter.py
+src/getImageData.py
 src/check_external_packages.py
 src/acs_3dpsf.py
 src/acs_determine_focus.py
@@ -192,3 +195,4 @@ lib/asciidata/asciifunction.py
 lib/asciidata/asciiheader.py
 lib/asciidata/asciisorter.py
 lib/asciidata/asciiutils.py
+src/write_rrgparams_to_header.py

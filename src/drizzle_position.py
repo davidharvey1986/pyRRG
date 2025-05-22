@@ -99,7 +99,7 @@ def drizzle_position(      drizzle_file,
 
 
         
-        if params['jwst']:
+        if params['telescope'] == 'JWST':
             iFilename = individual_files[iImage].split('/')[-1][0:34]
         else:
             iFilename = individual_files[iImage].split('/')[-1][0:8]

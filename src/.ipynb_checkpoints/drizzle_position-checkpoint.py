@@ -8,8 +8,7 @@ from tqdm import tqdm
 
 def drizzle_position(      drizzle_file,
                            individual_files,
-                           moments,
-                           dataDir='.'):
+                           moments):
     
     '''
     ;PURPOSE : RETURN THE POSITIONS OF EACH POINT IN THE DRIZZLED
@@ -47,7 +46,7 @@ def drizzle_position(      drizzle_file,
     
 
         
-    drizzle_obj = fits.open(dataDir+'/'+drizzle_file)
+    drizzle_obj = fits.open(drizzle_file)
     ImageData = drizzle_obj[params['fits_extension']].data
     header =  drizzle_obj[params['fits_extension']].header
     orig_cols = moments.columns
@@ -73,7 +72,10 @@ def drizzle_position(      drizzle_file,
 
         #now see where each of our positions lie on each of the individual images
 
-        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage], ra, dec, extension=params['fits_extension']) 
+        SingleImageX, SingleImageY = at.deg2pix( individual_files[iImage],
+                                                 ra, dec,
+                                                 extension=params['fits_extension']
+        ) 
         
         
         
@@ -94,11 +96,14 @@ def drizzle_position(      drizzle_file,
         InDrizzleFrame[iImage, 0, :] = SingleImageX
         InDrizzleFrame[iImage, 1, :] = SingleImageY
         InDrizzleFrame[iImage, 2, :] = isinArr
+
+
         
-        if params['jwst']:
+        if params['telescope'] == 'JWST':
             iFilename = individual_files[iImage].split('/')[-1][0:34]
         else:
             iFilename = individual_files[iImage].split('/')[-1][0:8]
+            
 
         x_column = fits.Column( name=iFilename+'_X_IMAGE', \
                                 format=SingleImageX.dtype, \

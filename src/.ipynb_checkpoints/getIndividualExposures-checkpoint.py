@@ -25,7 +25,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
         
     if not kwargs['no_exposures']:
         if kwargs['exposureNameList'] is None:
-            if kwargs['jwst']:
+            if kwargs['telescope'] == 'JWST':
                 exposureNameList = fits.open(kwargs['field'])[8].data['FILENAME']
             else:
                 inputHeader = fits.open(kwargs['field'])[0].header
@@ -50,7 +50,7 @@ def getIndividualExposures( verbose=True, **kwargs ):
     
     if np.all( np.array(fileCheck) == False):
 
-        raise ValueError("No individual files found")
+        raise ValueError("No individual files found - if no files exist use --no-exposures flag")
 
     if np.all( np.array(fileCheck) ) == False:
         contninueWithout = input("Haven't found all files, continue anyway? (y or n)")

@@ -60,8 +60,8 @@ def psf_cor(    mom_file,
         
     if not 'min_rad' in kwargs.keys():
         kwargs['min_rad'] = 1.5
-    if not 'jwst' in kwargs.keys():
-        kwargs['jwst'] = False
+    if not 'telescope' in kwargs.keys():
+        raise ValueError("Please ensure telescope is in kwargs")
     if not 'wavelength' in kwargs.keys():
         raise ValueError("Please input wavelength in to arguments")
                 
@@ -162,7 +162,7 @@ def psf_cor(    mom_file,
     sys.stdout.write("\n")
     for iImage in tqdm(range(nImages)):
         #Which positions are in the cluster frame
-        if kwargs['jwst'] :
+        if kwargs['telescope'] == 'JWST':
             iImage_name = images[iImage].split('/')[-1][0:34]
         else:
             iImage_name = images[iImage].split('/')[-1][0:8]
@@ -174,7 +174,7 @@ def psf_cor(    mom_file,
 
         #So get the focus position by fitting the true image stars to the
         #model
-        if not kwargs['jwst'] :
+        if kwargs['telescope'] == 'HST':
             focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, 
                                               **kwargs)
