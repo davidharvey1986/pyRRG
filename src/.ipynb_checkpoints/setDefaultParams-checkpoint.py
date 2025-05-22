@@ -34,8 +34,9 @@ def setDefaultParams( params ):
     if not os.path.isfile( params["field"] ):
         raise ValueError('Cant find input image (%s)' % params["field"])
         
-    
-    params["hst_filter"] = getHSTfilter(params)
+    instrument, image_filter = getHSTfilter(params)
+    params["hst_filter"] = image_filter
+    params["instrument"] = instrument
     params["wavelength"] = ''.join([  s for s in params["hst_filter"] if s.isdigit()])
     
 
@@ -59,7 +60,10 @@ def setDefaultParams( params ):
 
     if params["psf_model"] != "empirical":
         if params["psf_model_dir"] is None:
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib/%s' % params["psf_model"].lower()
+            
+            params["psf_model_dir"]= '%s/psf_lib/%s/%s/' % \
+            ( params['code_dir'], params["psf_model"].lower(), params["instrument"])
+            
         
     print("Using model from %s " % params["psf_model_dir"])
 

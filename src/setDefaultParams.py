@@ -61,8 +61,9 @@ def setDefaultParams( params ):
     if params["psf_model"] != "empirical":
         if params["psf_model_dir"] is None:
             
-            params["psf_model_dir"]=params['code_dir']+'/psf_lib/%s/%s/' %
-            ( params["psf_model"].lower(), params["instrument"])
+            params["psf_model_dir"]= '%s/psf_lib/%s/%s/' % \
+            ( params['code_dir'], params["psf_model"].lower(), params["instrument"])
+            
         
     print("Using model from %s " % params["psf_model_dir"])
 

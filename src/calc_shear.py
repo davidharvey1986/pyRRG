@@ -128,6 +128,7 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     ellipticity_sqr = momc['e1']**2+momc['e2']**2
     e_dot_u = momc['e1']*u1+momc['e2']*u2
     e_cross_u = momc['e1']*u2-momc['e2']*u1
+    
     if kwargs['verbose']:
         print("Using STAT TYPE : %s" % kwargs['stat_type'])
     g1_gal = 2-ellipticity_sqr- 0.5*gal_lambda-0.5*e_dot_u
@@ -190,7 +191,7 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 
  
     hdu = fits.BinTableHDU.from_columns(fits_cols + newcol)
-    hdu.writeto(outfile, overwrite=True,output_verify='ignore')
+    hdu.writeto(outfile, overwrite=True, output_verify='ignore')
 
 def g1_func( snr, a, b, c, d):
 
