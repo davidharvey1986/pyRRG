@@ -1,6 +1,8 @@
 import os as os
 from astropy.io import fits
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, append=True)
 
 from . import color_color as color
 from numpy.lib.recfunctions import append_fields as append_rec
@@ -8,16 +10,20 @@ from numpy.lib.recfunctions import append_fields as append_rec
 def run_match( cat_A, cat_B, matcher='sky', \
                    search_rad=2, coords=["RA","DEC"] ):
     
-
+    random_int = int(np.random.uniform(0,1e6))
+    
     command_str = ('stilts.sh tmatch2 in1="%s" in2="%s" '
                    'matcher="%s" values1="%s %s" values2="%s %s" '
-                   'params="%0.1f" out=matched_A_B.fits progress=none' % 
-        (cat_A, cat_B, matcher, coords[0], coords[1], coords[0], coords[1], search_rad))
+                   'params="%0.1f" out=matched_%i.fits progress=none' % 
+        (cat_A, cat_B, matcher, coords[0],
+         coords[1], coords[0], coords[1],
+         search_rad, random_int))
     
     os.system(command_str)
 
-    matched_cat = fits.open('matched_A_B.fits')
-
+    matched_cat = fits.open("matched_%i.fits" % random_int)
+    
+    os.system("rm -fr matched_%i.fits" % random_int)
     return matched_cat
 
 def match_cat( cat_A, cat_B, cleanup=True, \

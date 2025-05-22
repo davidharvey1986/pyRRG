@@ -10,7 +10,7 @@ def mmm( sky_vector,
          readnoise = False,
          nsky = False,
          integer = "discrete",
-         mxiter = 50,
+         mxiter = 100,
          minsky = 20,
          nan=True):
     """Estimate the sky background in a stellar contaminated field.

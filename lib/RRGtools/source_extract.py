@@ -7,9 +7,17 @@ import RRGtools as tools
 from numpy.lib.recfunctions import append_fields as append_rec
 
 
-def source_extract( image_name, weight_file, zero_point='jwst',
-                    outfile=None, return_sources=True,
-                    stilts_dir='.', conf_path='.', extension=None):
+def source_extract( 
+        image_name, 
+        weight_file, 
+        zero_point='jwst',
+        outfile=None,   
+        return_sources=True,
+        stilts_dir='.', 
+        conf_path='.', 
+        extension=None
+    ):
+    
     '''
     Given that source extration is a difficult thing for the photometry
     I will use the Mathilde mehtod, in Python to do a wrapper

@@ -9,6 +9,7 @@ from copy import deepcopy as cp
 import tqdm
 
 def plot_region_maskstar( filename, star):
+    
     regionFile = open( filename, "w")
     regionFile.write('# Region file format: DS9 version 4.1\n')
     #regionFile.write('# Filename: dummy.fits\n')
@@ -153,26 +154,32 @@ def inpoly(Px,Py,xl,yl):
     return nc
 
 
-def main(  shear_catalog, object_catalog_fits, \
-         mask_file='mask.reg', outFile='Shear_remove.fits', 
-         **kwargs):
+def main(  
+    shear_catalog, 
+    object_catalog_fits, \
+    mask_file='mask.reg', 
+    outFile='Shear_remove.fits', 
+    **kwargs):
     
     main_single(shear_catalog, object_catalog_fits, \
          mask_file=mask_file, outFile=outFile, 
          mask_stars=False,  plot_reg=None)
     
-    return
     
     object_catalog = fits.open(object_catalog_fits)
-
-    allExposures = getIndividualExposures( verbose=False, **kwargs )
-    os.system("mkdir masks/exposures")
+    
+    allExposures = getIndividualExposures( **kwargs )
     for iExposure in tqdm.tqdm(allExposures):
         
         new_obj = cp(object_catalog)
         new_cat = new_obj[1].data
         
-        x, y = tools.deg2pix( iExposure, new_cat['X_WORLD'], new_cat['Y_WORLD'], extension=0)
+        x, y = tools.deg2pix( 
+            iExposure, 
+            new_cat['X_WORLD'], 
+            new_cat['Y_WORLD'], 
+            extension=0
+        )
         
         new_cat['X_IMAGE'] = x
         new_cat['Y_IMAGE'] = y
@@ -187,10 +194,14 @@ def main(  shear_catalog, object_catalog_fits, \
             
         new_obj.writeto('tmp_cat_mask.fits', overwrite=True)
         
-        main_single( shear_catalog, 'tmp_cat_mask.fits', 
-                    outFile='tmp_shear_rm.fits', plot_reg="masks/%s.mask" % iExposure )
+        main_single( shear_catalog, 
+                    'tmp_cat_mask.fits', 
+                    outFile='tmp_shear_rm.fits', 
+                    plot_reg="masks/%s.mask" % iExposure.replace('/','_')
+                   )
         
     os.system("cat masks/*.reg | grep polygon > star_masks.reg")
+    
     main_single(shear_catalog, object_catalog_fits, \
          mask_file='star_masks.reg', outFile=outFile, 
          mask_stars=False,  plot_reg=None)
@@ -207,9 +218,12 @@ def main(  shear_catalog, object_catalog_fits, \
     
     
 
-def main_single(  shear_catalog, object_catalog_fits, \
-         mask_file='mask.reg', outFile='Shear_remove.fits', 
-         mask_stars=True,  plot_reg=None):
+def main_single(  
+        shear_catalog, 
+        object_catalog_fits,
+        mask_file='mask.reg', 
+        outFile='Shear_remove.fits', 
+        mask_stars=True,  plot_reg=None ):
     '''
         This algoritm will do two things.
         a) Draw masks(polygon) around detected stars automatically and remove objects within the polygon.
@@ -223,11 +237,16 @@ def main_single(  shear_catalog, object_catalog_fits, \
     #-------------------------select the stars from the size vs mag diagram----------------------------------------------------
     
     object_catalog = fits.open(object_catalog_fits)[1].data
+   
+    if ~np.any(object_catalog['galStarFlag']==0):
+        return 
+      
+    indexes = (object_catalog['galStarFlag']==-1) & \
+            ( object_catalog['MAG_AUTO'] <  
+             np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0])
+            )
     
-    Star_catalogue = \
-      object_catalog[ (object_catalog['galStarFlag']==-1) &
-                      (object_catalog['MAG_AUTO'] < \
-        np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0]))]
+    Star_catalogue = object_catalog[ indexes ]
 
 
     data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
@@ -239,21 +258,22 @@ def main_single(  shear_catalog, object_catalog_fits, \
     orig_cols = data.columns
     new_cols = fits.ColDefs(cols)
     hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
-    clean_catalog = shear_catalog.split('.')[0]+'_clean.'+\
-        shear_catalog.split('.')[1]
+    clean_catalog = "%s.clean" % shear_catalog
+        
+    
     hdu.writeto(clean_catalog, overwrite=True)
 
        
 
     ##########plot remove_star.reg---------------------------------------------------------
     star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
-    print("Masking")
     for j in np.arange(len(Star_catalogue["ra"])):
         star_x=Star_catalogue["X_IMAGE"][j]
         star_y=Star_catalogue["Y_IMAGE"][j]
         m=Star_catalogue["MAG_AUTO"][j]
         inside,star_corr_one=instar(1,1,star_x,star_y,m)
         star_corr[j]=star_corr_one
+        
     if plot_reg is not None:
         plot_region_maskstar(plot_reg, star_corr)
     
@@ -262,7 +282,7 @@ def main_single(  shear_catalog, object_catalog_fits, \
     if mask_stars:
         Shears=fits.open(clean_catalog)[1].data
     ##go through the sources list:
-        for i in tqdm.tqdm(np.arange(len(Shears['ra']))):
+        for i in np.arange(len(Shears['ra'])):
             xl=Shears['X_IMAGE'][i]
             yl=Shears["Y_IMAGE"][i]
             for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
@@ -293,7 +313,6 @@ def main_single(  shear_catalog, object_catalog_fits, \
             if mask[0:3] != 'box' and mask[0:7] !='polygon':
                 continue
             elif mask[0:3] == 'box':
-                print("masking a box")
                 mask_x = float(mask.split('(')[1].split(',')[0])
                 mask_y = float(mask.split('(')[1].split(',')[1])
                 

@@ -14,7 +14,7 @@ import numpy as np
 import os
 import json
 
-def getIndividualExposures( verbose=True, **kwargs ):
+def getIndividualExposures(  **kwargs ):
     '''
     From an input file (named inputFIleName) return
     a list of names that are the input files that
@@ -43,9 +43,6 @@ def getIndividualExposures( verbose=True, **kwargs ):
     for iFile in  np.atleast_1d(exposureNameList):
         if not os.path.isfile(iFile):
             print("%s file not found" % iFile )
-        else :
-            if verbose:
-                print("%s found!" % iFile )
         fileCheck.append( os.path.isfile(iFile) )
     
     if np.all( np.array(fileCheck) == False):

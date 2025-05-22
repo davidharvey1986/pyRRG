@@ -2,6 +2,8 @@ import numpy as np
 from astropy.io import fits as py
 from astropy import wcs
 import os as os
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, append=True)
 
 def deg2pix( fits, ra, dec, extension=None):
     '''

@@ -10,7 +10,7 @@ def mmm( sky_vector,
          readnoise = False,
          nsky = False,
          integer = "discrete",
-         mxiter = 50,
+         mxiter = 100,
          minsky = 20,
          nan=True):
     """Estimate the sky background in a stellar contaminated field.
@@ -98,8 +98,8 @@ def mmm( sky_vector,
            Added MINSKY keyword                                         W.L.                       December, 2011
            Converted to Python                                          D. Jones                   January,  2014
     """
-
-    if nan: sky_vector = sky_vector[np.where(sky_vector == sky_vector)]
+    #print("Getting the background of the image, this can take a while for large images")
+    if nan: sky_vector = sky_vector[np.isfinite(sky_vector)]
     nsky = len( sky_vector )            #Get number of sky elements 
  
     if nsky < minsky:
@@ -141,7 +141,7 @@ def mmm( sky_vector,
     minimm = minimm -1               #Highest value reject at lower end of vector
 
     # Compute mean and sigma (from the first pass).
-    medianIndex = np.int(np.floor((minimm+maximm+1)/2))
+    medianIndex = int(np.floor((minimm+maximm+1)/2))
 
     skymed = 0.5*sky[medianIndex] + \
       0.5*sky[medianIndex + 1] #median 
@@ -170,7 +170,7 @@ def mmm( sky_vector,
             sigma=-1.0 ;  skew = 0.0   
             print(('ERROR - Too many ('+str(mxiter) + ') iterations,' + \
                       ' unable to compute sky'))
-#            import pdb; pdb.set_trace()
+
             return(skymod,sigma,skew)
 
         if ( maximm-minimm < minsky ):    #Error? 
@@ -269,8 +269,8 @@ def mmm( sky_vector,
     
         center = (minimm + 1 + maximm)/2.
         side = np.round(0.2*(maximm-minimm))/2.  + 0.25
-        j = np.int(np.round(center-side))
-        k = np.int(np.round(center+side))
+        j = int(np.round(center-side))
+        k = int(np.round(center+side))
 
         #  In case  the data has a large number of of the same (quantized) 
         #  intensity, expand the range until both limiting values differ from the 

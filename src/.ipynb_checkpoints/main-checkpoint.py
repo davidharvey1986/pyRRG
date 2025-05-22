@@ -77,11 +77,14 @@ def main(  ):
     #Find objects and measure their raw shapes
     if not os.path.isfile( sex_catalogue):
 
-        sources = at.source_extract( params['field'], params['weight_file'],
-                                         outfile=sex_catalogue,
-                                         conf_path=params['dirs'].sex_files,
-                                         zero_point=params['zero_point'],
-                                         extension=params['fits_extension'])
+        sources = at.source_extract( 
+            params['field'], 
+            params['weight_file'],
+            outfile=sex_catalogue,
+            conf_path=params['dirs'].sex_files,
+            zero_point=params['zero_point'],
+            extension=params['fits_extension']
+        )
     else:
         sources = fits.open( sex_catalogue )[1].data
 

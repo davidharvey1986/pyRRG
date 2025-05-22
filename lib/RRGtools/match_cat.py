@@ -1,6 +1,8 @@
 import os as os
 from astropy.io import fits
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, append=True)
 
 from . import color_color as color
 from numpy.lib.recfunctions import append_fields as append_rec

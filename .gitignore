@@ -1,3 +1,4 @@
+src/.ipynb_checkpoints
 trainStarGalClass/*
 unittests/bugFixPyRRG
 lib/asciidata/__pycache__/*

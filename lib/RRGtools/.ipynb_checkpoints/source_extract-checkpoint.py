@@ -7,9 +7,17 @@ import RRGtools as tools
 from numpy.lib.recfunctions import append_fields as append_rec
 
 
-def source_extract( image_name, weight_file, zero_point='jwst',
-                    dataDir='PWD', outfile=None, return_sources=True,
-                    stilts_dir='.', conf_path='.', extension=None):
+def source_extract( 
+        image_name, 
+        weight_file, 
+        zero_point='jwst',
+        outfile=None,   
+        return_sources=True,
+        stilts_dir='.', 
+        conf_path='.', 
+        extension=None
+    ):
+    
     '''
     Given that source extration is a difficult thing for the photometry
     I will use the Mathilde mehtod, in Python to do a wrapper
@@ -29,8 +37,7 @@ def source_extract( image_name, weight_file, zero_point='jwst',
     '''
     check_sex_files( conf_path )
     
-    if dataDir == 'PWD':
-        dataDir = os.getcwd()
+
         
     if zero_point == 'jwst':
 
@@ -53,7 +60,7 @@ def source_extract( image_name, weight_file, zero_point='jwst',
                  'FILTER_NAME':conf_path+'/gauss_5.0_9x9.conv'}
         
     if weight_file is not None:
-        conf_args['WEIGHT_IMAGE'] = dataDir+'/'+weight_file
+        conf_args['WEIGHT_IMAGE'] = weight_file
         conf_args['WEIGHT_TYPE'] = 'MAP_WEIGHT'
 
 

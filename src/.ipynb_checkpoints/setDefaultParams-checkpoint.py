@@ -104,7 +104,7 @@ def setDefaultParams( params ):
 
     
     
-    params['zero_point'] = params["telescope"] 
+    params['zero_point'] = params["telescope"].lower()
    
     
     if params['fits_extension'] is None:
