@@ -176,7 +176,9 @@ class galStar():
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
             if not os.path.isfile( codeDir+'/'+rfModel ):
-                print("Cannot Random Forest, please either contact david.harvey@epfl.ch or manually continue")
+                print("Cannot find Random Forest in %s, please either"+
+                      " contact david.harvey@epfl.ch or manually continue"
+                     % codeDir)
                 self.galStarFlag = np.zeros(len(sources))-2
                 if not self.batch_run:
                     self.generate_axes( sources)
