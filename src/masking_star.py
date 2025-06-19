@@ -37,13 +37,13 @@ def plot_region_maskstar( filename, star, convert_wcs=None, **kwargs):
             converted_star.append( converted_coord )
     else:
         converted_star = star
-    
+
     regionFile = open( filename, "w")
     regionFile.write('# Region file format: DS9 version 4.1\n')
     #regionFile.write('# Filename: dummy.fits\n')
     regionFile.write("global color=green dashlist=8 3 width=1 font='helvetica 10 normal roman' select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1\n")
     regionFile.write("image\n")
-    
+
     for j in range(len(star)):
         polygonStr = 'polygon('
         for i in converted_star[j]:
@@ -188,8 +188,14 @@ def main(
     mask_file='mask.reg', 
     outFile='Shear_remove.fits', 
     **kwargs):
+
+    if not 'verbose' in list(kwargs.keys()):
+        kwargs['verbose'] = False
+        
+    if kwargs['verbose']:
+        ngals = fits.open(shear_catalog)[1].data.shape[0]
     
-    main_single(
+    cleaned_shears = main_single(
         shear_catalog, 
         object_catalog_fits, \
         mask_file=mask_file, 
@@ -199,7 +205,10 @@ def main(
         report=True,
     )
     
-    
+    if kwargs['verbose']:
+        ncleaned = np.sum(cleaned_shears['clean'])
+        print("Cleaned %s galaxies" % ncleaned)
+        
     object_catalog = fits.open(object_catalog_fits)
     
     allExposures = getIndividualExposures( **kwargs )
@@ -233,25 +242,46 @@ def main(
         
         new_obj[1].data = new_cat[ isin ]
         if len(new_cat[ isin ]) == 0:
+            print("NO STARS IN EXPOSURE")
             continue
             
         new_obj.writeto('tmp_cat_mask.fits', overwrite=True)
-        
-        main_single( shear_catalog, 
-                    'tmp_cat_mask.fits', 
-                    outFile='tmp_shear_rm.fits', 
-                    plot_reg="masks/%s_mask.reg" % iExposure.replace('/','_'),
-                    convert_wcs=( iExposure, kwargs['field'] ),
-                    **kwargs
+
+        mask_name = iExposure.split('/')[-1]
+        cleaned_shears = main_single( cleaned_shears, 
+                                      'tmp_cat_mask.fits', 
+                                      outFile='tmp_shear_rm.fits', 
+                                      plot_reg="masks/%s_mask.reg" % mask_name,
+                                      convert_wcs=( iExposure, kwargs['field'] ),
+                                      **kwargs
                    )
-        
+        if kwargs['verbose']:
+            ncleaned = np.sum(cleaned_shears['clean'])
+            
+            print("Cleaned a total of %s galaxies" % ncleaned)
+
+    '''
     os.system("cat masks/*.reg | grep polygon > star_masks.reg")
-    
-    main_single(shear_catalog, object_catalog_fits, \
-         mask_file='star_masks.reg', outFile=outFile, 
-         mask_stars=False,  plot_reg=None)
+    if os.path.isfile(outFile):
+        main_single(outFile, object_catalog_fits, \
+                    mask_file='star_masks.reg', outFile=outFile, 
+                    mask_stars=False,  plot_reg=None)
+    else:
+        main_single(shear_catalog, object_catalog_fits, \
+                    mask_file='star_masks.reg',
+                    outFile=outFile, 
+                    mask_stars=False,
+                    plot_reg=None)
         
 
+    '''    
+
+    
+    fits.writeto(
+        outFile,
+        cleaned_shears[ cleaned_shears['clean'] == 0 ],
+        overwrite=True
+    )
     
     
 
@@ -279,95 +309,94 @@ def main_single(
     #-------------------------select the stars from the size vs mag diagram----------------------------------------------------
     
     object_catalog = fits.open(object_catalog_fits)[1].data
-   
-    if ~np.any(object_catalog['galStarFlag']==0):
-        return 
-      
-    indexes = (object_catalog['galStarFlag']==-1) & \
-            ( object_catalog['MAG_AUTO'] <  
-             np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0])
-            )
-    if ~np.any(indexes):
-        print("There are no saturated stars to mask out")
-        return
-        
-    Star_catalogue = object_catalog[ indexes ]
 
-    if report:
-        print("There are %i saturated stars to mask out" % len(Star_catalogue))
-        
-    if not os.path.isdir("masks"):
-        os.system("mkdir masks")
-        
-    data=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
-    clean=np.zeros(len(data['ra']))
-    cols = []
-    cols.append(
-                 fits.Column(name='clean', format='D', array= clean)
-                 )
-    orig_cols = data.columns
-    new_cols = fits.ColDefs(cols)
-    hdu = fits.BinTableHDU.from_columns(orig_cols + new_cols)
-    clean_catalog = "%s.clean" % shear_catalog
-        
-    
-    hdu.writeto(clean_catalog, overwrite=True)
-
-       
-
-    ##########plot remove_star.reg---------------------------------------------------------
-    star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
-    for j in np.arange(len(Star_catalogue["ra"])):
-        
-        star_x=Star_catalogue["X_IMAGE"][j]
-        star_y=Star_catalogue["Y_IMAGE"][j]
-        
-        m=Star_catalogue["MAG_AUTO"][j]
-        
-        inside,star_corr_one=instar( 1, 1,
-                                    star_x, star_y, m)
-        star_corr[j]=star_corr_one
-
-    if plot_reg is not None:
-        plot_region_maskstar(plot_reg, 
-                             star_corr, 
-                             convert_wcs=convert_wcs,
-                             **kwargs)
-    
-
-    ##-------------------------------start masking-------------------------------
-    if mask_stars:
-        Shears=fits.open(clean_catalog)[1].data
-    ##go through the sources list:
-        for i in np.arange(len(Shears['ra'])):
-            xl=Shears['X_IMAGE'][i]
-            yl=Shears["Y_IMAGE"][i]
-            for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
-                
-                star_x=Star_catalogue['X_IMAGE'][j]
-                star_y=Star_catalogue['Y_IMAGE'][j]
-                m=Star_catalogue["MAG_AUTO"][j]
-                
-                inside, star_corr_one = instar(
-                    xl, yl,
-                    star_x,star_y,
-                    m
-                )
-            
-                #star_corr[j]=star_corr_one
-                if inside==1:
-                    Shears['clean'][i]=1
-            
-
-
-        Shears_remove=Shears[Shears['clean']==0]
-
+    if type(shear_catalog) == str:
+        Shears=fits.open(shear_catalog)[1].data   ##remember to change it to the name of your shear catalogue
     else:
-        Shears_remove=fits.open(clean_catalog)[1].data
+        Shears=shear_catalog
+        
+    if 'clean' not in list(Shears.dtype.names):
 
-    fits.writeto(outFile, Shears_remove, overwrite=True, output_verify='ignore' )
+        clean=np.zeros(len(Shears['ra']))
+        cols = []
+        cols.append(
+            fits.Column(name='clean', format='D', array= clean)
+        )
+        orig_cols = Shears.columns
+        new_cols = fits.ColDefs(cols)
+        Shears = fits.BinTableHDU.from_columns(orig_cols + new_cols).data
+
+        
+
+    ##### Now start the automasking
+    if mask_stars:
+        if np.any(object_catalog['galStarFlag']==0):
+            
+            indexes = (object_catalog['galStarFlag']==-1) & \
+                ( object_catalog['MAG_AUTO'] <  
+                  np.min( object_catalog['MAG_AUTO'][ object_catalog['galStarFlag']==0])
+                 )
+            if np.any(indexes):
+           
+        
+                Star_catalogue = object_catalog[ indexes ]
+            
+                if report:
+                    print("There are %i saturated stars to mask out" % len(Star_catalogue))
+        
+                if not os.path.isdir("masks"):
+                    os.system("mkdir masks")
+                    
+
+                ##########plot remove_star.reg---------------------------------------------------------
+                star_corr=[[] for i in np.arange(len(Star_catalogue["ra"]))]
+                for j in np.arange(len(Star_catalogue["ra"])):
+                    
+                    star_x=Star_catalogue["X_IMAGE"][j]
+                    star_y=Star_catalogue["Y_IMAGE"][j]
+                    
+                    m=Star_catalogue["MAG_AUTO"][j]
+                
+                    inside, star_corr_one = instar(
+                        1, 1,
+                        star_x, star_y, m
+                    )
+                    
+                    star_corr[j]=star_corr_one
+
+                if plot_reg is not None:
+
+                    plot_region_maskstar(plot_reg, 
+                                     star_corr, 
+                                     convert_wcs=convert_wcs,
+                                     **kwargs)
     
-    ##-------------------------------start masking (for mask.reg)-------------------------------
+
+            ##-------------------------------start masking-------------------------------
+
+
+                ##go through the sources list:
+                for i in np.arange(len(Shears['ra'])):
+                    xl=Shears['X_IMAGE'][i]
+                    yl=Shears["Y_IMAGE"][i]
+                    for j in np.arange(len(Star_catalogue["ra"])):   #go through the star list
+                        
+                        star_x=Star_catalogue['X_IMAGE'][j]
+                        star_y=Star_catalogue['Y_IMAGE'][j]
+                        m=Star_catalogue["MAG_AUTO"][j]
+                        
+                        inside, star_corr_one = instar(
+                            xl, yl,
+                            star_x,star_y,
+                            m
+                        )
+            
+                        #star_corr[j]=star_corr_one
+                        if inside==1:
+                            Shears['clean'][i]=1
+                
+        
+        ##-------------------------------start masking (for mask.reg)-------------------------------
     if os.path.isfile(mask_file):
         mask_obj = open(mask_file, 'r')
         
@@ -387,8 +416,8 @@ def main_single(
                 
                 mask_angle = float(mask.split('(')[1].split(',')[4][:-2])
                 #rotate the shears into fram of reference of the mask
-                shears_x_mask_ref = tools.ra_separation(Shears_remove['X_WORLD'], mask_y, mask_x , mask_y)
-                shears_y_mask_ref = (Shears_remove['Y_WORLD'] - mask_y)*3600.
+                shears_x_mask_ref = tools.ra_separation(Shears['X_WORLD'], mask_y, mask_x , mask_y)
+                shears_y_mask_ref = (Shears['Y_WORLD'] - mask_y)*3600.
                 
                 shears_x_mask_rot = np.cos(mask_angle*np.pi/180.)*shears_x_mask_ref + \
                                     np.sin(mask_angle*np.pi/180.)*shears_y_mask_ref
@@ -399,8 +428,9 @@ def main_single(
                     (shears_x_mask_rot > -mask_sizex/2.) &\
                         (shears_y_mask_rot < mask_sizey/2.) &\
                             (shears_y_mask_rot > -mask_sizey/2.)
-    
-                Shears_remove = Shears_remove[ inBox == False ]
+
+
+                Shears['clean'][ inBox  ] = 1
           
             elif mask[0:7] =='polygon':
                 mask_x = mask.split('(')[1].split(',')[::2]
@@ -408,15 +438,14 @@ def main_single(
                 mask_y = mask.split('(')[1].split(',')[1::2]
                 mask_y[-1] = mask_y[-1][:-2]
                 py1 = [float(i) for i in mask_y]
-                for k in np.arange(len(Shears_remove['ra'])):
-                    xl=Shears_remove['X_WORLD'][k]
-                    yl=Shears_remove['Y_WORLD'][k]
+                for k in np.arange(len(Shears['ra'])):
+                    xl=Shears['X_WORLD'][k]
+                    yl=Shears['Y_WORLD'][k]
                     inside=inpoly(xl,yl,px1,py1)
                     if inside==1:
-                        Shears_remove['clean'][k]=1
-                Shears_remove=Shears_remove[Shears_remove['clean']==0]
-
-        fits.writeto(outFile,Shears_remove, overwrite=True,output_verify='ignore' )
-
-
-    return
+                        Shears['clean'][k]=1
+                        
+  
+                        
+    
+    return Shears
