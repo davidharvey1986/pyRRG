@@ -217,17 +217,20 @@ def main(
         print("WARNING: MASKING %i EXPOSURES -> COULD TAKE SOME TIME" % len(allExposures))
 
     #Do rerun masking on images with the same orietnatoin
-    orient_done = []
+    orient_done = {}
     
     for iExposure in tqdm.tqdm(allExposures):
-
+        mask_name = "masks/%s_mask.reg" % iExposure.split('/')[-1]
+        
         orientation = fits.open(iExposure)[
             kwargs['fits_extension']].header[kwargs['orientation_header']]
                                              
-        if orientation in orient_done:
+        if orientation in list(orient_done.keys()):
+            #cp the mask so clear to user that it has done it
+            os.system("cp %s %s" % ( orient_done[orientation], mask_name))
             continue
         
-        orient_done.append(orientation)
+        orient_done[orientation] = mask_name
         
         new_obj = cp(object_catalog)
         new_cat = new_obj[1].data
@@ -258,11 +261,11 @@ def main(
             
         new_obj.writeto('tmp_cat_mask.fits', overwrite=True)
 
-        mask_name = iExposure.split('/')[-1]
+
         cleaned_shears = main_single( cleaned_shears, 
                                       'tmp_cat_mask.fits', 
                                       outFile='tmp_shear_rm.fits', 
-                                      plot_reg="masks/%s_mask.reg" % mask_name,
+                                      plot_reg=mask_name,
                                       convert_wcs=( iExposure, kwargs['field'] ),
                                       **kwargs
                    )
