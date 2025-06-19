@@ -215,8 +215,19 @@ def main(
     
     if len(allExposures) > 10:
         print("WARNING: MASKING %i EXPOSURES -> COULD TAKE SOME TIME" % len(allExposures))
-        
+
+    #Do rerun masking on images with the same orietnatoin
+    orient_done = []
+    
     for iExposure in tqdm.tqdm(allExposures):
+
+        orientation = fits.open(iExposure)[
+            kwargs['fits_extension']].header[kwargs['orientation_header']]
+                                             
+        if orientation in orient_done:
+            continue
+        
+        orient_done.append(orientation)
         
         new_obj = cp(object_catalog)
         new_cat = new_obj[1].data
@@ -230,7 +241,7 @@ def main(
         
         new_cat['X_IMAGE'] = x
         new_cat['Y_IMAGE'] = y
-       
+        
         
         isin, oritentaion = acs_limits( 
             x, 
@@ -238,8 +249,8 @@ def main(
             iExposure, 
             kwargs
         )
-    
         
+
         new_obj[1].data = new_cat[ isin ]
         if len(new_cat[ isin ]) == 0:
             print("NO STARS IN EXPOSURE")
