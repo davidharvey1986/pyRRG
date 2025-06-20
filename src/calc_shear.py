@@ -128,6 +128,7 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     ellipticity_sqr = momc['e1']**2+momc['e2']**2
     e_dot_u = momc['e1']*u1+momc['e2']*u2
     e_cross_u = momc['e1']*u2-momc['e2']*u1
+    snr = momc['FLUX_AUTO']/momc['FLUXERR_AUTO']
     
     if kwargs['verbose']:
         print("Using STAT TYPE : %s" % kwargs['stat_type'])
@@ -148,14 +149,14 @@ def calc_shear( corrected_moments, outfile, **kwargs):
         g1_model = np.zeros(len(gal_lambda))+G1
     elif kwargs['stat_type'] =='snr':
 
-        snr = momc['FLUX_AUTO']/momc['FLUXERR_AUTO']
 
-        snr = snr[np.isfinite(g1_gal)]
+
+        snr_clean = snr[np.isfinite(g1_gal)]
         g1_gal = g1_gal[np.isfinite(g1_gal)]
 
 
-        g1_gal_cut=g1_gal[snr<30]
-        snr_cut = snr[snr<30]
+        g1_gal_cut=g1_gal[snr_clean<30]
+        snr_cut = snr_clean[snr_clean<30]
         is_not_nan = np.isfinite(snr_cut*g1_gal_cut)
 
         try:
@@ -169,6 +170,17 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 
         G1 = g1_func( snr, *popt)
         g1_model = G1
+    elif  kwargs['stat_type'].lower() =='cosmos':
+        #https://arxiv.org/pdf/astro-ph/0702359 page 18
+        popt = [
+            1.125, 0.04, 17., 4
+        ]
+        
+    
+
+        G1 = g1_func( snr, *popt)
+        g1_model = G1
+        
     else:
         raise ValueError("Stat type not recognised")
     
@@ -177,16 +189,33 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 
     fits_cols = []
     for iName in momc.columns.names:
-        fits_cols.append( fits.Column(name=iName, format=momc[iName].dtype, array=momc[iName] ) )
+        if  (iName == 'gamma1' or
+            iName == 'gamma2' or
+            iName == 'g1_gal' or
+            iName == 'g1_model' or
+            iName == 'gal_lambda' or
+            iName == 'e_dot_u' or
+            iName == 'snr'
+            ):
+            if kwargs['verbose']:
+                print("Warning: Found existing name (%s): overwriting" % iName)
+        else:
+            fits_cols.append(
+                fits.Column(name=iName,
+                        format=momc[iName].dtype,
+                        array=momc[iName]
+                        ) )
 
 
 
+            
     newcol = [ fits.Column(name='gamma1', format=gamma1.dtype, array=gamma1),
                fits.Column(name='gamma2', format=gamma2.dtype, array=gamma2),
                fits.Column(name='g1_gal', format=g1_gal.dtype, array=g1_gal),
                fits.Column(name='g1_model', format=g1_model.dtype, array=g1_model),
                 fits.Column(name='gal_lambda', format=gal_lambda.dtype, array=gal_lambda),
-                fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u)
+                fits.Column(name='e_dot_u', format=e_dot_u.dtype, array=e_dot_u),
+                   fits.Column(name='snr', format=e_dot_u.dtype, array=snr)
               ]
 
  
@@ -196,3 +225,4 @@ def calc_shear( corrected_moments, outfile, **kwargs):
 def g1_func( snr, a, b, c, d):
 
     return a + b*np.arctan( ( snr - c)/d)
+
