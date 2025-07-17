@@ -74,3 +74,5 @@ if __name__ == "__main__":
 
     if sys.argv[1] == 'RF':
         trainDataRF()
+    elif sys.argv[1] == 'SVM':
+        trainDataSVM()

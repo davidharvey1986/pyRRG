@@ -1,4 +1,4 @@
-'''
+'''AA
 This program is going to generate the trainig data.
 
 It needs a load of images at varying depth, of which the moments
@@ -11,6 +11,7 @@ For now I will just use the SLACS images that i have downloaded.
 But in the future i will require varying depth
 
 '''
+from tqdm import tqdm
 import ipdb as pdb
 import RRGtools as at
 import glob as glob
@@ -52,7 +53,7 @@ def filesToRecArray( files ):
     They MUST have the same dtypes
     '''
     
-    for i, iFile in enumerate(files):
+    for i, iFile in enumerate(tqdm(files)):
         
         data, iStarGalClass = matchStarGalaxiesToData( iFile )
         
@@ -66,8 +67,11 @@ def filesToRecArray( files ):
             starGalClass = starGalNoNan
             allData = iDataNoNan
         else:
-            
-            iFileData = rec2array( data )
+            try:
+                iFileData = rec2array( data )
+            except:
+                print("%s Failed" % iFile)
+                continue
             iDataNoNan, starGalNoNan = \
               removeNans( iFileData, iStarGalClass )
 
@@ -105,7 +109,7 @@ def rec2array( recArray):
     '''
 
     #dont include the errors in this fit
-    includeNames = [ i for i in list(recArray.columns.names) if not 'err' in i ]
+    #includeNames = [ i for i in list(recArray.columns.names) if not 'err' in i ]
     #includeNames.remove('skymed')
     #includeNames.remove('exp_time')
     #includeNames.remove('skysw')
@@ -113,9 +117,9 @@ def rec2array( recArray):
 
 
     includeNames = \
-      ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
+      ['MAG_AUTO','gal_size','MU_MAX','RADIUS','FLUX_AUTO',\
            'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
-      'ell','skymed','exp_time','skysd']
+       'ell','skymed','exp_time','skysd']
    
     newArray = np.zeros((len(recArray),len(includeNames)), float)
 
@@ -143,7 +147,7 @@ def getFeatureLabels( fitsFile ):
     namesNoErr = \
       ['MAG_AUTO','gal_size','MU_MAX','MAG_ISO','RADIUS','FLUX_AUTO',\
            'xxxx','yyyy','xyyy','xxyy','xx','xy','yy','e1','e2','prob',\
-      'ell','skymed','exp_time','skysd']
+      'ell','exp_time','skysd']
     print(namesNoErr)
 
     return np.array(namesNoErr)
@@ -167,7 +171,7 @@ def matchStarGalaxiesToData( iFile ):
     dataCols = data.columns + fits.ColDefs(newIDcol)
     dataWithID =  fits.BinTableHDU.from_columns(dataCols)
     
-    dataWithID.writeto('DataID.fits', clobber=True)
+    dataWithID.writeto('DataID.fits', overwrite=True)
     matchedGalaxyData = at.run_match(cluster+'_galaxies.fits',\
                                          'DataID.fits')[1].data
 
@@ -191,8 +195,6 @@ def removeNans( newArray, starGal ):
     nanCheck = np.isfinite(np.sum(newArray, axis=1))
     newArrayNansRemoved = newArray[nanCheck, :]
     Nremoved = newArray.shape[0] - newArrayNansRemoved.shape[0]
-    
-    print(("%i/%i removed due to nans" % (Nremoved, newArray.shape[0])))
 
     nanCheckField = np.isfinite(np.sum(newArray, axis=0))
 
