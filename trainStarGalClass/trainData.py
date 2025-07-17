@@ -1,4 +1,4 @@
-'''
+'''A
 This script will train the data at the moment using a very simple
 logisitic regression
 
@@ -12,6 +12,7 @@ import generateTrainingData as gt
 import pickle as pkl
 import time
 import ipdb as pdb
+import sys
 
 def trainDataSVM(nSamples=60000):
     pickleFileName = 'starGalaxyModelSVM.pkl'
@@ -39,7 +40,7 @@ def trainDataSVM(nSamples=60000):
     pkl.dump(fitClassifier, open(pickleFileName,'wb'))
     return pickleFileName
     
-def trainDataRF(nTrees=100, retrain=True):
+def trainDataRF(nTrees=1000, retrain=True):
     '''
     This uses a random forest to classify the data
     '''
@@ -69,3 +70,7 @@ def trainDataRF(nTrees=100, retrain=True):
     
     return pickleFileName
 
+if __name__ == "__main__":
+
+    if sys.argv[1] == 'RF':
+        trainDataRF()

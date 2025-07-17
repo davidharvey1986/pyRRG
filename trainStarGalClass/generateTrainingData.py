@@ -14,7 +14,7 @@ But in the future i will require varying depth
 import ipdb as pdb
 import RRGtools as at
 import glob as glob
-import pyfits as fits
+from astropy.io import fits
 import numpy as np
 import numpy.lib.recfunctions as rec
 import pickle as pkl
