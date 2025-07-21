@@ -15,15 +15,19 @@ from matplotlib import pyplot as plt
 import numpy as np
 from numpy.lib.recfunctions import append_fields as append_rec
 import os as os
-def findClusterMembers( red_band, blue_band, outname='cluster_mem_rem.fits'):
+def findClusterMembers( 
+        red_band, 
+        blue_band, 
+        outname='cluster_members.fits'
+    ):
     '''
     INPUTS:
         - red_band is the name of the observation in the redder band
         - blue_band is the name of the observation in the bluer band
 
     OUTPUTS
-        - a joint catalogue with the two magnitudes, but with the cluster members 
-        removed.
+        - a joint catalogue with the two magnitudes, of the cluster members 
+        to be passed to pyRRG.
 
     NOTE: It changes the name of the magnitudes within the structure, so the 
         name of the file is assumed to be ${OBJECTNAME}_${FILTER}_drz_sci.fits
@@ -56,9 +60,15 @@ def findClusterMembers( red_band, blue_band, outname='cluster_mem_rem.fits'):
 
 
     while True:
-        UpperThreshold = np.float(input('Please input the upper threshold of the red-sequence: '))
-        LowerThreshold = np.float(input('Please input the lower threshold of the red-sequence: '))
-        MagThreshold = np.float(input('Please input the magnitude threshold of the red-sequence: '))
+        UpperThreshold = np.float(
+            input('Please input the upper threshold of the red-sequence: ')
+        )
+        LowerThreshold = np.float(
+            input('Please input the lower threshold of the red-sequence: ')
+        )
+        MagThreshold = np.float(
+            input('Please input the magnitude threshold of the red-sequence: ')
+        )
 
         clusterMembers =  (color < UpperThreshold) & \
           (color > LowerThreshold) & \
@@ -91,7 +101,8 @@ def findClusterMembers( red_band, blue_band, outname='cluster_mem_rem.fits'):
                             
     final_cat = fits.BinTableHDU.from_columns(joint_columns)
    
-    final_cat.writeto( outname, clobber=True)
+    final_cat.writeto( outname, overwrite=True)
+    
     return fits.open(outname)
                        
                                   
