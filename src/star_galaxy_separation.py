@@ -226,10 +226,10 @@ class galStar():
             to go backwards
             '''
             self.locus = {}
-            self.locus['StarsLowCut'] = np.quantile(sources['MU_MAX'][ self.galStarFlag == 0 ], 0.01 )
+            self.locus['StarsLowCut'] = np.quantile(sources['MU_MAX'][ self.galStarFlag == 0 ], 0.05 )
             self.locus['StarsUpCut'] =  np.max(sources['MU_MAX'][ self.galStarFlag == 0 ] )
 
-            self.locus['GalLowCut'] =  np.quantile(sources['MU_MAX'][ self.galStarFlag == 1 ], 0.01 )
+            self.locus['GalLowCut'] =  np.quantile(sources['MU_MAX'][ self.galStarFlag == 1 ], 0.05 )
             
             popt, pope = curve_fit( 
                 lin_fit, 
@@ -245,7 +245,7 @@ class galStar():
             self.locus['IntGal'] = popt[0] + np.max(residual)
 
             self.locus['GradStarsLowCut'] =  popt[1]
-            self.locus['IntStarsLowCut'] = popt[0] + np.quantile(residual, 0.01)
+            self.locus['IntStarsLowCut'] = popt[0] + np.quantile(residual, 0.05)
             
             
             
