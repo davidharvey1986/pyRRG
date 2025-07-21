@@ -7,7 +7,6 @@ def write_rrgparams_to_header( fitsname, params, outputname=None):
     Write all the rrg params to the header of the catalogue for
     future knowledge
     '''
-
     hdu = fits.open(fitsname)
 
 

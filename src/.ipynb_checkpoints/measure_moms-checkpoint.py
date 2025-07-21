@@ -143,7 +143,12 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
         else:
             yGal = kwargs['yGal']
     except:
-        xGal, yGal = at.deg2pix( fits_image, object_catalogue['RA'], object_catalogue['DEC'] )
+        xGal, yGal = at.deg2pix(
+            fits_image,
+            object_catalogue['RA'],
+            object_catalogue['DEC'],
+            extension=kwargs['fits_extension']
+        )
 
   
     ysize= imhead['NAXIS2']
@@ -152,7 +157,9 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
     if kwargs['weight_file'] is None:
         wt_image = np.ones( img.shape)
     else:
-        wt_image = fits.open( kwargs['weight_file'] )[0].data
+        print("Getting weight image from %s with ext %i" %
+              (kwargs['weight_file']  , kwargs['wht_fits_extension']))
+        wt_image = fits.open( kwargs['weight_file'] )[kwargs['wht_fits_extension']].data
 
 
 
@@ -194,9 +201,9 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
     
     galaxy_moments = moms( nGalaxies, radius=radius )
 
-    print("Measuring Object Moments")
-    for i in tqdm(range( nGalaxies )):
-        
+
+    for i in range( nGalaxies ):
+
         #following changed by jrhodes to account for different indexing in SExtractor and IDL
        
 
@@ -486,7 +493,7 @@ class moms( dict ):
 
     def calc_e1e2( self, mult_rad=1 ):
         self.__dict__['e1']=(self.xx-self.yy)/ (self.xx+self.yy)
-        self.e2=2.*self.xy/(self.xx+self.yy)
+        self.__dict__['e2']=2.*self.xy/(self.xx+self.yy)
 
         self.__dict__['e1_err'] = np.sqrt( ((self.xx+self.yy)**(-2))*\
                                (self.error.xx**2*(1-self.e1)**2 + \

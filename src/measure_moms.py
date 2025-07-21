@@ -202,7 +202,6 @@ def measure_moms(fits_image, sex_catalog, outfile, verbose=False, **kwargs):
     galaxy_moments = moms( nGalaxies, radius=radius )
 
 
-
     for i in range( nGalaxies ):
 
         #following changed by jrhodes to account for different indexing in SExtractor and IDL

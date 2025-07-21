@@ -2,7 +2,11 @@ from astropy.io import fits
 import RRGtools as at
 import numpy as np
 
-def remove_galaxy_members( galaxy_filename, shear_filename, outfile=None ) :
+def remove_galaxy_members( 
+    galaxy_filename, 
+    shear_filename, 
+    outfile=None,
+    verbose=False) :
     '''
     Remove a fits table of galaxy members
     
@@ -18,10 +22,30 @@ def remove_galaxy_members( galaxy_filename, shear_filename, outfile=None ) :
     except:
         raise ValueError("Input shear catalogue is not a fits file")
     
-    matched_cat = at.run_match( galaxy_filename, shear_filename, search_rad=1. )[1].data
+    matched_cat = at.run_match( 
+        galaxy_filename, 
+        shear_filename, 
+        search_rad=1. )[1].data
     
     nGalaxies = shear_cat.shape[0]
-    rm_gals = [ np.arange(nGalaxies)[shear_cat['NUMBER'] == i] for i in matched_cat['NUMBER'] ]
+    
+    if np.any('NUMBER' == np.array(matched_cat.dtype.names)):
+        rm_gals = np.concatenate([ 
+            np.arange(nGalaxies)[shear_cat['NUMBER'] == i]
+            for i in matched_cat['NUMBER']
+        ])
+    else:
+
+        rm_gals = np.concatenate([ 
+            np.arange(nGalaxies)[shear_cat['NUMBER'] == i]
+            for i in matched_cat['NUMBER_2']
+        ])
+
+    if verbose:
+        print(
+            "Removing %i cluster members from the final catalogue "
+             % (len(rm_gals) )
+        )
     keep_gals = np.ones(nGalaxies)
     keep_gals[ rm_gals ] = 0
                         

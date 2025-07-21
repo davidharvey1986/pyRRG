@@ -36,16 +36,27 @@ def findClusterMembers(
                  os.path.isfile( blue_band ) ):
         raise ValueError("File not found")
     
+    try:
+        red_band_filter = fits.open(red_band)[1].header['RRG-filter']
+        blue_band_filter = fits.open(blue_band)[1].header['RRG-filter']
+    except:
+        print("FAILED TO FIND RED AND BLUE "+
+              "FILTERS IN HEADER USING 'RED' and 'BLUE'")
+        
+        red_band_filter = 'RED'
+        blue_band_filter = 'BLUE'
+  
     
     joint_catalogue = tools.run_match( red_band, blue_band)
 
     #This assumes the name of the file is in the order  ${OBJECTNAME}_${FILTER}_drz_sci.fits
-    red_band_filter = red_band.split('_')[1]
-    blue_band_filter = blue_band.split('_')[1]
+    
+    print(red_band_filter,blue_band_filter)
     joint_catalogue[1].data = append_rec( joint_catalogue[1].data, \
                                               red_band_filter, \
                                               joint_catalogue[1].data['MAG_AUTO_1'], \
                                               usemask=False, asrecarray=True)
+    
     joint_catalogue[1].data = append_rec( joint_catalogue[1].data,\
                                               blue_band_filter, \
                                               joint_catalogue[1].data['MAG_AUTO_2'], \
@@ -60,13 +71,13 @@ def findClusterMembers(
 
 
     while True:
-        UpperThreshold = np.float(
+        UpperThreshold = float(
             input('Please input the upper threshold of the red-sequence: ')
         )
-        LowerThreshold = np.float(
+        LowerThreshold = float(
             input('Please input the lower threshold of the red-sequence: ')
         )
-        MagThreshold = np.float(
+        MagThreshold = float(
             input('Please input the magnitude threshold of the red-sequence: ')
         )
 
@@ -98,12 +109,12 @@ def findClusterMembers(
                 fits.Column(name=final_cat_name, \
                             array=final_data[final_cat_names[i]], \
                             format=final_data[final_cat_names[i]].dtype))
-                            
+    
+    
     final_cat = fits.BinTableHDU.from_columns(joint_columns)
    
     final_cat.writeto( outname, overwrite=True)
     
-    return fits.open(outname)
                        
                                   
     

@@ -94,16 +94,17 @@ def main(  ):
     if not os.path.isfile(uncorrected_moments_cat):
         measure_moms( params['field'], sex_catalogue,
                                  uncorrected_moments_cat, **params)
+        
 
     uncorrected_moments = fits.open( uncorrected_moments_cat )[1].data
  
 
-    
     sgs.star_galaxy_separation( uncorrected_moments,
                                 outfile=uncorrected_moments_cat,
                                 batch_run=params['batch_run'],
                                 verbose=params['verbose'])
-  
+    write_rrgparams_to_header( uncorrected_moments_cat, params )
+ 
     corrected_moments_cat =params['root_name']+"_cor.cat"
 
     #Correct for the PSF
@@ -141,13 +142,17 @@ def main(  ):
     
     if params['cluster_members_cat'] is not None:
         print("Removing Cluster Members from %s" % params['cluster_members_cat'])
-        remove_galaxy_members( params['cluster_members_cat'], clean_cat)
+        remove_galaxy_members( 
+            params['cluster_members_cat'], 
+            clean_cat,
+            verbose=params['verbose']
+        )
     
     if not params['batch_run']:
         plot.plot_shears( clean_cat )
 
     write_rrgparams_to_header( clean_cat, params )
-    
+   
     etr.ellipse_to_reg( clean_cat )
     
     lenstool_file = params['root_name']+".lenstool"
