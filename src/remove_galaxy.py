@@ -25,10 +25,10 @@ def remove_galaxy_members(
     matched_cat = at.run_match( 
         galaxy_filename, 
         shear_filename, 
-        search_rad=1. )[1].data
+        search_rad=2. )[1].data
     
     nGalaxies = shear_cat.shape[0]
-    
+
     if np.any('NUMBER' == np.array(matched_cat.dtype.names)):
         rm_gals = np.concatenate([ 
             np.arange(nGalaxies)[shear_cat['NUMBER'] == i]
@@ -38,7 +38,7 @@ def remove_galaxy_members(
 
         rm_gals = np.concatenate([ 
             np.arange(nGalaxies)[shear_cat['NUMBER'] == i]
-            for i in matched_cat['NUMBER_2']
+            for i in matched_cat['NUMBER_1']
         ])
 
     if verbose:

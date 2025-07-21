@@ -47,7 +47,7 @@ def findClusterMembers(
         blue_band_filter = 'BLUE'
   
     
-    joint_catalogue = tools.run_match( red_band, blue_band)
+    joint_catalogue = tools.run_match( red_band, blue_band, search_rad=3)
 
     #This assumes the name of the file is in the order  ${OBJECTNAME}_${FILTER}_drz_sci.fits
     
@@ -105,6 +105,7 @@ def findClusterMembers(
             final_cat_name = '_'.join(final_cat_names[i].split('_')[:-1])
         else:
             final_cat_name = final_cat_names[i]
+            
         joint_columns.append( \
                 fits.Column(name=final_cat_name, \
                             array=final_data[final_cat_names[i]], \
