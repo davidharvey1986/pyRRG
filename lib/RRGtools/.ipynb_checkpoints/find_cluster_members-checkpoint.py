@@ -1,9 +1,9 @@
 '''
-Remove cluster members from catlogue
+Find cluster members in catlogue
 
 This algorithm will take 2 filters from HST and match the catalogues
 It will then look and the color-magnitude plot and find the red sequence.
-From this it wil remove galaxies that appear to be in the cluster from the catalogue
+From this it will find the cluster memebrs - this can then be passed through pyRRG to remove them with the --cluster_members keyword
 
 
 It requires that the pyRRG code has been run on two different bands of the same cluster
