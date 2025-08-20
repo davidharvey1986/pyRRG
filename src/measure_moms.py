@@ -495,17 +495,38 @@ class moms( dict ):
         self.__dict__['e1']=(self.xx-self.yy)/ (self.xx+self.yy)
         self.__dict__['e2']=2.*self.xy/(self.xx+self.yy)
 
-        self.__dict__['e1_err'] = np.sqrt( ((self.xx+self.yy)**(-2))*\
-                               (self.error.xx**2*(1-self.e1)**2 + \
-                                self.error.yy**2*(1+self.e1)**2-\
-                                2.*(1-self.e1*self.e1)*self.error.xxyy))
+        '''
+        This returns a lot of errors, (sqrt(negative)) so now
+        i introduce classical error propagation
+        
+        self.__dict__['e1_err'] = np.sqrt( 
+                ((self.xx+self.yy)**(-2))*
+                 (self.error.xx**2*(1-self.e1)**2 + 
+                  self.error.yy**2*(1+self.e1)**2-
+                  2.*(1-self.e1*self.e1)*self.error.xxyy)
+        )
                                 
-        self.__dict__['e2_err'] = np.sqrt( ((self.xx+self.yy)**(-2))*\
-                               ((self.error.xx**2+self.error.yy**2+\
-                                 2.*self.error.xxyy)*self.e2**2+\
-                                 4.*(self.error.xy**2-self.e2*\
-                                     (self.error.xxxy*self.error.xyyy))))
-
+        self.__dict__['e2_err'] = np.sqrt( 
+                ((self.xx+self.yy)**(-2))*\
+                ((self.error.xx**2+self.error.yy**2+\
+                2.*self.error.xxyy)*self.e2**2+\
+                4.*(self.error.xy**2-self.e2*\
+                (self.error.xxxy*self.error.xyyy))))
+        '''
+        norm = (self.xx+self.yy)
+        
+        self.__dict__['e1_err'] =  np.sqrt(
+            self.error.xx**2*np.power( 2*self.yy/norm**2, 2) +
+            self.error.yy**2*np.power( 2*self.xx/norm**2, 2)
+        )
+        
+        self.__dict__['e2_err'] =  np.sqrt(
+            self.error.xx**2*np.power( 2*self.xy/norm**2, 2) +
+            self.error.yy**2*np.power( 2*self.xy/norm**2, 2) +
+            self.error.xy**2*np.power( 2./norm, 2)
+        )    
+        
+        
         self.__dict__['ell'] = np.sqrt( self.e1**2 + self.e2**2)
         self.__dict__['pa'] = 0.5*np.arctan2(self.e2, self.e1)*180./np.pi
         
