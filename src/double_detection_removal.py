@@ -4,8 +4,11 @@ from scipy import spatial
 import matplotlib.pyplot as plt
 
 def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
-    hdulist=fits.open(rrg_catalogue)
-    data_org=hdulist[1].data
+    if type(rrg_catalogue) == str:
+        hdulist = fits.open(rrg_catalogue)
+        data_org = hdulist[1].data
+    else:
+        data_org = rrg_catalogue
     print("Num of objects in the rrg catalogue: %i" % len(data_org))
 
     x=np.array(data_org['X_IMAGE'])
@@ -38,6 +41,8 @@ def remove_object(rrg_catalogue, output_catalogue, FWHM_to_radius=1):
     data_org=data_org[sort_data[:, 3].astype(int)]
 
     print(("Num of objects after removing double-detection: %i" % len(data_org)))
+    if not type(rrg_catalogue) == str:
+        return data_org
         
     fits.writeto(output_catalogue, data=data_org, \
                      header=hdulist[1].header, \
