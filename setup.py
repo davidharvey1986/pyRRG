@@ -1,11 +1,11 @@
-#!/usr/local/bin/python3                                                        
+#!/usr/local/bin/python3                      AA                                  
 import sys,os,string,glob,subprocess
 
 from setuptools import setup,Extension
 from setuptools.command.build_ext import build_ext
 from setuptools.command.install import install
 
-import numpy
+
 
 
 
@@ -49,7 +49,8 @@ setup   (       name            = "pyRRG",
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['scikit-learn',\
                                    'numpy', 'tqdm', \
-                                    'scipy'],                          
+                                   'scipy','astropy',
+                                  'matplotlib'],                          
         )
 
 
