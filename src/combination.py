@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.special import factorial
 def combination( n, k):
 
     '''
@@ -17,5 +17,5 @@ def combination( n, k):
     ;              K!(N-K)!
     '''
     
-    return np.math.factorial(n)/(np.math.factorial(k)*np.math.factorial(n-k))
+    return factorial(n)/(factorial(k)*factorial(n-k))
 
