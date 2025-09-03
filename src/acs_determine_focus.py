@@ -11,9 +11,9 @@ def acs_determine_focus_metric( true, model ):
     match
     '''
 
-    dof = np.max( [float((len(model.e1)-1)), 1])
-    goodness_of_fit = np.sum( (true['e1']-model.e1)**2+(true['e2']-model.e2)**2) /dof
-    
+    #dof = np.max( [float((len(model.e1)-1)), 1])
+    goodness_of_fit = np.nanmean( (true['e1']-model.e1)**2+(true['e2']-model.e2)**2)
+
     return goodness_of_fit
 
 
@@ -85,8 +85,9 @@ def acs_determine_focus( unknown_focus_image,
                     xGal=inframe_stars[image_name+'_X_IMAGE'],
                     yGal=inframe_stars[image_name+'_Y_IMAGE'],
                     mult=2, min_rad=6,  quiet=True)
-        
+
         star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
+        
         model_e, focus = acs_model.acs_model_e(
             star_moments[image_name+'_X_IMAGE'],
             star_moments[image_name+'_Y_IMAGE'], 
@@ -104,7 +105,9 @@ def acs_determine_focus( unknown_focus_image,
         )
 
     #Now get an array of moments for all the possible focus positions
+    
 
+    
     #Number of focus positions
     n_focus, nobjects = model_e.xx.shape
     focus = np.arange(16)-10
@@ -112,7 +115,9 @@ def acs_determine_focus( unknown_focus_image,
 
     
     # Select only those stars with a suitably close model (since we're not interpolating)
-    close_match = np.arange(nobjects)[average_distance < r_match]
+    close_match = np.arange(nobjects)[
+        (average_distance < r_match) 
+    ]
     
     n_stars=len(close_match)
     if n_stars < 2:
@@ -151,10 +156,11 @@ def acs_determine_focus( unknown_focus_image,
             model['xxyy'][0] = model_e.xxyy[f,close_match][i]
             model['xyyy'][0] = model_e.xyyy[f,close_match][i]
             model['yyyy'][0] = model_e.yyyy[f,close_match][i]
+
             
             chisq[f]=acs_determine_focus_metric(true[i], model)
             
-
+        
         best_fit_focus_indiv[ 0, i ] = focus[ np.argmin( chisq )]
         best_fit_focus_indiv[ 1, i ] = np.min(chisq)
 
