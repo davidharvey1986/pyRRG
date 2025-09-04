@@ -135,11 +135,12 @@ class galStar():
                      batch_run=False,
                      locus=None
                     ):
-
-            #These store the plotted points and the order they are plotted
-            #so they can be removed if the user decideds to undo a line
             if locus is not None:
                 self.locus = locus
+            else:
+                self.locus = None
+            #These store the plotted points and the order they are plotted
+            #so they can be removed if the user decideds to undo a line
             self.generateNumpyArrayWithNoNans( sources )
             self.include_sat = include_sat
             self.star_points = []
@@ -147,6 +148,7 @@ class galStar():
             #all sources that are predicted to be noise
             self.noise_points = []
             self.manual=False
+
             self.alreadyDefinedStarGalaxySeparation(sources)
             self.batch_run=batch_run
             if (not self.fieldExists) | (redo_separation):
@@ -154,11 +156,9 @@ class galStar():
             else:
                 self.galStarFlag = sources['galStarFlag']
                 if np.all(self.galStarFlag == -2):
-                    if self.locus is None:
-                        self.defaults( sources )
+                    self.defaults( sources )
                 else:
-                    if self.locus is None:
-                        self.getLocusFromSources( sources )
+                    self.getLocusFromSources( sources )
                     self.generate_axes( sources )   
                     self.plot_stars_galaxies(  sources )   
             self.report_locus()        
@@ -192,7 +192,14 @@ class galStar():
             
             '''
             codeDir = os.path.dirname(os.path.realpath(__file__))
-            if not os.path.isfile( codeDir+'/'+rfModel ):
+            if self.locus is not None:
+                print("Using user input locus")
+                self.galStarFlag = np.zeros(len(sources))-2
+
+                self.get_galaxies(sources)
+                self.get_stars(sources)
+                
+            elif not os.path.isfile( codeDir+'/'+rfModel ):
                 print("Cannot find Random Forest in %s, please either"% codeDir +
                       " contact david.harvey@epfl.ch or manually continue"
                      )
@@ -202,6 +209,7 @@ class galStar():
                 self.get_params_interactively( sources )
                 self.manual = True
             else:
+                print("Using Random Forest to separate")
                 galStarFlagClassifier =  \
                   pkl.load(open(codeDir+'/'+rfModel,'rb'), encoding='latin1')
 
@@ -227,6 +235,8 @@ class galStar():
             or saturated star, but the code also requres the lines, so i need
             to go backwards
             '''
+            if self.locus is not None:
+                return
             self.locus = {}
             self.locus['StarsLowCut'] = np.quantile(sources['MU_MAX'][ self.galStarFlag == 0 ], 0.05 )
             self.locus['StarsUpCut'] =  np.max(sources['MU_MAX'][ self.galStarFlag == 0 ] )
@@ -336,16 +346,16 @@ class galStar():
                 filename : the name of string that the settings will be saved to
                 sources : a fits_record of the objects in the catalogue
             '''
-
-            self.locus = {
-                'StarsLowCut' : 12.91068,
-                'StarsUpCut':  21.06389,
-                'GalLowCut' : 16.14132,
-                'GradGal': 0.93908,
-                'IntGal' : -1.93295,
-                'GradStarsLowCut':  1.01017,
-                'IntStarsLowCut': -4.18013
-            }
+            if self.locus is not None:
+                self.locus = {
+                    'StarsLowCut' : 12.91068,
+                    'StarsUpCut':  21.06389,
+                    'GalLowCut' : 16.14132,
+                    'GradGal': 0.93908,
+                    'IntGal' : -1.93295,
+                    'GradStarsLowCut':  1.01017,
+                    'IntStarsLowCut': -4.18013
+                }
 
             self.get_stars(sources)
             self.get_galaxies(sources)
