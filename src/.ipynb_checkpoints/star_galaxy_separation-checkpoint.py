@@ -154,12 +154,14 @@ class galStar():
             else:
                 self.galStarFlag = sources['galStarFlag']
                 if np.all(self.galStarFlag == -2):
-                    self.defaults( sources )
+                    if self.locus is None:
+                        self.defaults( sources )
                 else:
-                    self.getLocusFromSources( sources )
+                    if self.locus is None:
+                        self.getLocusFromSources( sources )
                     self.generate_axes( sources )   
                     self.plot_stars_galaxies(  sources )   
-                    
+            self.report_locus()        
         def report_locus( self ):
             
             print( "StarsLowCut = %0.5f" %  self.locus['StarsLowCut'] )
