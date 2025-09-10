@@ -32,7 +32,8 @@ def setDefaultParams( params ):
             raise IOError("Can't find weight file: %s" % params["weight_file"])
             
     if params["root_name"] is None:
-        params["root_name"] = params['FILENAME'].split('.')[0]
+        #params["root_name"] = params['FILENAME'].split('.')[0]
+        params["root_name"], _ = os.path.splitext(params['FILENAME'])
         
     params["root_name"] = os.path.join(params["output_dir"],params["root_name"])
     
