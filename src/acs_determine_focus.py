@@ -199,6 +199,23 @@ def acs_determine_focus( unknown_focus_image,
     return new_best_fit_focus
 
 
+def get_focus_from_array( focus_file, exposure_name ):
+    '''
+    Get the focus from a file containing focus positions
+    '''
+    dtype = [('images',object), ('focus_positions', float)]
+    data = np.loadtxt(focus_file, dtype=dtype)
+    
+    assert exposure_name in data['images'], f"Exposure name {exposure_name} not in file { data['images']}"
+    
+    focus_position = data['focus_positions'][ data['images'] == exposure_name]
+    
+    assert len(focus_position) == 1, f"Found multiple exposures with the same name ({exposure_name})"
+    
+
+    return focus_position[0]
+    
+
 class moments( dict ):
 
     def __init__( self, n_objects ):

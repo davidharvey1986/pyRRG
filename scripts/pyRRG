@@ -42,6 +42,8 @@ parser.add_argument('--no-exposures',
                     help="If there are no exposures to be added in just create a fake one",
                     action='store_true'
                     )
+parser.add_argument('--focus-array', help='User defined focus array, avoiding the need to measure stars and find the best focus array for hubble. If set and jwst this will return error since jwst does not require a focusarray', default=None, type=str)
+
 
 
 

@@ -32,7 +32,8 @@ def setDefaultParams( params ):
             raise IOError("Can't find weight file: %s" % params["weight_file"])
             
     if params["root_name"] is None:
-        params["root_name"] = params['FILENAME'].split('.')[0]
+        #params["root_name"] = params['FILENAME'].split('.')[0]
+        params["root_name"], _ = os.path.splitext(params['FILENAME'])
         
     params["root_name"] = os.path.join(params["output_dir"],params["root_name"])
     
@@ -138,5 +139,13 @@ def setDefaultParams( params ):
         print("WARNING: With --no-exposures and exposure threshold > 0"+\
                          "there will be no galaxies, so making exposure threshold=0")
         params['expThresh'] = 0
+
+    compatibility_check = params["telescope"] == 'JWST' and (params['focus_array'] is not None)
+    assert ~compatibility_check, \
+        "JWST set and focus-array given - this is not compatible since JWST does not require a focus position"
+    
+    if params['focus_array'] is not None:
+        assert os.path.isfile(params['focus_array']), f"Can't find user-defined focus array: {params['focus_array']}"
+        
     json.dump(params, open("pyRRG.params","w"))
     return params

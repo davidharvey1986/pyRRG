@@ -133,7 +133,9 @@ def psf_cor(    mom_file,
     
     galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
     star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
+        
 
+    
     uncorrected_xx = galaxy_moms.xx
     uncorrected_yy = galaxy_moms.yy
     
@@ -175,13 +177,19 @@ def psf_cor(    mom_file,
         #So get the focus position by fitting the true image stars to the
         #model
         if kwargs['telescope'] == 'HST':
-            focus = adf.acs_determine_focus(  images[iImage], star_moms, \
+            if kwargs['focus_array'] is None:
+                focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, 
                                               **kwargs)
+            else:
+                focus = adf.get_focus_from_array(  kwargs['focus_array'], images[iImage] )
         else:
             focus = 0
         #Just keep track of the focii i have used through out
         FocusArray[iImage] = focus
+        if ~np.isfinite(focus):
+            print(f"WARNING: Non-finite focus found for {images[iImage]}, skipping")
+            continue
 
         #For all the points in the main drizzled field that are within
         #iImage, interpolate the psf from the ref fram of the single
@@ -251,20 +259,19 @@ def psf_cor(    mom_file,
                 (iMom != 'radius') &\
                 (iMom != 'x') & (iMom != 'y'):
                 psf_moms[iMom][inFrame] += iPsfMomsRot[iMom]
-   
         #then keep count how many images per position
         psf_moms['nExposures'][ inFrame ] += 1
 
         
         #then give the position the value of the averaged psf_moms.
-
+    if np.all(psf_moms['nExposures'] == 0):
+        raise ValueError("No good exposures found")
     #Save the focus array
     focuslist = open(dirs.output_dir+'/FocusArray.txt', "w")
     
     for i in range(nImages):
-        ExpName = images[i].split('/')[-1].split('_')[0]
         focuslist.write( "%s %3.1f \n" % \
-                             (ExpName, FocusArray[i]))
+                             (images[i], FocusArray[i]))
 
 
     #Now take the mean of each moment

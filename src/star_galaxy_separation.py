@@ -160,8 +160,8 @@ class galStar():
                 else:
                     self.getLocusFromSources( sources )
                     self.generate_axes( sources )   
-                    self.plot_stars_galaxies(  sources )   
-            self.report_locus()        
+                    self.plot_stars_galaxies(  sources )
+                    
         def report_locus( self ):
             
             print( "StarsLowCut = %0.5f" %  self.locus['StarsLowCut'] )

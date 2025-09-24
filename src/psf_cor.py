@@ -177,9 +177,12 @@ def psf_cor(    mom_file,
         #So get the focus position by fitting the true image stars to the
         #model
         if kwargs['telescope'] == 'HST':
-            focus = adf.acs_determine_focus(  images[iImage], star_moms, \
+            if kwargs['focus_array'] is None:
+                focus = adf.acs_determine_focus(  images[iImage], star_moms, \
                                               drizzle_file, 
                                               **kwargs)
+            else:
+                focus = adf.get_focus_from_array(  kwargs['focus_array'], images[iImage] )
         else:
             focus = 0
         #Just keep track of the focii i have used through out
@@ -267,9 +270,8 @@ def psf_cor(    mom_file,
     focuslist = open(dirs.output_dir+'/FocusArray.txt', "w")
     
     for i in range(nImages):
-        ExpName = images[i].split('/')[-1].split('_')[0]
         focuslist.write( "%s %3.1f \n" % \
-                             (ExpName, FocusArray[i]))
+                             (images[i], FocusArray[i]))
 
 
     #Now take the mean of each moment

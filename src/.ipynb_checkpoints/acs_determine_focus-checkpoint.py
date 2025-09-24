@@ -11,9 +11,9 @@ def acs_determine_focus_metric( true, model ):
     match
     '''
 
-    dof = np.max( [np.float((len(model.e1)-1)), 1])
-    goodness_of_fit = np.sum( (true['e1']-model.e1)**2+(true['e2']-model.e2)**2) /dof
-    
+    #dof = np.max( [float((len(model.e1)-1)), 1])
+    goodness_of_fit = np.nanmean( (true['e1']-model.e1)**2+(true['e2']-model.e2)**2)
+
     return goodness_of_fit
 
 
@@ -22,11 +22,11 @@ def acs_determine_focus_metric( true, model ):
 def acs_determine_focus( unknown_focus_image,
                          observed_moments_stars,
                          drizzle_file,
-                         wavelength,
                          data_dir=None,
                          psf_model_dir=None,
                          pixel_scale=0.03,
-                         r_match=600):
+                         r_match=600,
+                         **kwargs):
     '''
     ;+      
     ; NAME:
@@ -77,21 +77,37 @@ def acs_determine_focus( unknown_focus_image,
     image_name = unknown_focus_image.split('/')[-1][0:8]
     inframe_stars = observed_moments_stars[observed_moments_stars[image_name+'_INFRAME'] == 1]
 
-    if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
-        measure_moms( unknown_focus_image,  'NOCAT_NEED',
+    if not kwargs['no_exposures']:
+        if not os.path.isfile( unknown_focus_image[:-5]+'_uncor.cat'):
+            measure_moms( unknown_focus_image,  'NOCAT_NEED',
                     unknown_focus_image[:-5]+'_uncor.cat',
                     object_catalogue=inframe_stars,
                     xGal=inframe_stars[image_name+'_X_IMAGE'],
                     yGal=inframe_stars[image_name+'_Y_IMAGE'],
                     mult=2, min_rad=6,  quiet=True)
-        
-    star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
-    
-    #Now get an array of moments for all the possible focus positions
-    model_e, focus = acs_model.acs_model_e(star_moments[image_name+'_X_IMAGE'],
-                                           star_moments[image_name+'_Y_IMAGE'], 
-                                           wavelength=wavelength )
 
+        star_moments = fits.open( unknown_focus_image[:-5]+'_uncor.cat' )[1].data
+        
+        model_e, focus = acs_model.acs_model_e(
+            star_moments[image_name+'_X_IMAGE'],
+            star_moments[image_name+'_Y_IMAGE'], 
+            wavelength=kwargs['wavelength']
+        )
+
+    else:
+        all_moments = fits.open( kwargs['root_name']+'_uncor.cat' )[1].data
+        star_moments = all_moments[all_moments['galStarFlag'] == 0]
+        
+        model_e, focus = acs_model.acs_model_e(
+            star_moments['X_IMAGE'],
+            star_moments['Y_IMAGE'], 
+            wavelength=kwargs['wavelength']
+        )
+
+    #Now get an array of moments for all the possible focus positions
+    
+
+    
     #Number of focus positions
     n_focus, nobjects = model_e.xx.shape
     focus = np.arange(16)-10
@@ -99,7 +115,9 @@ def acs_determine_focus( unknown_focus_image,
 
     
     # Select only those stars with a suitably close model (since we're not interpolating)
-    close_match = np.arange(nobjects)[average_distance < r_match]
+    close_match = np.arange(nobjects)[
+        (average_distance < r_match) 
+    ]
     
     n_stars=len(close_match)
     if n_stars < 2:
@@ -138,10 +156,11 @@ def acs_determine_focus( unknown_focus_image,
             model['xxyy'][0] = model_e.xxyy[f,close_match][i]
             model['xyyy'][0] = model_e.xyyy[f,close_match][i]
             model['yyyy'][0] = model_e.yyyy[f,close_match][i]
+
             
             chisq[f]=acs_determine_focus_metric(true[i], model)
             
-
+        
         best_fit_focus_indiv[ 0, i ] = focus[ np.argmin( chisq )]
         best_fit_focus_indiv[ 1, i ] = np.min(chisq)
 
@@ -179,6 +198,23 @@ def acs_determine_focus( unknown_focus_image,
     
     return new_best_fit_focus
 
+
+def get_focus_from_array( focus_file, exposure_name ):
+    '''
+    Get the focus from a file containing focus positions
+    '''
+    dtype = [('images',object), ('focus_positions', float)]
+    data = np.loadtxt(focus_file, dtype=dtype)
+    
+    assert exposure_name in data['images'], f"Exposure name {exposure_name} not in file { data['images']}"
+    
+    focus_position = data['focus_positions'][ data['images'] == exposure_name]
+    
+    assert len(focus_position) == 1, f"Found multiple exposures with the same name ({exposure_name})"
+    
+
+    return focus_position[0]
+    
 
 class moments( dict ):
 
