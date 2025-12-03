@@ -22,7 +22,7 @@ def getIndividualExposures(  **kwargs ):
     '''
     if 'FILENAME' not in kwargs.keys():
         raise ValueError("Please state FILENAME in kwargs")
-        
+
     if not kwargs['no_exposures']:
         if kwargs['exposureNameList'] is None:
             if kwargs['telescope'] == 'JWST':
@@ -37,7 +37,7 @@ def getIndividualExposures(  **kwargs ):
             exposureNameList = np.loadtxt(kwargs['exposureNameList'], dtype=object)
     else:
         print("WARNING - NO EXPOSURES - USING DRIZZLE FILE TO ESTIMATE")
-        exposureNameList = kwargs['FILENAME' ]  
+        exposureNameList = kwargs['field' ]  
                     
     fileCheck = []
     for iFile in  np.atleast_1d(exposureNameList):

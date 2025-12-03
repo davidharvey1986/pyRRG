@@ -197,10 +197,18 @@ def psf_cor(    mom_file,
           
 
         if  kwargs['psf_model'] == 'webbpsf' :
-            image_detector = fits.open(
+            try:
+                image_detector = fits.open(
                     images[iImage])[
                         kwargs['fits_extension']
                     ].header['DETECTOR'][:5]
+            except:
+                if kwargs['no_exposures']:
+                    print("Fail to find detector - probably because this is a drizzled image")
+                    image_detector=input(f"Please input detector choosing from {psf_detectors}: ")
+                else:
+                    raise ValueError(f"Failed - please find 'DETECTOR' extension in the header of {images[iImage]}")
+                    
             detector_num = np.arange(len(
                         psf_detectors))[
                             psf_detectors
