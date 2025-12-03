@@ -51,10 +51,10 @@ def rrg_to_lenstool( rrg_catalogue,
     #For a2-b^2 ellipticuity e= e* + 2g
     try:
         size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
-            image[rrgParams['fits_extension']].header['CD2_2']*3600.
+            image[rrgParams['fits_extension']].header['CDELT1']*3600.
     except:
         pixel_scale=0.03
-        print(f"Cant find CD2_2, assuming pixel scale of {pixel_scale}")
+        print(f"Cant find CDELT1, assuming pixel scale of {pixel_scale}")
         size = 2.*np.sqrt(( MaskedRRGCat.xx + MaskedRRGCat.yy)/2.) * \
 	    pixel_scale*3600.
         
