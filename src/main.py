@@ -20,7 +20,7 @@ from .remove_galaxy import remove_galaxy_members
 from .write_rrgparams_to_header import write_rrgparams_to_header
 import sys
 import json
-
+from .mass_mapping import generate_binned_lensing_map
 def main(  ):
     '''
     ;PURPOSE : RUN RRG OVER THE GIVEN CLUSTER AND FILTER, CAN TAKE
@@ -150,7 +150,7 @@ def main(  ):
     
     if not params['batch_run']:
         plot.plot_shears( clean_cat )
-
+        generate_binned_lensing_map(drz_image_dir=params['field'], shear_cat_dir=clean_cat, mean_gal_per_bin=10)
     write_rrgparams_to_header( clean_cat, params )
    
     etr.ellipse_to_reg( clean_cat )
