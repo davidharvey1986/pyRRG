@@ -6,14 +6,14 @@ from lenspack.image.inversion import ks93
 from lenspack.utils import bin2d
 from scipy.ndimage import gaussian_filter
 
-def bboxarea_and_realarea(image):
+def bboxarea_and_realarea(image, pixel_scale=0.03):
     """"
     Assumes that image is:
       - rectangular 2D
       - contains nans for empty pixels
       - contains floats for other pixels
     """
-    pixel_area = (0.03/60)**2 #arcmin2
+    pixel_area = (pixel_scale/60)**2 #arcmin2
     area = np.sum(~np.isnan(image)) * pixel_area
     bbox = np.shape(image)[0] * np.shape(image)[1] * pixel_area
     return area, bbox
@@ -57,7 +57,7 @@ def get_convergence(g1, g2):
     kappaB = kappaB_pad[npad:-npad, npad:-npad]
     return kappaE, kappaB
 
-def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin):
+def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     """"
     input: HST drz image, shear catalog and required source galaxies per bin
 
@@ -91,7 +91,7 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin):
     g2_image = shears["gamma2"]
 
     #Rotate shears to (ra, dec) coords
-    rotation_angle = header["ORIENTAT"] * np.pi / 180 # rad
+    rotation_angle = header[params['orientation_header']] * np.pi / 180 # rad
     g1, g2 = rotate_shears(g1_image, g2_image, rotation_angle)
 
     # Aspect ratio of the image
@@ -99,8 +99,17 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin):
     y_min, y_max = np.percentile(y, [1, 99])
     aspect_ratio = (x_max - x_min) / (y_max - y_min)
 
-    #Bounding box area and real area of the image
-    bboxarea, area = bboxarea_and_realarea(drz_image)
+    try:
+        pixel_scale = header['CDELT1'] * 3600  # arcsec/pixel
+    except KeyError:
+        try:
+            pixel_scale = header['CD2_2'] * 3600  # arcsec/pixel
+        except KeyError:
+            pixel_scale = 0.03
+            print(f"Cant find CD2_2, assuming pixel scale of {pixel_scale}")
+
+    # Bounding box area and real area of the image
+    bboxarea, area = bboxarea_and_realarea(drz_image, pixel_scale=pixel_scale)
     bboxarea_to_area = bboxarea / area
 
     # Number of bins for final mass map
@@ -190,11 +199,13 @@ def plot_ngal_gamma_snr(ngal,
 
 def generate_binned_lensing_map(drz_image_dir,
                                 shear_cat_dir,
-                                mean_gal_per_bin):
+                                mean_gal_per_bin,
+                                params):
 
     bounds, pos, ngal, gamma_binned, area = bin_shear(drz_image_dir,
                                                 shear_cat_dir,
-                                                mean_gal_per_bin)
+                                                mean_gal_per_bin,
+                                                params)
 
     snr_map = SNRmap(gamma_binned, smoothing=1)
 

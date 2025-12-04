@@ -149,8 +149,14 @@ def main(  ):
         )
     
     if not params['batch_run']:
-        plot.plot_shears( clean_cat )
-        generate_binned_lensing_map(drz_image_dir=params['field'], shear_cat_dir=clean_cat, mean_gal_per_bin=10)
+
+        plot.plot_shears( clean_cat, nbins=15, min_gals_per_bins=50.)
+
+        generate_binned_lensing_map(drz_image_dir=params['field'],
+                                    shear_cat_dir=clean_cat,
+                                    mean_gal_per_bin=10,
+                                    params=params)
+
     write_rrgparams_to_header( clean_cat, params )
    
     etr.ellipse_to_reg( clean_cat )
