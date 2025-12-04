@@ -72,8 +72,9 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     """
 
     #Load drz image and shear
-    header = fits.getheader(drz_image_dir)
-    drz_image = fits.getdata(drz_image_dir)
+    image = fits.open(drz_image_dir)
+    header = image[params['fits_extension']].header
+    drz_image = image[params['fits_extension']].data
     shears = fits.getdata(shear_cat_dir)
 
     if len(shears) < 3:
