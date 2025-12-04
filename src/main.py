@@ -150,7 +150,8 @@ def main(  ):
     
     if not params['batch_run']:
 
-        plot.plot_shears( clean_cat, nbins=15, min_gals_per_bins=50.)
+        #This has been suplanted by the next function that Felix wrote
+        #plot.plot_shears( clean_cat, nbins=15, min_gals_per_bins=50.)
 
         generate_binned_lensing_map(drz_image_dir=params['field'],
                                     shear_cat_dir=clean_cat,
