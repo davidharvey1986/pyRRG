@@ -346,7 +346,7 @@ class galStar():
                 filename : the name of string that the settings will be saved to
                 sources : a fits_record of the objects in the catalogue
             '''
-            if self.locus is not None:
+            if self.locus is None:
                 self.locus = {
                     'StarsLowCut' : 12.91068,
                     'StarsUpCut':  21.06389,
@@ -370,6 +370,7 @@ class galStar():
             '''
             #first get the default params
             self.defaultsInteractiveParams(  sources )
+            
             if self.batch_run:
                 return
             #Write on the plot some useful directions for the user
