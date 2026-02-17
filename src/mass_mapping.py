@@ -5,15 +5,16 @@ from astropy.io import fits
 from lenspack.image.inversion import ks93
 from lenspack.utils import bin2d
 from scipy.ndimage import gaussian_filter
+from astropy.wcs import WCS
 
-def bboxarea_and_realarea(image, pixel_scale=0.03):
+def bboxarea_and_realarea(image, pixel_scale):
     """"
     Assumes that image is:
       - rectangular 2D
       - contains nans for empty pixels
       - contains floats for other pixels
     """
-    pixel_area = (pixel_scale/60)**2 #arcmin2
+    pixel_area = (pixel_scale / 60)**2 #arcmin^2
     area = np.sum(~np.isnan(image)) * pixel_area
     bbox = np.shape(image)[0] * np.shape(image)[1] * pixel_area
     return area, bbox
@@ -100,17 +101,11 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     y_min, y_max = np.percentile(y, [1, 99])
     aspect_ratio = (x_max - x_min) / (y_max - y_min)
 
-    try:
-        pixel_scale = header['CDELT1'] * 3600  # arcsec/pixel
-    except KeyError:
-        try:
-            pixel_scale = header['CD2_2'] * 3600  # arcsec/pixel
-        except KeyError:
-            pixel_scale = 0.03
-            print(f"Cant find CD2_2, assuming pixel scale of {pixel_scale}")
+    wcs = WCS(header)
+    pixel_scale = np.sqrt((wcs.pixel_scale_matrix ** 2).sum(axis=0))[0] * 3600
 
     # Bounding box area and real area of the image
-    bboxarea, area = bboxarea_and_realarea(drz_image, pixel_scale=pixel_scale)
+    bboxarea, area = bboxarea_and_realarea(drz_image, pixel_scale)
     bboxarea_to_area = bboxarea / area
 
     # Number of bins for final mass map
