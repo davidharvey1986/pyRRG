@@ -48,8 +48,8 @@ setup   (       name            = "pyRRG",
                 url = 'https://github.com/davidharvey1986/pyRRG', # use the URL to the github repo
                 download_url = 'https://github.com/davidharvey1986/pyRRG/archive/'+version+'.tar.gz',
                 install_requires=['scikit-learn',\
-                                   'numpy', 'tqdm', \
-                                   'scipy','astropy',
+                                   'numpy==1.26.0', 'tqdm', \
+                                   'scipy==1.15.3','astropy',
                                   'matplotlib'],                          
         )
 
