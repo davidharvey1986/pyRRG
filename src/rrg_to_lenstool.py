@@ -11,7 +11,7 @@ import numpy as np
 
 def rrg_to_lenstool( rrg_catalogue,
                          image_file,
-                        rrgParams,
+                         rrgParams,
                          output_catalogue=None,
                          lenstool_catalogue=None,
                          reference=None,

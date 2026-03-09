@@ -20,7 +20,7 @@ from .remove_galaxy import remove_galaxy_members
 from .write_rrgparams_to_header import write_rrgparams_to_header
 import sys
 import json
-
+from .mass_mapping import generate_binned_lensing_map
 def main(  ):
     '''
     ;PURPOSE : RUN RRG OVER THE GIVEN CLUSTER AND FILTER, CAN TAKE
@@ -149,7 +149,14 @@ def main(  ):
         )
     
     if not params['batch_run']:
-        plot.plot_shears( clean_cat )
+
+        #This has been suplanted by the next function that Felix wrote
+        #plot.plot_shears( clean_cat, nbins=15, min_gals_per_bins=50.)
+
+        generate_binned_lensing_map(drz_image_dir=params['field'],
+                                    shear_cat_dir=clean_cat,
+                                    mean_gal_per_bin=10,
+                                    params=params)
 
     write_rrgparams_to_header( clean_cat, params )
    
