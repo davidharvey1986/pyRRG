@@ -226,9 +226,18 @@ class galStar():
         def generateNumpyArrayWithNoNans( self, sources ):
             #Only plot non nan values, also this is used for Random For
             self.sourcesArray = rec2array( sources )
-            self.nanCheck = np.isfinite(np.sum(self.sourcesArray, axis=1))
-            
-            
+
+            # Define bright vs faint detections
+            bright = sources['MAG_AUTO'] <= 21
+            faint = sources['MAG_AUTO'] > 21
+
+            # Identify rows with all finite values
+            all_finite = np.isfinite(np.sum(self.sourcesArray, axis=1))
+
+            # Only apply finite mask to faint detections
+            # (eg saturated stars can have nans, but we still want to plot them)
+            self.nanCheck = bright | (faint & all_finite)
+
         def getLocusFromSources( self, sources ):
             '''
             The RF returns whether an individual object is a galaxy, star
@@ -292,9 +301,9 @@ class galStar():
             self.ax3.set_ylim([10,30])
 
 
-            self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'g,')
-            self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'g,')
-            self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'g,')
+            self.ax1.plot( sources['MAG_AUTO'][self.nanCheck], sources['gal_size'][self.nanCheck], 'go', markersize=1)
+            self.ax2.plot( sources['MAG_AUTO'][self.nanCheck], sources['RADIUS'][self.nanCheck],   'go', markersize=1)
+            self.ax3.plot( sources['MAG_AUTO'][self.nanCheck], sources['MU_MAX'][self.nanCheck],   'go', markersize=1)
             if show:
                 plt.show(block=False)
             
@@ -625,6 +634,7 @@ class galStar():
             self.noise_points.append( [ 
                 self.axes[0].plot( 
                     sources['MAG_AUTO'][self.galStarFlag==-1], 
+                    sources['MAG_AUTO'][self.galStarFlag==-1],
                     sources['MU_MAX'][self.galStarFlag==-1], 'g,'  ),
                 self.axes[1].plot( 
                     sources['MAG_AUTO'][self.galStarFlag==-1], 
