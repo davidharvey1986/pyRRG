@@ -112,6 +112,22 @@ def star_galaxy_separation( sources,
         sources['galStarFlag'] = galStarObject.galStarFlag
         fits.writeto(  outfile, sources, overwrite=True )
 
+    # Update _sex.cat too
+    sexcat = outfile.replace('_uncor.cat', '_sex.cat')
+    sexcat_data = fits.getdata(sexcat)
+
+    if 'galStarFlag' not in sexcat_data.columns.names:
+        # Create the column in sexcat
+        col = fits.Column(name='galStarFlag', format='I', array=galStarObject.galStarFlag)
+        orig_cols = sexcat_data.columns
+        new_cols = fits.ColDefs([col])
+        hdu_with_flag = fits.BinTableHDU.from_columns(orig_cols + new_cols)
+        hdu_with_flag.writeto(sexcat, overwrite=True)
+    else:
+        # Update existing column in sexcat
+        sexcat_data['galStarFlag'] = galStarObject.galStarFlag
+        fits.writeto(sexcat, sexcat_data, overwrite=True)
+
     if verbose:
         galStarObject.generate_axes( sources, show=False )
         galStarObject.plot_stars_galaxies( sources )

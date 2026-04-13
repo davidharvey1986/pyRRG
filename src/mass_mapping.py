@@ -6,7 +6,117 @@ from lenspack.image.inversion import ks93
 from lenspack.utils import bin2d
 from scipy.ndimage import gaussian_filter
 from astropy.wcs import WCS
+from regions import Regions, PolygonSkyRegion, CircleSkyRegion, RectangleSkyRegion
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
+import astropy.units as u
+import matplotlib as mpl
 
+def circle_to_polygon(circle, npoints=50):
+    ra0 = circle.center.ra.deg
+    dec0 = circle.center.dec.deg
+    r = circle.radius.to(u.deg).value
+    theta = np.linspace(0, 2*np.pi, npoints)
+    x = ra0 + r * np.cos(theta) * np.cos(np.deg2rad(dec0))  # flat-sky
+    y = dec0 + r * np.sin(theta)
+    return Polygon(np.column_stack((x, y)))
+
+def rectangle_to_polygon(rect):
+    ra0 = rect.center.ra.deg
+    dec0 = rect.center.dec.deg
+    w = rect.width.to(u.deg).value
+    h = rect.height.to(u.deg).value
+    angle = rect.angle.to(u.rad).value  # rotation CCW from North
+
+    # rectangle corners relative to center
+    dx = np.array([-w/2, w/2, w/2, -w/2])
+    dy = np.array([-h/2, -h/2, h/2, h/2])
+
+    # rotate
+    x = dx*np.cos(angle) - dy*np.sin(angle)
+    y = dx*np.sin(angle) + dy*np.cos(angle)
+
+    x += ra0
+    y += dec0
+    return Polygon(np.column_stack((x, y)))
+
+def get_masked_area(mask_file):
+    """
+    Reads a DS9 region file containing masks and calculates the total masked area in arcmin^2.
+    """
+    # Read regions from the DS9 region file
+    regions = Regions.read(mask_file, format="ds9")
+
+    polys = []
+    for r in regions:
+        if isinstance(r, PolygonSkyRegion):
+            ra = r.vertices.ra.deg
+            dec = r.vertices.dec.deg
+            x = ra * np.cos(np.deg2rad(np.mean(dec)))
+            y = dec
+            polys.append(Polygon(np.column_stack((x, y))))
+        elif isinstance(r, CircleSkyRegion):
+            polys.append(circle_to_polygon(r))
+        elif isinstance(r, RectangleSkyRegion):
+            polys.append(rectangle_to_polygon(r))
+        else:
+            print(f"Warning: Skipping unsupported region type: {type(r)}")
+
+    #Fix random errors in polygon creation
+    fixed_polys = []
+    for p in polys:
+        if not p.is_valid:
+            p = p.buffer(0)  # this often fixes self-intersections
+        fixed_polys.append(p)
+
+    # merge overlapping polygons
+    merged = unary_union(fixed_polys)
+
+    # area in deg^2, then convert to arcmin^2
+    area_deg2 = merged.area
+    area_arcmin2 = area_deg2 * 3600
+
+    return area_arcmin2
+
+def set_bw_dark_theme():
+    """
+    Pure black background + white/gray foreground (no color).
+    Call once before creating figures.
+    """
+    plt.style.use("dark_background")
+
+    mpl.rcParams.update(
+        {
+            # Surfaces
+            "figure.facecolor": "#000000",
+            "axes.facecolor": "#000000",
+            "savefig.facecolor": "#000000",
+
+            # Foreground/text
+            "text.color": "#ffffff",
+            "axes.labelcolor": "#ffffff",
+            "axes.edgecolor": "#ffffff",
+            "xtick.color": "#ffffff",
+            "ytick.color": "#ffffff",
+
+            # Lines/markers default (white)
+            "lines.color": "#ffffff",
+            "patch.edgecolor": "#ffffff",
+
+            # Grid (subtle gray)
+            "grid.color": "#666666",
+            "grid.alpha": 0.35,
+            "axes.grid": False,
+
+            # Legend (B/W)
+            "legend.frameon": True,
+            "legend.facecolor": "#000000",
+            "legend.edgecolor": "#ffffff",
+
+            # Images/colormaps default to gray
+            "image.cmap": "gray",
+        }
+    )
 def bboxarea_and_realarea(image, pixel_scale):
     """"
     Assumes that image is:
@@ -93,7 +203,11 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     g2_image = shears["gamma2"]
 
     #Rotate shears to (ra, dec) coords
-    rotation_angle = header[params['orientation_header']] * np.pi / 180 # rad
+    if params['telescope'] == 'HST':
+        rotation_angle = header[params['orientation_header']] * np.pi / 180 # rad
+    elif params['telescope'] == 'JWST':
+        rotation_angle = (header[params['orientation_header']] - 90) * np.pi / 180
+    print("rotating shears, angle: ", header[params['orientation_header']])
     g1, g2 = rotate_shears(g1_image, g2_image, rotation_angle)
 
     # Aspect ratio of the image
@@ -105,8 +219,8 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     pixel_scale = np.sqrt((wcs.pixel_scale_matrix ** 2).sum(axis=0))[0] * 3600
 
     # Bounding box area and real area of the image
-    bboxarea, area = bboxarea_and_realarea(drz_image, pixel_scale)
-    bboxarea_to_area = bboxarea / area
+    area, bboxarea = bboxarea_and_realarea(drz_image, pixel_scale)
+    bboxarea_to_area =  bboxarea / area
 
     # Number of bins for final mass map
     bins = np.sqrt(len(x) / mean_gal_per_bin * bboxarea_to_area)
@@ -146,7 +260,14 @@ def plot_ngal_gamma_snr(ngal,
                         title='title'):
 
 
-    fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    #fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+    set_bw_dark_theme()
+    fig = plt.figure(figsize=(12, 4), constrained_layout=True)
+    gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1])  # all equal
+    ax0 = fig.add_subplot(gs[0, 0])
+    ax1 = fig.add_subplot(gs[0, 1])
+    ax2 = fig.add_subplot(gs[0, 2])
+    axes = [ax0, ax1, ax2]
     fig.suptitle(title)
 
     # Plot number of galaxies/bin
@@ -155,7 +276,7 @@ def plot_ngal_gamma_snr(ngal,
     axes[0].set_xlabel(r"$\Delta$RA [arcsec]")
     axes[0].set_ylabel(r"$\Delta$Dec [arcsec]")
     axes[0].set_aspect("equal")
-    plt.colorbar(im0, ax=axes[0], fraction=0.046, pad=0.04)
+    plt.colorbar(im0, ax=axes[0], fraction=0.049, pad=0.04)
 
     # Plot shear field (vector field)
     ra_map, dec_map = pos[0], pos[1]
@@ -168,13 +289,14 @@ def plot_ngal_gamma_snr(ngal,
     angle = 0.5 * np.arctan2(V, U) * 180 / np.pi
     mask = ~np.isnan(U) & ~np.isnan(V)
     X, Y, U, V, angle = X[mask], Y[mask], U[mask], V[mask], angle[mask]
-    axes[1].quiver(X, Y, U, V, angles=angle, pivot='middle', headaxislength=0,
+    axes[1].quiver(X, Y, U, V, angles=angle, pivot='middle', headaxislength=0,color='white',
                    headwidth=0, headlength=0, scale=0.005, scale_units='x', width=0.006)
     # axes[1].axis([np.min(y), np.max(y), np.min(x), np.max(x)])
     axes[1].set_title("Shear Field")
     axes[1].set_xlabel(r"$\Delta$RA [arcsec]")
     axes[1].set_ylabel(r"$\Delta$Dec [arcsec]")
     axes[1].set_aspect("equal")
+    #plt.colorbar(plt.cm.ScalarMappable(cmap="jet"), ax=axes[1], fraction=0.046, pad=0.04)
     # Plot signal-to-noise map
 
     im2 = axes[2].imshow(snr_map,
@@ -184,12 +306,12 @@ def plot_ngal_gamma_snr(ngal,
     axes[2].set_title("Signal-to-Noise Map")
     axes[2].set_xlabel(r"$\Delta$RA [arcsec]")
     axes[2].set_ylabel(r"$\Delta$Dec [arcsec]")
-    plt.colorbar(im2, ax=axes[2], fraction=0.046, pad=0.04)
+    plt.colorbar(im2, ax=axes[2], fraction=0.049, pad=0.04)
 
-    plt.tight_layout()
-
-    #plt.savefig(outfile)
-    #if plot:
+    #Set lims
+    for ax in axes:
+        ax.set_xlim(bounds[0], bounds[1])
+        ax.set_ylim(bounds[2], bounds[3])
 
     plt.show(block=True)
 
@@ -202,10 +324,17 @@ def generate_binned_lensing_map(drz_image_dir,
                                                 shear_cat_dir,
                                                 mean_gal_per_bin,
                                                 params)
-
+    gamma_binned = [gamma_binned[0], gamma_binned[1]]
     snr_map = SNRmap(gamma_binned, smoothing=1)
 
-    total_ngals_density = np.nansum(ngal) / area
+    if params['mask_file'] is not None and os.path.isfile(params['mask_file']):
+        masked_area = get_masked_area(params['mask_file'])
+    else:
+        masked_area = 0
+
+    eff_area = area - masked_area
+    print(f"Total area of the image: {area:.2f} arcmin^2 | Masked area: {masked_area:.2f} arcmin^2")
+    total_ngals_density = np.nansum(ngal) / eff_area
 
     plot_ngal_gamma_snr(ngal,
                         pos,

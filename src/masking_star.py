@@ -208,6 +208,16 @@ def main(
     if kwargs['verbose']:
         ncleaned = np.sum(cleaned_shears['clean'])
         print("Cleaned %s galaxies" % ncleaned)
+
+    if kwargs.get('mask_file_only', False):
+        if kwargs['verbose']:
+            print("Skipping automatic star masking (--mask_file_only enabled)")
+        fits.writeto(
+            outFile,
+            cleaned_shears[ cleaned_shears['clean'] == 0 ],
+            overwrite=True
+        )
+        return
         
     object_catalog = fits.open(object_catalog_fits)
     
@@ -411,7 +421,7 @@ def main_single(
                 
         
         ##-------------------------------start masking (for mask.reg)-------------------------------
-    if os.path.isfile(mask_file):
+    if mask_file and os.path.isfile(mask_file):
         mask_obj = open(mask_file, 'r')
         
         for mask in mask_obj:

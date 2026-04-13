@@ -146,6 +146,9 @@ def setDefaultParams( params ):
     
     if params['focus_array'] is not None:
         assert os.path.isfile(params['focus_array']), f"Can't find user-defined focus array: {params['focus_array']}"
-        
+
+    if 'mask_file_only' not in params:
+        params['mask_file_only'] = False
+
     json.dump(params, open("pyRRG.params","w"))
     return params
