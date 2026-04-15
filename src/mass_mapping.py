@@ -43,23 +43,38 @@ def rectangle_to_polygon(rect):
     return Polygon(np.column_stack((x, y)))
 
 def safe_read_ds9(mask_file):
+    """
+    Reads DS9 region file but filters invalid geometries before parsing.
+    """
+
     valid_lines = []
+
+    number_pattern = re.compile(r"-?\d+\.?\d*")
 
     for line in open(mask_file):
         line = line.strip()
 
-        if line.startswith("box"):
-            nums = re.findall(r"-?\d+\.?\d*", line)
+        if not line or line.startswith("#"):
+            continue
 
-            # box has at least: x y w h angle
+        if line.startswith("circle"):
+            nums = number_pattern.findall(line)
+            if len(nums) >= 3:
+                radius = float(nums[2])
+                if radius <= 0:
+                    print(f"Skipping invalid circle (radius<=0): {line}")
+                    continue
+
+        elif line.startswith("box"):
+            nums = number_pattern.findall(line)
             if len(nums) >= 4:
                 w = float(nums[2])
                 h = float(nums[3])
 
+                # fix or skip invalid boxes
                 if w <= 0 or h <= 0:
-                    print(f"Skipping invalid box (non-positive size): {line}")
+                    print(f"Skipping invalid box (w/h<=0): {line}")
                     continue
-
         valid_lines.append(line)
 
     return Regions.parse("\n".join(valid_lines), format="ds9")
