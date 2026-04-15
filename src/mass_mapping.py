@@ -11,6 +11,8 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 import astropy.units as u
 import matplotlib as mpl
+import re
+
 
 def circle_to_polygon(circle, npoints=50):
     ra0 = circle.center.ra.deg
@@ -40,13 +42,38 @@ def rectangle_to_polygon(rect):
     y += dec0
     return Polygon(np.column_stack((x, y)))
 
+def safe_read_ds9(mask_file):
+    valid_lines = []
+
+    rect_pattern = re.compile(r"rectangle\(([^)]+)\)")
+
+    with open(mask_file) as f:
+        for line in f:
+            if "rectangle" in line:
+                match = rect_pattern.search(line)
+                if match:
+                    values = list(map(float, match.group(1).split(",")))
+
+                    # DS9: rectangle(x, y, width, height, angle)
+                    if len(values) >= 4:
+                        width, height = values[2], values[3]
+
+                        if width <= 0 or height <= 0:
+                            print(f"Skipping invalid rectangle: {line.strip()}")
+                            continue  # skip bad region
+
+            valid_lines.append(line)
+
+    region_string = "".join(valid_lines)
+    return Regions.parse(region_string, format="ds9")
+
 def get_masked_area(mask_file):
     """
     Reads a DS9 region file containing masks and calculates the total masked area in arcmin^2.
     """
     # Read regions from the DS9 region file
-    regions = Regions.read(mask_file, format="ds9")
-
+    #regions = Regions.read(mask_file, format="ds9")
+    regions = safe_read_ds9(mask_file)
     polys = []
     for r in regions:
         if isinstance(r, PolygonSkyRegion):
