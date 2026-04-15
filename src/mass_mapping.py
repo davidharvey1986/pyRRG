@@ -45,27 +45,24 @@ def rectangle_to_polygon(rect):
 def safe_read_ds9(mask_file):
     valid_lines = []
 
-    rect_pattern = re.compile(r"rectangle\(([^)]+)\)")
+    for line in open(mask_file):
+        line = line.strip()
 
-    with open(mask_file) as f:
-        for line in f:
-            if "rectangle" in line:
-                match = rect_pattern.search(line)
-                if match:
-                    values = list(map(float, match.group(1).split(",")))
+        if line.startswith("box"):
+            nums = re.findall(r"-?\d+\.?\d*", line)
 
-                    # DS9: rectangle(x, y, width, height, angle)
-                    if len(values) >= 4:
-                        width, height = values[2], values[3]
+            # box has at least: x y w h angle
+            if len(nums) >= 4:
+                w = float(nums[2])
+                h = float(nums[3])
 
-                        if width <= 0 or height <= 0:
-                            print(f"Skipping invalid rectangle: {line.strip()}")
-                            continue  # skip bad region
+                if w <= 0 or h <= 0:
+                    print(f"Skipping invalid box (non-positive size): {line}")
+                    continue
 
-            valid_lines.append(line)
+        valid_lines.append(line)
 
-    region_string = "".join(valid_lines)
-    return Regions.parse(region_string, format="ds9")
+    return Regions.parse("\n".join(valid_lines), format="ds9")
 
 def get_masked_area(mask_file):
     """
