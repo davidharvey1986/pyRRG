@@ -426,8 +426,9 @@ def main_single(
         
         for mask in mask_obj:
             
-            if mask[0:3] != 'box' and mask[0:7] !='polygon':
+            if mask[0:3] != 'box' and mask[0:7] != 'polygon' and mask[0:6] != 'circle':
                 continue
+
             elif mask[0:3] == 'box':
                 mask_x = float(mask.split('(')[1].split(',')[0])
                 mask_y = float(mask.split('(')[1].split(',')[1])
@@ -468,8 +469,29 @@ def main_single(
                     inside=inpoly(xl,yl,px1,py1)
                     if inside==1:
                         Shears['clean'][k]=1
-                        
-  
-                        
-    
+
+            elif mask[0:6] == 'circle':
+                # Parse circle: circle(RA, DEC, radius")
+                circle_x = float(mask.split('(')[1].split(',')[0])
+                circle_y = float(mask.split('(')[1].split(',')[1])
+                circle_radius_arcsec = float(mask.split('(')[1].split(',')[2][:-2].replace('"',''))  # Remove closing " and )
+
+                if (circle_x > 360.) or (circle_y > 360.):
+                    raise ValueError("Invalid value found in mask file. Circle coordinates must be in WCS (degrees)")
+
+                # Convert radius from arcseconds to degrees
+                circle_radius_deg = circle_radius_arcsec / 3600.
+
+                # Calculate distance from each shear source to circle center
+                # Using angular separation in degrees
+                shears_x_sep = tools.ra_separation(Shears['X_WORLD'], circle_y, circle_x, circle_y)
+                shears_y_sep = (Shears['Y_WORLD'] - circle_y) * 3600.  # Convert to arcsec
+
+                distance_arcsec = np.sqrt(shears_x_sep**2 + shears_y_sep**2)
+
+                # Mark sources inside the circle
+                inCircle = distance_arcsec < circle_radius_arcsec
+                Shears['clean'][inCircle] = 1
+
+
     return Shears
