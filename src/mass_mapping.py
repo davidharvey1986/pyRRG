@@ -168,17 +168,20 @@ def bboxarea_and_realarea(image, pixel_scale):
     bbox = np.shape(image)[0] * np.shape(image)[1] * pixel_area
     return area, bbox
 
-def project_ra_dec_to_cartesian(ra,dec):
+def project_ra_dec_to_cartesian(ra,dec, refcoord = None):
     """
     Taken (ra, dec) and projects these coords to a cartesian
     (x, y) frame in arcsec relative to the median (ra,dec)
     """
     #define reference point
-    dec0 = np.nanmedian(dec) * np.pi / 180.0
-    ra0 = np.nanmedian(ra)
-
-    x = ((ra0 - ra) * np.cos(dec0)) * 3600  # east minus west plus; cos correction
-    y = (dec - np.mean(dec)) * 3600 # arcsec
+    if refcoord is None:
+        dec0 = np.nanmedian(dec)
+        ra0 = np.nanmedian(ra)
+    else:
+        dec0 = refcoord[1]
+        ra0 = refcoord[0]
+    x = ((ra0 - ra) * np.cos(np.deg2rad(dec0))) * 3600  # east minus west plus; cos correction
+    y = (dec - dec0) * 3600 # arcsec
     return x, y
 
 def rotate_shears(g1, g2, angle):
@@ -207,7 +210,7 @@ def get_convergence(g1, g2):
     kappaB = kappaB_pad[npad:-npad, npad:-npad]
     return kappaE, kappaB
 
-def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
+def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params, refcoord =None):
     """"
     input: HST drz image, shear catalog and required source galaxies per bin
 
@@ -235,7 +238,7 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params):
     ra  = shears["ra"]
     dec = shears["dec"]
     # project (ra,dec) on tangent cartesian plane (x,y) in arcsec
-    x, y = project_ra_dec_to_cartesian(ra,dec)
+    x, y = project_ra_dec_to_cartesian(ra,dec, refcoord)
 
     # Shear components in pixel coordinates
     g1_image = shears["gamma1"]
