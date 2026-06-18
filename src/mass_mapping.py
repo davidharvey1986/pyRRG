@@ -13,7 +13,6 @@ import astropy.units as u
 import matplotlib as mpl
 import re
 
-
 def circle_to_polygon(circle, npoints=50):
     ra0 = circle.center.ra.deg
     dec0 = circle.center.dec.deg
@@ -249,7 +248,6 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params, refcoord =
         rotation_angle = header[params['orientation_header']] * np.pi / 180 # rad
     elif params['telescope'] == 'JWST':
         rotation_angle = (header[params['orientation_header']] - 90) * np.pi / 180
-    print("rotating shears, angle: ", header[params['orientation_header']])
     g1, g2 = rotate_shears(g1_image, g2_image, rotation_angle)
 
     # Aspect ratio of the image
@@ -357,6 +355,15 @@ def plot_ngal_gamma_snr(ngal,
 
     plt.show(block=True)
 
+def eps2xi(eps_1, eps_2):
+    """
+    Convert eps to xi (eq 4.11 Bartellman & Schneider 2001)
+    """
+    eps_norm = np.sqrt(eps_1**2 + eps_2**2)
+    xi_1 = 2*eps_1/(1 + eps_norm**2)
+    xi_2 = 2*eps_2/(1 + eps_norm**2)
+    return xi_1, xi_2
+
 def generate_binned_lensing_map(drz_image_dir,
                                 shear_cat_dir,
                                 mean_gal_per_bin,
@@ -378,6 +385,10 @@ def generate_binned_lensing_map(drz_image_dir,
     print(f"Total area of the image: {area:.2f} arcmin^2 | Masked area: {masked_area:.2f} arcmin^2")
     total_ngals_density = np.nansum(ngal) / eff_area
 
+    shears = fits.getdata(shear_cat_dir)
+    eps1, eps2 = eps2xi(shears["e1"], shears["e2"])
+    rms = 0.5 * (np.sqrt(np.mean(eps1 ** 2)) + np.sqrt(np.mean(eps2 ** 2)))
+
     plot_ngal_gamma_snr(ngal,
                         pos,
                         gamma_binned,
@@ -385,7 +396,7 @@ def generate_binned_lensing_map(drz_image_dir,
                         bounds,
                         plot=True,
                         outfile='wlmap.png',
-                        title=r'Source galaxy number density: %.2f gal/arcmin^2' % total_ngals_density)
+                        title=f'Source galaxy number density: {total_ngals_density:.2f} gal/arcmin2 | RMS: {rms:.2f}')
     return
 
 

@@ -46,10 +46,9 @@ parser.add_argument('--focus-array', help='User defined focus array, avoiding th
 parser.add_argument('--mask_file', help='Additional .reg file used to mask out regions of the input image', default=None, type=str)
 parser.add_argument('--mask_file_only', help='Only mask from mask_file', action='store_true')
 
-
-
-
-
+parser.add_argument('--RS_info', help='Availability red sequence column', action='store_true')
+parser.add_argument('--RS_mag_cut', help='Red sequence magnitude cut', default=24., type=float)
+parser.add_argument('--RS_color_cut', help='Number of std from red sequence', default=3., type=float)
 
 args = parser.parse_args()
 

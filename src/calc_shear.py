@@ -101,6 +101,12 @@ def calc_shear( corrected_moments, outfile, **kwargs):
     if kwargs['verbose']:
         print("%i galaxies filtered from prob not zero cut" % np.sum(good)) 
 
+    if kwargs['RS_info'] == True:
+        RS_mask = np.logical_and(corrected_moments.MAG_AUTO < kwargs['RS_mag_cut'], np.abs(corrected_moments.N_sigma_from_RS) < kwargs['RS_color_cut'])
+        good[ RS_mask ] = 0
+        if kwargs['verbose']:
+            print("%i galaxies filtered from Red Sequence cut" % np.sum(RS_mask))
+
     if np.sum(good) == 0:
         if not kwargs['verbose']:
             kwargs['verbose'] = True

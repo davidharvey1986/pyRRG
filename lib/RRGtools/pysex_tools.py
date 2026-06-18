@@ -106,7 +106,6 @@ def sex_to_reg( sex_cat, outfile,
 
     
 
-
 def check_fields( structure, coordinate_sys='IMAGE' ):
 
     '''
