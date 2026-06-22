@@ -247,7 +247,7 @@ def bin_shear(drz_image_dir, shear_cat_dir, mean_gal_per_bin, params, refcoord =
     if params['telescope'] == 'HST':
         rotation_angle = header[params['orientation_header']] * np.pi / 180 # rad
     elif params['telescope'] == 'JWST':
-        rotation_angle = (header[params['orientation_header']] - 90) * np.pi / 180
+        rotation_angle = (header[params['orientation_header']]) * np.pi / 180
     g1, g2 = rotate_shears(g1_image, g2_image, rotation_angle)
 
     # Aspect ratio of the image
