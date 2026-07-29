@@ -299,6 +299,10 @@ def psf_cor(    mom_file,
 
     psf_moms.writeto(filename)
 
+    star_filename = '%s/star_moments.fits' % (dirs.output_dir)
+    print("WRITING OUT STAR MOMENTS FITS FILE %s" % star_filename)
+    fits.BinTableHDU(data=star_moms).writeto(star_filename, overwrite=True)
+
     for iMom in psf_moms.keys():
         psf_moms[iMom] = psf_moms[iMom][ momsWithDrizzlePosition['galStarFlag'] == 1 ]
     
@@ -317,6 +321,78 @@ def psf_cor(    mom_file,
     xscale=1000, yscale=1000
     unps
     '''
+    print("I GO IN FIGURE")
+    import matplotlib.pyplot as plt
+    from matplotlib.collections import LineCollection
+
+    def plot_evec(ax, x, y, e1, e2, xscale=1000, yscale=1000, color="black", label=None):
+        """
+        Equivalent of IDL's plt_evec, /e1e2: draws a short line ("whisker") at
+        each (x, y) position, oriented along the ellipticity position angle
+        (0.5 * atan2(e2, e1)) and scaled by the ellipticity magnitude.
+        """
+        e_mag = np.sqrt(e1 ** 2 + e2 ** 2)
+        theta = 0.5 * np.arctan2(e2, e1)
+
+        dx = e_mag * np.cos(theta) * xscale
+        dy = e_mag * np.sin(theta) * yscale
+
+        # Build line segments centred on each (x, y) point
+        x0, x1 = x - dx / 2, x + dx / 2
+        y0, y1 = y - dy / 2, y + dy / 2
+        segments = np.stack([np.column_stack([x0, y0]), np.column_stack([x1, y1])], axis=1)
+
+        lc = LineCollection(segments, colors=color, linewidths=1.5, label=label)
+        ax.add_collection(lc)
+        ax.autoscale()
+
+    # Plot the PSF model
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_title(f"PSF MODEL")
+    ax.set_xlabel("X [PIXELS]")
+    ax.set_ylabel("Y [PIXELS]")
+    ax.set_aspect("equal")
+
+    xscale, yscale = 1000, 1000
+
+    # --- Interpolated PSF model, at galaxy positions ---
+    plot_evec(ax, psf_moms.x, psf_moms.y, psf_moms.e1, psf_moms.e2,
+              xscale=xscale, yscale=yscale, color="black", label="Galaxies")
+
+    # --- Actual measured stellar ellipticities, at star positions ---
+    star_e1 = (star_moms.xx - star_moms.yy) / (star_moms.xx + star_moms.yy)
+    star_e2 = 2. * star_moms.xy / (star_moms.xx + star_moms.yy)
+
+    plot_evec(ax, star_moms.x, star_moms.y, star_e1, star_e2,
+              xscale=xscale, yscale=yscale, color="red", label="Stars")
+    ax.legend()
+    # --- Ellipticity scale bar (reference whisker of known |e|) ---
+    e_ref = 0.1  # reference ellipticity magnitude to display
+    xscale, yscale = 1000, 1000
+
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    x0 = xlim[0] + 0.08 * (xlim[1] - xlim[0])
+    y0 = ylim[0] + 0.05 * (ylim[1] - ylim[0])
+
+    dx_ref = e_ref * xscale
+    dy_ref = 0.0  # horizontal reference bar (theta = 0)
+
+    ax.plot([x0 - dx_ref / 2, x0 + dx_ref / 2], [y0, y0], color="red", linewidth=1.5)
+    ax.text(x0, y0 + 0.02 * (ylim[1] - ylim[0]), f"e = {e_ref}",
+            color="red", fontsize=9, ha="center", va="bottom")
+
+    # Only look at positions covered by a single exposure — no rotation/averaging
+    # ambiguity possible if nExposures == 1
+    single_exp_mask = psf_moms.nExposures == 1
+    print(single_exp_mask)
+    plot_evec(ax, psf_moms.x[single_exp_mask], psf_moms.y[single_exp_mask],
+              psf_moms.e1[single_exp_mask], psf_moms.e2[single_exp_mask],
+              xscale=xscale, yscale=yscale, color="green", label="PSF model (1 exp only)")
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(dirs.output_dir, 'Psf_Model.png'), dpi=150)
+    plt.close(fig)
     #and continue on as per usual...
 
     pxxw=psf_moms.xx
