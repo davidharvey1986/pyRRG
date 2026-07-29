@@ -150,5 +150,7 @@ def setDefaultParams( params ):
     if 'mask_file_only' not in params:
         params['mask_file_only'] = False
 
+    if params['RS_info'] is None:
+        params['RS_info'] = False
     json.dump(params, open("pyRRG.params","w"))
     return params
