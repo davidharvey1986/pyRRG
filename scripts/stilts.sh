@@ -116,6 +116,7 @@ esac
 
 # Execute the command.
 java \
+   --sun-misc-unsafe-memory-access=allow \
    $javaArgs \
    -classpath $CLASSPATH \
    uk.ac.starlink.ttools.Stilts \
