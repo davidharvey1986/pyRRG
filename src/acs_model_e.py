@@ -2,7 +2,7 @@ from scipy.io import readsav as readSave
 import numpy as np
 from . import directories
 from astropy.io import fits
-
+import pickle as pkl
 
 
 
@@ -86,7 +86,7 @@ def acs_model_e( x, y, wavelength='814', data_dir=None):
     
     # Loop over each focus value in turn
     for f in range(n_focus):
-        moms = readSave( filenames1+str(catalogues_focus[f])+filenames2).moms
+        moms = pkl.load(open(filenames1 + str(catalogues_focus[f]) + '.pkl', 'rb'))
         
         
         # Loop over each position in which we're interested

@@ -99,7 +99,7 @@ def psf_cor(    mom_file,
             scat, meta = pkl.load(open(dirs.psf_model_dir+'/moms.pkl', 'rb'))
             psf_detectors = np.array([ i['detector'][0][:5] for i in meta])
         else:
-            scat = readsav( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.scat' )['scat']
+            scat = pkl.load( open( dirs.psf_model_dir+'/TinyTim'+kwargs['wavelength']+'.pkl', 'rb' ) )
 
     #so this function interpolates.
  
