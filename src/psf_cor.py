@@ -404,8 +404,14 @@ def psf_cor(    mom_file,
     pxyyy=psf_moms.xyyy
     pyyyy=psf_moms.yyyy
     
-    w=kwargs['min_rad']
-    
+    # Width of the Gaussian weight the TinyTim PSF moments were measured with (stellar weight w*,
+    # RRG Eq. 54). The ACS/F814W TinyTim table is only self-consistent for 6 px (P_xxxx = 3 P_xx^2,
+    # g/w* = 0.42 as in Rhodes+2000), and acs_determine_focus also measures the stars with min_rad=6.
+    # Hardcoded so it no longer follows the galaxy min_rad: with --min_rad=3 the PSF was de-weighted with
+    # w* = 3 and over-subtracted (bright stars corrected to r^2 = -1.15 r^2_obs instead of ~0).
+    # The galaxy weight floor (sigma, above) still uses kwargs['min_rad'].
+    w=6.
+
     
 
 
