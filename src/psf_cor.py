@@ -133,11 +133,11 @@ def psf_cor(    mom_file,
     
     galaxy_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 1])
     star_moms = cp.copy(momsWithDrizzlePosition[momsWithDrizzlePosition['galStarFlag'] == 0])
-        
 
     
-    uncorrected_xx = galaxy_moms.xx
-    uncorrected_yy = galaxy_moms.yy
+    # Real copies: galaxy_moms.xx/yy are overwritten with the corrected moments below
+    uncorrected_xx = np.array(galaxy_moms.xx, copy=True)
+    uncorrected_yy = np.array(galaxy_moms.yy, copy=True)
     
    
    
