@@ -485,8 +485,11 @@ def psf_cor(    mom_file,
     pxxc=a+trace/2
     pyyc=d+trace/2
     pxyc=b
-    
 
+    '''
+    Old: RRG Eq. 50 (as in the original IDL rrg_psf_cor.pro). This is an
+    approximation: it is exact only for unweighted moments, so with the Gaussian
+    weight lambda comes out too small and G1 too large (~1.44 instead of ~1.14).
 
     corrected_moments.xxxx = galaxy_moms.xxxx-e-\
       6*pxxc*galaxy_moms.xx+6*pxxc*pxxc;
@@ -499,6 +502,20 @@ def psf_cor(    mom_file,
       3*(pxyc*galaxy_moms.yy+pyyc*galaxy_moms.xy)+6*pxyc*pyyc;
     corrected_moments.yyyy = galaxy_moms.yyyy-\
       k-6*pyyc*galaxy_moms.yy+6*pyyc*pyyc;
+    '''
+
+    # Exact correction for a round Gaussian PSF of width g (= shear) measured
+    # with a Gaussian weight of width sigma, the same assumption and target
+    # weight (sigma^2 + g^2) as the second moments above, which use (g/gw)^4.
+    # Fourth moments have two more powers of x, so they get (g/gw)^8.
+    # The PSF anisotropy is ignored here; it changes G1 by < 0.003.
+    gw2 = gw*gw
+    A4 = (shear/gw)**8
+    corrected_moments.xxxx = A4*(galaxy_moms.xxxx - 6*gw2*galaxy_moms.xx + 3*gw2*gw2)
+    corrected_moments.yyyy = A4*(galaxy_moms.yyyy - 6*gw2*galaxy_moms.yy + 3*gw2*gw2)
+    corrected_moments.xxyy = A4*(galaxy_moms.xxyy - gw2*(galaxy_moms.xx + galaxy_moms.yy) + gw2*gw2)
+    corrected_moments.xxxy = A4*(galaxy_moms.xxxy - 3*gw2*galaxy_moms.xy)
+    corrected_moments.xyyy = A4*(galaxy_moms.xyyy - 3*gw2*galaxy_moms.xy)
 
     corrected_moments['e1'] = (corrected_moments.xx-corrected_moments.yy)/\
       (corrected_moments.xx+corrected_moments.yy)
